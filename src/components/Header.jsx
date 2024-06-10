@@ -24,9 +24,9 @@ const Header = () => {
                         <PopoverTrigger asChild>
                             <HomeIcon sx={{ fontSize: "40px", cursor: "pointer", bgcolor: "#cbe9f7", padding: "5px", borderRadius: "50%", color: "#fda839" }} />
                         </PopoverTrigger>
-                        <PopoverContent className="w-96">
+                        <PopoverContent className="w-[97%]">
                             <div>
-                                <h2 className="font-bold text-base heading mt-3 ">Setting</h2>
+                                <h2 className="font-bold text-base">Setting</h2>
                                 <Link to={'/UpdateUnavailability'} className='shadow p-3 mt-3  flex items-center gap-1 rounded-2xl cursor-pointer'>
                                     <CalendarMonthIcon sx={{ fontSize: "18px" }} />
                                     <h1 className="font-bold text-sm heading ">Update Unavailability</h1>
@@ -35,10 +35,10 @@ const Header = () => {
                                     <PersonIcon />
                                     <h1 className="font-bold text-sm heading ">Update Profile Picture</h1>
                                 </Link>
-                                <div className='shadow p-3 mt-3 flex items-center gap-1 rounded-2xl cursor-pointer'>
+                                <Link to={'/update_address'} className='shadow p-3 mt-3 flex items-center gap-1 rounded-2xl cursor-pointer'>
                                     <AddLocationIcon />
                                     <h1 className="font-bold text-sm heading ">Update Address</h1>
-                                </div>
+                                </Link>
                                 <div className='shadow p-3 mt-3 flex items-center gap-1 rounded-2xl cursor-pointer'>
                                     <DirectionsWalkIcon />
                                     <h1 className="font-bold text-sm heading ">Update View App Walkthrough</h1>
