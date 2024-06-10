@@ -21,19 +21,19 @@ const UpdateAddress = () => {
             <div className='login_page min-h-screen'>
                 <Header />
                 <div className="container">
-                    <div className="max-w-[320px] w-full mx-auto">
-                        <div className='bg-white p-3 mt-3 w-full mx-auto rounded-lg sm:w-full'>
-                            <h2 className="font-bold text-base mt-3 ">Update Address</h2>
+                    <div className='bg-white p-3 mt-3 w-full mx-auto rounded-lg sm:w-full'>
+                        <h2 className="font-bold text-base mt-3 ">Update Address</h2>
+                        <div className="max-w-[320px] w-full mx-auto">
                             <div className='mt-2'>
-                              <input type="text" className='border outline-none px-2' placeholder='name' />
+                                <input type="text" className='border outline-none px-2 w-full py-3 rounded-md' placeholder='name' />
                             </div>
                             <div className='mt-2'>
-                              <input type="text" className='border outline-none px-2' placeholder='name' />
+                                <input type="text" className='border outline-none px-2 w-full py-3 rounded-md' placeholder='email' />
                             </div>
                             <div className='mt-2'>
-                              <input type="text" className='border outline-none px-2' placeholder='name' />
+                                <input type="text" className='border outline-none px-2 w-full py-3 rounded-md' placeholder='phone' />
                             </div>
-                         
+
                             <div className='w-full'>
                                 <button type="submit" className="text-center w-full mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
                                     Save

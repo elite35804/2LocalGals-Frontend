@@ -21,24 +21,26 @@ const UpdateUnavailability = () => {
             <div className='login_page min-h-screen'>
                 <Header />
                 <div className="container">
-                    <div className="max-w-[320px] w-full mx-auto">
-                        <div className='bg-white p-3 mt-3 w-full mx-auto rounded-lg sm:w-full'>
-                            <h2 className="font-bold text-base heading mt-3  ">Update Unavailability</h2>
+                    <div className='bg-white p-3 mt-3 w-full mx-auto rounded-lg sm:w-full'>
+                        <h2 className="font-bold text-base heading mt-3  ">Update Unavailability</h2>
+                        <div className='grid grid-cols-3 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
                             <Calendar
                                 mode="single"
                                 selected={date}
                                 onSelect={setDate}
-                                className="rounded-md mt-5 w-full border-b border-dashed"
+                                className="rounded-md mt-5 w-full"
                             />
-                            <div>
-                                <h2 className="font-bold text-base heading mt-3  ">Start Time</h2>
-                                <AccessTimeIcon />
+                            <div className='flex gap-4'>
+                                <div>
+                                    <h2 className="font-bold text-base heading mt-3  ">Start Time</h2>
+                                    <input type="text" placeholder='Start date' className='border outline-none px-2 rounded-md py-2 w-full' />
+                                </div>
+                                <div>
+                                    <h2 className="font-bold text-base heading mt-3  ">End Time</h2>
+                                    <input type="text" placeholder='End date' className='border outline-none px-2 rounded-md py-2 w-full' />
+                                </div>
                             </div>
-                            <div>
-                                <h2 className="font-bold text-base heading mt-3  ">End Time</h2>
-                                <AccessTimeIcon />
-                            </div>
-                            <div>
+                            <div className='w-full'>
                                 <h2 className="font-bold text-base heading mt-3  ">Recurrence</h2>
                                 <Select className='w-full'>
                                     <SelectTrigger className="w-full">
@@ -54,15 +56,15 @@ const UpdateUnavailability = () => {
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
-                                <div className='flex items-center justify-between'>
-                                    <button type="submit" className="sign-in text-center mt-10 border border-yellow-900 text-xs font-semibold px-12 py-3 rounded-lg">
-                                        Delete
-                                    </button>
-                                    <button type="submit" className="sign-in text-center mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
-                                        Save
-                                    </button>
-                                </div>
                             </div>
+                        </div>
+                        <div className='flex items-center justify-center gap-6'>
+                            <button type="submit" className="sign-in text-center mt-10 border border-yellow-900 text-xs font-semibold px-12 py-3 rounded-lg">
+                                Delete
+                            </button>
+                            <button type="submit" className="sign-in text-center mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
+                                Save
+                            </button>
                         </div>
                     </div>
                 </div>
