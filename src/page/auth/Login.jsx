@@ -34,7 +34,7 @@ const Login = () => {
             <EmailIcon sx={{ fontSize: "15px", color: "#747474" }} />
             <input
               placeholder="E-mail"
-              className="w-full bg-transparent outline-none text-[12px] text-input-placeholder"
+              className="w-full bg-transparent outline-none text-sm text-input-placeholder"
               type="email"
               id="email"
             />
@@ -43,7 +43,7 @@ const Login = () => {
             <KeyIcon sx={{ fontSize: "15px", color: "#747474" }} />
             <input
               placeholder="Password"
-              className="w-full outline-none bg-transparent text-[12px] text-input-placeholder"
+              className="w-full outline-none bg-transparent text-sm text-input-placeholder"
               type="password"
               id="password"
             />
