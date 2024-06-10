@@ -10,8 +10,8 @@ const Login = () => {
     navigate("/first");
   };
   return (
-    <div className="login_page h-screen">
-      <div className="2xl:max-w-[400px] w-full max-w-[350px] mx-auto h-full justify-center flex flex-col gap-2">
+    <div className="login_page h-screen flex justify-center">
+      <div className="2xl:max-w-[400px] w-full max-w-[350px] mx-2 h-full justify-center flex flex-col gap-2">
         <div className="text-center">
           <div className="flex justify-center">
             <img
