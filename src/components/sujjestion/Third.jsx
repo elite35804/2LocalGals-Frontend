@@ -1,16 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import Header from '../Header';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import SendIcon from '@mui/icons-material/Send';
-
 import TodayIcon from '@mui/icons-material/Today';
 const Third = () => {
+  const params = useLocation()
+  console.log(params.pathname)
   return (
     <div className='min-h-screen'>
-      <Header />
+      {params.pathname == '/walk_through' ? null : <Header />}
       <div className='container'>
         <div className='bg-white p-4 mt-5 rounded-xl'>
           <div className='status'>
@@ -141,7 +142,7 @@ const Third = () => {
             </div>
           </div>
           <div className='flex items-center justify-center  mt-10'>
-            <button type="submit" className="bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
+            <button type="submit" className="bg-yellow-900 main_btn border border-transparent text-white text-xs font-semibold px-12 py-3 rounded-lg">
               Start Job
             </button>
           </div>

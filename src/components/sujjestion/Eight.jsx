@@ -214,7 +214,7 @@ const Eight = () => {
                         <div className='flex justify-between lg:block'>
                             <div className='mt-12'>
                                 <h4 className='font-bold'>Notes</h4>
-                                <textarea id="w3review" name="w3review" rows="4" cols="50" placeholder='Type here....' className='custom_textarea xl:w-[400px] w-[500px] h-[250px] lg:w-full sm:h-[100px]'></textarea>
+                                <textarea id="w3review" name="w3review" rows="4" cols="50" placeholder='Type here....' readOnly className='custom_textarea xl:w-[400px] w-[500px] h-[250px] lg:w-full sm:h-[100px]'></textarea>
 
                             </div>
 
