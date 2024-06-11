@@ -32,7 +32,7 @@ const Login = () => {
                         <VisibilityIcon sx={{ fontSize: "15px", color: "#747474" }} />
                     </div>
                     {/* <p className="text-[11px] my-2 mr-2 text-input-placeholder w-max ml-auto" >Forgot Password ?</p> */}
-                    <button type="submit" className="sign-in text-center mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
+                    <button type="submit" className="border border-transparent main_btn text-center mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
                         <div className='flex items-center justify-center'>
                             <span className=''>Sign In</span>
                         </div>

@@ -59,10 +59,10 @@ const UpdateUnavailability = () => {
                             </div>
                         </div>
                         <div className='flex items-center justify-center gap-6'>
-                            <button type="submit" className="sign-in text-center mt-10 border border-yellow-900 text-xs font-semibold px-12 py-3 rounded-lg">
+                            <button type="submit" className="hover:bg-yellow-900 hover:text-white transition-all text-center mt-10 border border-yellow-900 text-xs font-semibold px-12 py-3 rounded-lg">
                                 Delete
                             </button>
-                            <button type="submit" className="sign-in text-center mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
+                            <button type="submit" className="main_btn border border-transparent text-center mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
                                 Save
                             </button>
                         </div>

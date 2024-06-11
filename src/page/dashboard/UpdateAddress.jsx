@@ -35,7 +35,7 @@ const UpdateAddress = () => {
                             </div>
 
                             <div className='w-full'>
-                                <button type="submit" className="text-center w-full mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
+                                <button type="submit" className="main_btn border border-transparent text-center w-full mt-10 bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
                                     Save
                                 </button>
                             </div>

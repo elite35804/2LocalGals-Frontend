@@ -48,7 +48,7 @@ const Slider = () => {
                 ></span>
               ))}
             </div>
-            <button onClick={handleslider} className="bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg next_buton">
+            <button onClick={handleslider} className="bg-yellow-900 main_btn border border-transparent text-white text-xs font-semibold px-12 py-3 rounded-lg next_buton">
               {index === data.length - 1 ? 'Continue' : 'Next'}
             </button>
           </div>
