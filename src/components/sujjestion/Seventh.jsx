@@ -8,7 +8,7 @@ const Seventh = () => {
         <div className=''>
             {/* <Header /> */}
             <div className='container '>
-                <div className='bg-white p-3 mt-5 rounded-xl mx-auto'>
+                <div className='bg-white p-3 sm:p-0 mt-5 rounded-xl mx-auto'>
                    {/* <Link to={'/sixth'}><KeyboardBackspaceIcon sx={{ fontSize: "40px", cursor: "pointer", padding: "5px", borderRadius: "50%", color: "#fda839" }} /></Link> */}
              <div className='w-[80%] lg:w-full mx-auto'>
                      
@@ -26,8 +26,8 @@ const Seventh = () => {
     
 <table width="100%" className='mt-10 general_clean_items'>
                  <tr>
-                    <th className='font-bold text-start'>Kitchen</th>
-                    <th className='text-red-400 text-bold text-start'>Not Completed</th>
+                    <th className='font-bold text-start sm:w-[66%] pl-2 text-lg sm:text-m'>Kitchen</th>
+                    <th className='text-red-500 text-bold text-start sm:text-center text-lg sm:text-m '>Not Completed</th>
                  </tr>
 
                  <tbody>
@@ -38,7 +38,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
               
@@ -53,7 +53,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
               
@@ -68,7 +68,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
 
@@ -83,7 +83,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
    
@@ -98,7 +98,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4 border-solid-red' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"/>
              
@@ -113,7 +113,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
        
@@ -128,7 +128,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
        
@@ -143,7 +143,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
        
@@ -158,7 +158,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
        
@@ -173,7 +173,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
        
@@ -188,7 +188,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
        
@@ -203,7 +203,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
        
@@ -217,8 +217,8 @@ const Seventh = () => {
 
                <table width="100%" className='mt-10 general_clean_items'>
                  <tr>
-                    <th className='font-bold text-start deep_clean'>Deep clean items</th>
-                    <th className='text-red-400 text-bold text-start'>Not Completed</th>
+                    <th className='font-bold text-start deep_clean text-lg sm:text-m'>Deep clean items</th>
+                    <th className='text-red-500 text-bold text-start sm:text-center text-lg sm:text-m'>Not Completed</th>
                  </tr>
 
                  <tbody>
@@ -229,7 +229,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"/>
                  
@@ -244,7 +244,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
               
@@ -259,7 +259,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
             
@@ -274,7 +274,7 @@ const Seventh = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className='sm:text-center'>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
           

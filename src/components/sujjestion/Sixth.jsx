@@ -8,7 +8,7 @@ const Sixth = () => {
         <div className=''>
             {/* <Header /> */}
             <div className='container '>
-                <div className='bg-white p-3 mt-5 rounded-xl mx-auto'>
+                <div className='bg-white p-3 sm:p-0 mt-5 rounded-xl mx-auto'>
                    {/* <Link to={'/fifth'}><KeyboardBackspaceIcon sx={{ fontSize: "40px", cursor: "pointer", padding: "5px", borderRadius: "50%", color: "#fda839" }} /></Link> */}
              <div className='w-[60%] lg:w-full mx-auto'>
                      
@@ -24,10 +24,10 @@ const Sixth = () => {
                     </div>
 <div className='flex justify-between md:block'>
     
-<table width="100%" className='mt-10 general_clean_items'>
+<table width="100%" className='mt-10 general_clean_items '>
                  <tr>
-                    <th className='font-bold text-start'>General clean items</th>
-                    <th className='text-red-400 text-bold text-start'>Not Completed</th>
+                    <th className='font-bold text-start text-lg sm:text-m'>General clean items</th>
+                    <th className='text-red-500 text-bold text-start text-lg sm:text-m' >Not Completed</th>
                  </tr>
 
                  <tbody>
@@ -38,10 +38,10 @@ const Sixth = () => {
                        </ul>
                      
                         </td>
-                        <td>
+                        <td className=''>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
-                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px'}}  ></AddBoxIcon>  
+                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px' ,marginLeft:'5px'}}  ></AddBoxIcon>  
                      
                         </td>
                         
@@ -56,7 +56,7 @@ const Sixth = () => {
                         <td>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
-                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px'}}  ></AddBoxIcon>  
+                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px',marginLeft:'5px'}}  ></AddBoxIcon>  
                      
                         </td>
                         
@@ -71,7 +71,7 @@ const Sixth = () => {
                         <td>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
-                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px'}}  ></AddBoxIcon>  
+                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px' ,marginLeft:'5px'}}  ></AddBoxIcon>  
                      
                         </td>
                         
@@ -86,7 +86,7 @@ const Sixth = () => {
                         <td>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
-                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px'}}  ></AddBoxIcon>  
+                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px' ,marginLeft:'5px'}}  ></AddBoxIcon>  
                      
                         </td>
                         
@@ -101,7 +101,7 @@ const Sixth = () => {
                         <td>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4 border-solid-red' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"/>
-                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px'}}  ></AddBoxIcon>  
+                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px',marginLeft:'5px'}}  ></AddBoxIcon>  
                      
                         </td>
                         
@@ -116,7 +116,7 @@ const Sixth = () => {
                         <td>
                        
                 <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked/>
-                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px'}}  ></AddBoxIcon>  
+                <AddBoxIcon sx={{color:"#6fc1e9",marginTop:'-10px' ,marginLeft:'5px'}}  ></AddBoxIcon>  
                      
                         </td>
                         
@@ -125,10 +125,10 @@ const Sixth = () => {
                 
                 </table>    
 
-               <table width="100%" className='mt-10 general_clean_items'>
+               <table width="100%" className='mt-8 general_clean_items'>
                  <tr>
-                    <th className='font-bold text-start deep_clean'>Deep clean items</th>
-                    <th className='text-red-400 text-bold text-start'>Not Completed</th>
+                    <th className='font-bold text-start deep_clean text-lg sm:text-m'>Deep clean items</th>
+                    <th className='text-red-500 text-bold text-start text-lg sm:text-m'>Not Completed</th>
                  </tr>
 
                  <tbody>

@@ -27,8 +27,8 @@ const Eight = () => {
 
                             <table width="100%" className='mt-10 general_clean_items'>
                                 <tr>
-                                    <th className='font-bold text-start'>General clean items</th>
-                                    <th className='text-red-400 text-bold text-start'>Not Completed</th>
+                                    <th className='font-bold text-start text-lg sm:text-m'>General clean items</th>
+                                    <th className='text-red-400 text-bold text-start text-lg sm:text-m'>Not Completed</th>
                                 </tr>
 
                                 <tbody>
@@ -42,7 +42,7 @@ const Eight = () => {
                                         <td>
 
                                             <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' }}  ></AddBoxIcon>
+                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px',marginLeft:'5px' }}  ></AddBoxIcon>
 
                                         </td>
 
@@ -57,7 +57,7 @@ const Eight = () => {
                                         <td>
 
                                             <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' }}  ></AddBoxIcon>
+                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' ,marginLeft:'5px' }}  ></AddBoxIcon>
 
                                         </td>
 
@@ -72,7 +72,7 @@ const Eight = () => {
                                         <td>
 
                                             <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' }}  ></AddBoxIcon>
+                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px'  ,marginLeft:'5px'}}  ></AddBoxIcon>
 
                                         </td>
 
@@ -87,7 +87,7 @@ const Eight = () => {
                                         <td>
 
                                             <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' }}  ></AddBoxIcon>
+                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' ,marginLeft:'5px'}}  ></AddBoxIcon>
 
                                         </td>
 
@@ -102,7 +102,7 @@ const Eight = () => {
                                         <td>
 
                                             <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4 border-solid-red' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' }}  ></AddBoxIcon>
+                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' ,marginLeft:'5px' }}  ></AddBoxIcon>
 
                                         </td>
 
@@ -117,7 +117,7 @@ const Eight = () => {
                                         <td>
 
                                             <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' }}  ></AddBoxIcon>
+                                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px' ,marginLeft:'5px' }}  ></AddBoxIcon>
 
                                         </td>
 
@@ -126,10 +126,10 @@ const Eight = () => {
 
                             </table>
 
-                            <table width="86%" className='mt-10 general_clean_items'>
+                            <table width="86%" className='mt-8 general_clean_items'>
                                 <tr>
-                                    <th className='font-bold text-start deep_clean'>Deep clean items</th>
-                                    <th className='text-red-400 text-bold text-start'>Not Completed</th>
+                                    <th className='font-bold text-start deep_clean text-lg sm:text-m'>Deep clean items</th>
+                                    <th className='text-red-400 text-bold text-start text-lg sm:text-m'>Not Completed</th>
                                 </tr>
 
                                 <tbody>
