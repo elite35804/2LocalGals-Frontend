@@ -27,7 +27,7 @@ const Header = () => {
                         <PopoverContent className="w-[97%]">
                             <div>
                                 <h2 className="font-bold text-base">Setting</h2>
-                                <Link to={'/UpdateUnavailability'} className='shadow p-3 mt-3  flex items-center gap-1 rounded-2xl cursor-pointer'>
+                                <Link to={'/update_unavailability'} className='shadow p-3 mt-3  flex items-center gap-1 rounded-2xl cursor-pointer'>
                                     <CalendarMonthIcon sx={{ fontSize: "18px" }} />
                                     <h1 className="font-bold text-sm heading ">Update Unavailability</h1>
                                 </Link>

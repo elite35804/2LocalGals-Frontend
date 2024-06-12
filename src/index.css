@@ -1,6 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Jost:100,200,300,400,500,600,700,800,900');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html, body {
+    font-family: 'Jost', sans-serif !important;
+}
 
 .login_page {
     background: linear-gradient(login_page);
@@ -11,7 +17,7 @@
     margin: 0 auto;
     padding-right: 1rem;
     padding-left: 1rem;
-    margin-bottom: 24px;
+    margin-bottom: 5px;
 }
 
 body {

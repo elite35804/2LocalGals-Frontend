@@ -20,10 +20,9 @@ const Routing = () => {
                 <Route path='/home' element={<Home />} />
                 <Route path='/schedule_details' element={<Subpage/>} />
                 <Route path='/Startjob' element={<Startjob/>} />
-                <Route path='/finish' element ={<Finish></Finish>}></Route>
-
-                <Route path='/walk_through' element={<Slider></Slider>}></Route>
-                <Route path='/UpdateUnavailability' element={<UpdateUnavailability />} />
+                <Route path='/finish' element ={<Finish/>}></Route>
+                <Route path='/walk_through' element={<Slider/>}></Route>
+                <Route path='/update_unavailability' element={<UpdateUnavailability />} />
                 <Route path='/update_profile_picture' element={<UpdateProfilePicture />} />
                 <Route path='/update_address' element={<UpdateAddress />} />
             </Routes>
