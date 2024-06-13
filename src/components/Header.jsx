@@ -1,5 +1,5 @@
 import React from 'react'
-import HomeIcon from '@mui/icons-material/Home';
+
 import {
     Popover,
     PopoverContent,
@@ -11,7 +11,8 @@ import AddLocationIcon from '@mui/icons-material/AddLocation';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { Link } from 'react-router-dom';
 import SettingsIcon from '@mui/icons-material/Settings';
-import profile_img from '../assets/profile-2.png'
+import profile_img from '../assets/profile-2.png';
+import HomeIcon from '@mui/icons-material/Home';
 
 
 const Header = () => {

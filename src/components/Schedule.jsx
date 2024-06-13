@@ -22,7 +22,7 @@ const Schedule = () => {
                         </div>
                     </div>
                     <div className='w-[33%] sm:w-[30%]'>
-                       <div className='sm:flex sm:items-center sm:gap-7'>
+                       <div className='sm:flex sm:items-center sm:gap-4'>
                        <p className='text-yellow-900 font-semibold text-sm'>End</p>
                        <span className='sm:text-[12px]'>11:30 Am</span>
                        </div>
@@ -42,7 +42,7 @@ const Schedule = () => {
                 </div></Link>
                 <Link to={'/schedule_details'} className='flex border-b sm:justify-between border-dashed py-2 p-3 hover:bg-[#cccccc45]'>
                 <div className='w-[33%] sm:w-[37%] '>
-                        <div className='sm:flex sm:items-center sm:gap-7'>
+                        <div className='sm:flex sm:items-center sm:sm:gap-4'>
                         <p className='text-yellow-900 font-semibold text-sm'>Start</p>
                         <span className='sm:text-[12px]'>11:30 Am</span>
                         </div>
@@ -52,7 +52,7 @@ const Schedule = () => {
                         </div>
                     </div>
                     <div className='w-[33%] sm:w-[30%]'>
-                       <div className='sm:flex sm:items-center sm:gap-7'>
+                       <div className='sm:flex sm:items-center sm:gap-4'>
                        <p className='text-yellow-900 font-semibold text-sm'>End</p>
                        <span className='sm:text-[12px]'>11:30 Am</span>
                        </div>
@@ -72,7 +72,7 @@ const Schedule = () => {
                 </Link>
                 <Link to={'/schedule_details'} className='flex border-b sm:justify-between border-dashed py-2 p-3 hover:bg-[#cccccc45]'>
                 <div className='w-[33%] sm:w-[37%] '>
-                        <div className='sm:flex sm:items-center sm:gap-7'>
+                        <div className='sm:flex sm:items-center sm:sm:gap-4'>
                         <p className='text-yellow-900 font-semibold text-sm'>Start</p>
                         <span className='sm:text-[12px]'>11:30 Am</span>
                         </div>
@@ -82,7 +82,7 @@ const Schedule = () => {
                         </div>
                     </div>
                     <div className='w-[33%] sm:w-[30%]'>
-                       <div className='sm:flex sm:items-center sm:gap-7'>
+                       <div className='sm:flex sm:items-center sm:gap-4'>
                        <p className='text-yellow-900 font-semibold text-sm'>End</p>
                        <span className='sm:text-[12px]'>11:30 Am</span>
                        </div>
