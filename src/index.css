@@ -281,6 +281,11 @@ input[type="checkbox"]:not(:checked){
         top: 38%;
     }
 }
+@media (min-width:640px){
+    .main_hide{
+        display: none;
+    }
+}
 
 
 .switch {
