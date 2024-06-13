@@ -9,13 +9,15 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PersonIcon from '@mui/icons-material/Person';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import SettingsIcon from '@mui/icons-material/Settings';
 import profile_img from '../assets/profile-2.png';
 import HomeIcon from '@mui/icons-material/Home';
 
 
 const Header = () => {
+    const params = useLocation()
+    console.log(params.pathname)
     return (
         <div className='border-b border-dashed border-white  py-3'>
             <div className="container">
@@ -24,9 +26,15 @@ const Header = () => {
                         <img className='w-16 object-cover h-16 rounded-full' src={profile_img} alt="profile img" />
                     </Link>
                     <Popover>
-                        <PopoverTrigger asChild>
-                            <SettingsIcon sx={{ fontSize: "40px", cursor: "pointer", bgcolor: "#cbe9f7", padding: "5px", borderRadius: "50%", color: "#fda839" }} />
-                        </PopoverTrigger>
+                        {
+                            params.pathname == "/walk_through" ?
+                              <Link to={'/home'}> <HomeIcon sx={{ fontSize: "40px", cursor: "pointer", bgcolor: "#cbe9f7", padding: "5px", borderRadius: "50%", color: "#fda839" }} /></Link>
+                                :
+                                <PopoverTrigger asChild>
+                                    <SettingsIcon sx={{ fontSize: "40px", cursor: "pointer", bgcolor: "#cbe9f7", padding: "5px", borderRadius: "50%", color: "#fda839" }} />
+
+                                </PopoverTrigger>
+                        }
                         <PopoverContent className="w-[97%] box-shadow">
                             <div>
                                 <h2 className="font-bold text-base">Setting</h2>
