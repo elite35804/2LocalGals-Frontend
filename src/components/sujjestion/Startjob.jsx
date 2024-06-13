@@ -66,11 +66,11 @@ const Startjob = () => {
 
           <div className='status flex items-center justify-between'>
             <p> <button onClick={handleback} ><KeyboardBackspaceIcon sx={{ fontSize: "40px", cursor: "pointer", padding: "5px", marginLeft: "0px", marginTop: "15px", borderRadius: "50%", color: "#fda839" }} /></button></p>
-            <p className='text-red-600 text-end font-bold text-lg'>Not Completed</p>
+            <p className='text-red-600 text-end font-medium text-lg'>Not Completed</p>
           </div>
           <div className='Brad_allen_section mt-8'>
             <div className='flex justify-between '>
-              <p className='font-bold text-lg'>Brad ALLen</p>
+              <p className='font-semibold text-lg'>Brad ALLen</p>
               <p><AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>   <InsertCommentIcon sx={{ color: "#6fc1e9" }}></InsertCommentIcon>  </p>
             </div>
             <div className='flex flex-col items-start gap-2 justify-between mt-5 march_date'>
@@ -87,7 +87,7 @@ const Startjob = () => {
             <div>
               <div className="flex flex-col items-center justify-center mt-10 ">
                 <div className="flex items-center justify-center w-40 h-40 bg-[#fdfec4] rounded-full border-4 border-[#ffd808]">
-                  <span className="text-2xl font-bold">{formatTime(seconds)}</span>
+                  <span className="text-2xl font-medium">{formatTime(seconds)}</span>
                 </div>
                 <div className="mt-8 flex gap-4 ">
                   <button
@@ -132,8 +132,8 @@ const Startjob = () => {
                 <div className=' w-[45%] sm:w-full '>
 
 <div className='flex justify-between items-center mt-10'>
-  <h4 className='font-bold sm:text-sm text-lg'>Kitchen</h4>
-   <h4 className='font-bold text-red-600 sm:text-sm text-lg'>Not Completed</h4>
+  <h4 className='font-medium sm:text-sm text-lg'>Kitchen</h4>
+   <h4 className='font-medium text-red-600 sm:text-sm text-lg'>Not Completed</h4>
 </div>
   <div>
   <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
@@ -221,8 +221,8 @@ const Startjob = () => {
                 <div className=' w-[45%] sm:w-full '>
 
 <div className='flex justify-between items-center mt-10'>
-  <h4 className='font-bold sm:text-sm text-lg'>Deep clean items</h4>
-   <h4 className='font-bold text-red-600 sm:text-sm text-lg'>Not Completed</h4>
+  <h4 className='font-medium sm:text-sm text-lg'>Deep clean items</h4>
+   <h4 className='font-medium text-red-600 sm:text-sm text-lg'>Not Completed</h4>
 </div>
 
   <div>
@@ -265,7 +265,7 @@ const Startjob = () => {
               <div>
 
                 <div>
-                  <h4 className='text-lg font-bold  '>Details: </h4>
+                  <h4 className='text-lg font-medium  '>Details: </h4>
                   <p className='text-grey-500 font-semibold  mt-4'>3 Cats and 1 Dog. Dog would be in the office
                     with wife. They're both working from home.
                     Aren't looking for a full house clean. We
@@ -281,7 +281,7 @@ const Startjob = () => {
                   <table width="55% sm:w-full" className='mt-10 general_clean_items'>
                     <thead>
                     <tr>
-                      <th className='font-bold text-start text-lg sm:text-sm sm:w-[73%]'>General clean items</th>
+                      <th className='font-medium text-start text-lg sm:text-sm sm:w-[73%]'>General clean items</th>
                       <th className='text-red-600 text-bold text-start sm:text-end text-lg sm:text-sm sm:w-[27%]' >Not Completed</th>
                     </tr>
                     </thead>
@@ -383,8 +383,8 @@ const Startjob = () => {
 <div className=' w-[45%] sm:w-full '>
 
 <div className='flex justify-between items-center mt-10'>
-  <h4 className='font-bold sm:text-sm text-lg'>Deep clean items</h4>
-   <h4 className='font-bold text-red-600 sm:text-sm text-lg'>Not Completed</h4>
+  <h4 className='font-medium sm:text-sm text-lg'>Deep clean items</h4>
+   <h4 className='font-medium text-red-600 sm:text-sm text-lg'>Not Completed</h4>
 </div>
 
   <div>
@@ -425,7 +425,7 @@ const Startjob = () => {
 
                   <div className='flex justify-between lg:block'>
                     <div className='mt-12'>
-                      <h4 className='font-bold text-lg'>Notes</h4>
+                      <h4 className='font-medium text-lg'>Notes</h4>
                       <textarea id="w3review" name="w3review" rows="4" cols="50" placeholder='Type here....' className='custom_textarea xl:w-[400px] w-[500px] h-[250px] lg:w-full sm:h-[100px]'></textarea>
 
                     </div>
@@ -433,7 +433,7 @@ const Startjob = () => {
 
 
                     <div className='mt-12'>
-                      <h4 className='font-bold text-lg'>Upload Pictures</h4>
+                      <h4 className='font-medium text-lg'>Upload Pictures</h4>
                       <div className='w-[500px] xl:w-[400px] h-[250px] sm:w-full sm:h-[100px] lg:w-full border-2 border-dashed mt-4 border-grey-500 rounded-2xl  center_image'>
 
                         <figure >

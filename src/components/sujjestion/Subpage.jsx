@@ -31,7 +31,7 @@ const Subpage = () => {
             </div>
             <div className='Brad_allen_section mt-8'>
               <div className='flex justify-between'>
-                <p className=' font-medium text-lg'>Brad ALLen</p>
+                <p className=' font-semibold text-lg'>Brad ALLen</p>
                 <p><AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>   <InsertCommentIcon sx={{ color: "#6fc1e9" }}></InsertCommentIcon>  </p>
               </div>
               <div className='flex items-center justify-between mt-5 march_date'>
