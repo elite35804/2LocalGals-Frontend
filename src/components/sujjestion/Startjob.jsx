@@ -9,7 +9,6 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import TodayIcon from '@mui/icons-material/Today';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useState } from 'react';
-import WithDashboardLayout from '@/hoc/WithDashboardLayout';
 const Startjob = () => {
   const params = useLocation()
   console.log(params.pathname);
@@ -66,7 +65,7 @@ const Startjob = () => {
         <div className='bg-white p-4 mt-5 rounded-xl'>
 
           <div className='status flex items-center justify-between'>
-            <p> <buttton onClick={handleback} ><KeyboardBackspaceIcon sx={{ fontSize: "40px", cursor: "pointer", padding: "5px", marginLeft: "0px", marginTop: "15px", borderRadius: "50%", color: "#fda839" }} /></buttton></p>
+            <p> <button onClick={handleback} ><KeyboardBackspaceIcon sx={{ fontSize: "40px", cursor: "pointer", padding: "5px", marginLeft: "0px", marginTop: "15px", borderRadius: "50%", color: "#fda839" }} /></button></p>
             <p className='text-red-600 text-end font-bold text-lg'>Not Completed</p>
           </div>
           <div className='Brad_allen_section mt-8'>
@@ -128,270 +127,133 @@ const Startjob = () => {
             {options ? (
               <div className='flex items-start justify-between md:block'>
 
-                <table width="100%" className='mt-10 general_clean_items'>
-                  <tr>
-                    <th className='font-bold text-start'>Kitchen</th>
-                    <th className='text-red-500 text-bold text-start'>Not Completed</th>
-                  </tr>
-
-                  <tbody>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'>Take Before/After Pictures</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1 '>General dusting and remove cobwebs</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Damp wipe countertops & cloth dry</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'>Clean outsides of range hood</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'>Clean top/front of range and fridge</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4 border-solid-red' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'>Clean top/front of all appliances</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Wipe out Microwave</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Do any dishes or place in dishwasher</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Clean/disinfect sink</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Empty garbage and replace liner</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Sweep/vacuum any hard flooring</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Mop any hard flooring</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                  </tbody>
-
-                </table>
-
-                <table width="100%" className='mt-10 general_clean_items'>
-                  <tr>
-                    <th className='font-bold text-start deep_clean'>Deep clean items</th>
-                    <th className='text-red-500 text-bold text-start'>Not Completed</th>
-                  </tr>
-
-                  <tbody>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'>Kitchen Cupboard(Outside only)</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1 '>Bath Cupboards(Outside only)</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'> Inside Oven</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-                    <tr>
-                      <td>
-                        <ul className='list-disc once_list mt-4'>
-                          <li className='text-grey-500 font-semibold mb-1'>Fridge/Freezer</li>
-                        </ul>
-
-                      </td>
-                      <td>
-
-                        <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={allchecked} onChange={handlechecked} />
-
-
-                      </td>
-
-                    </tr>
-
-                  </tbody>
-
-
-
-                </table>
+              
+
+                <div className=' w-[45%] sm:w-full '>
+
+<div className='flex justify-between items-center mt-10'>
+  <h4 className='font-bold sm:text-sm text-lg'>Kitchen</h4>
+   <h4 className='font-bold text-red-600 sm:text-sm text-lg'>Not Completed</h4>
+</div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Take Before/After Pictures </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>General dusting and remove cobwebs </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Damp wipe countertops & cloth dry</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Clean outsides of range hood </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Clean top/front of range and fridge</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Clean top/front of all appliances</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Wipe out Microwave</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Do any dishes or place in dishwasher</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Clean/disinfect sink</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Empty garbage and replace liner</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Sweep/vacuum any hard flooring</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Mop any hard flooring</li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked}/>
+  </ul>
+  </div>
+
+
+
+</div>
+
+
+
+
+
+               
+                <div className=' w-[45%] sm:w-full '>
+
+<div className='flex justify-between items-center mt-10'>
+  <h4 className='font-bold sm:text-sm text-lg'>Deep clean items</h4>
+   <h4 className='font-bold text-red-600 sm:text-sm text-lg'>Not Completed</h4>
+</div>
+
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Kitchen Cupboard(Outside only) </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Bath Cupboards(Outside only) </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Inside Oven </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Fridge/Freezer </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+
+
+
+</div>
+           
               </div>
 
 
@@ -403,7 +265,7 @@ const Startjob = () => {
               <div>
 
                 <div>
-                  <h4 className='text-lg font-bold text-lg'>Details: </h4>
+                  <h4 className='text-lg font-bold  '>Details: </h4>
                   <p className='text-grey-500 font-semibold  mt-4'>3 Cats and 1 Dog. Dog would be in the office
                     with wife. They're both working from home.
                     Aren't looking for a full house clean. We
@@ -416,100 +278,100 @@ const Startjob = () => {
 
                 <div className='flex justify-between  items-start md:block'>
 
-                  <table width="100%" className='mt-10 general_clean_items'>
+                  <table width="55% sm:w-full" className='mt-10 general_clean_items'>
+                    <thead>
                     <tr>
-                      <th className='font-bold text-start'>General clean items</th>
-                      <th className='text-red-600 text-bold text-start'>Not Completed</th>
+                      <th className='font-bold text-start text-lg sm:text-sm sm:w-[73%]'>General clean items</th>
+                      <th className='text-red-600 text-bold text-start sm:text-end text-lg sm:text-sm sm:w-[27%]' >Not Completed</th>
                     </tr>
-
+                    </thead>
                     <tbody>
                       <tr>
                         <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'>Master Bathroom</li>
+                          <ul className='list-disc once_list bg-[#fafafa] p-4 rounded-xl'>
+                            <li className='text-grey-500 font-semibold'>Master Bathroom</li>
                           </ul>
-
                         </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                          <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)}  ></AddBoxIcon>
-
+                        <td className='sm:text-end'>
+                          <div className='bg-[#fafafa] p-4 inline-block rounded-xl'>
+                            <input className='checkbox_class w-[17px] h-[17px]' type="checkbox" id="vehicle2" name="vehicle1"   onChange={handlechecked} />
+                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)}  ></AddBoxIcon>
+                          </div>
                         </td>
 
                       </tr>
                       <tr>
                         <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1 '>Master Bedroom</li>
+                          <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl'>
+                            <li className='text-grey-500 font-semibold '>Master Bedroom</li>
                           </ul>
 
                         </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                          <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
-
+                        <td  className='sm:text-end'>
+                          <div className='bg-[#fafafa] p-4 mt-2 inline-block rounded-xl'>
+                            <input className='checkbox_class w-[17px] h-[17px]' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
+                          </div>
                         </td>
 
                       </tr>
                       <tr>
                         <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'> Bathroom 2</li>
+                          <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl'>
+                            <li className='text-grey-500 font-semibold'> Bathroom 2</li>
                           </ul>
 
                         </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                          <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
-
+                        <td  className='sm:text-end'>
+                          <div className='bg-[#fafafa] p-4 inline-block rounded-xl'>
+                            <input className='checkbox_class w-[17px] h-[17px]' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
+                          </div>
                         </td>
 
                       </tr>
                       <tr>
                         <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'>Bathroom 2</li>
+                          <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl'>
+                            <li className='text-grey-500 font-semibold'>Bathroom 2</li>
                           </ul>
 
                         </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                          <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
-
+                        <td  className='sm:text-end'>
+                          <div className='bg-[#fafafa] p-4 inline-block rounded-xl'>
+                            <input className='checkbox_class w-[17px] h-[17px]' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
+                          </div>
                         </td>
 
                       </tr>
                       <tr>
                         <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'>Kitchen</li>
+                          <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl'>
+                            <li className='text-grey-500 font-semibold'>Kitchen</li>
                           </ul>
 
                         </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4 border-solid-red' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={false} />
-                          <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
-
+                        <td  className='sm:text-end'>
+                          <div className='bg-[#fafafa] inline-block rounded-xl p-4'>
+                            <input className='checkbox_class w-[17px] h-[17px] border-solid-red' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)} ></AddBoxIcon>
+                          </div>
                         </td>
 
                       </tr>
                       <tr>
                         <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'>Other Rooms/Areas</li>
+                          <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl'>
+                            <li className='text-grey-500 font-semibold'>Other Rooms/Areas</li>
                           </ul>
 
                         </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked />
-                          <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)}  ></AddBoxIcon>
-
+                        <td  className='sm:text-end '>
+                          <div className='bg-[#fafafa] inline-block rounded-xl p-4'>
+                            <input className='checkbox_class w-[17px] h-[17px]' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+                            <AddBoxIcon sx={{ color: "#6fc1e9", marginTop: '-10px', marginLeft: '5px', cursor: 'pointer' }} onClick={() => setoptions(true)}  ></AddBoxIcon>
+                          </div>
                         </td>
 
                       </tr>
@@ -517,77 +379,43 @@ const Startjob = () => {
 
                   </table>
 
-                  <table width="100%" className='mt-10 general_clean_items'>
-                    <tr>
-                      <th className='font-bold text-start deep_clean'>Deep clean items</th>
-                      <th className='text-red-600 text-bold text-start'>Not Completed</th>
-                    </tr>
 
-                    <tbody>
-                      <tr>
-                        <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'>Kitchen Cupboard(Outside only)</li>
-                          </ul>
+<div className=' w-[45%] sm:w-full '>
 
-                        </td>
-                        <td>
+<div className='flex justify-between items-center mt-10'>
+  <h4 className='font-bold sm:text-sm text-lg'>Deep clean items</h4>
+   <h4 className='font-bold text-red-600 sm:text-sm text-lg'>Not Completed</h4>
+</div>
 
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] text-red-600 mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={false} />
-
-
-                        </td>
-
-                      </tr>
-                      <tr>
-                        <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1 '>Bath Cupboards(Outside only)</li>
-                          </ul>
-
-                        </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={false} />
-
-
-                        </td>
-
-                      </tr>
-                      <tr>
-                        <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'> Inside Oven</li>
-                          </ul>
-
-                        </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={false} />
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Kitchen Cupboard(Outside only) </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"  onChange={handlechecked} />
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Bath Cupboards(Outside only) </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Inside Oven </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
+  <div>
+  <ul className='list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between'>
+  <li className='text-grey-500 font-semibold sm:text-sm'>Fridge/Freezer </li>
+  <input className='checkbox_class w-[17px] h-[17px] leading-tight text-red-600' type="checkbox" id="vehicle2" name="vehicle1" value="Bike"   onChange={handlechecked} />
+  </ul>
+  </div>
 
 
-                        </td>
 
-                      </tr>
-                      <tr>
-                        <td>
-                          <ul className='list-disc once_list mt-4'>
-                            <li className='text-grey-500 font-semibold mb-1'>Fridge/Freezer</li>
-                          </ul>
-
-                        </td>
-                        <td>
-
-                          <input className='ms-2 checkbox_class w-[17px] h-[17px] mt-4' type="checkbox" id="vehicle2" name="vehicle1" value="Bike" checked={false} />
-
-
-                        </td>
-
-                      </tr>
-
-                    </tbody>
-
-                  </table>
+</div>
+               
                 </div>
 
 
@@ -598,7 +426,7 @@ const Startjob = () => {
                   <div className='flex justify-between lg:block'>
                     <div className='mt-12'>
                       <h4 className='font-bold text-lg'>Notes</h4>
-                      <textarea id="w3review" name="w3review" rows="4" cols="50" placeholder='Type here....'  className='custom_textarea xl:w-[400px] w-[500px] h-[250px] lg:w-full sm:h-[100px]'></textarea>
+                      <textarea id="w3review" name="w3review" rows="4" cols="50" placeholder='Type here....' className='custom_textarea xl:w-[400px] w-[500px] h-[250px] lg:w-full sm:h-[100px]'></textarea>
 
                     </div>
 
@@ -621,7 +449,7 @@ const Startjob = () => {
 
                   </div>
                   <div className='flex items-center justify-center  mt-10'>
-                    <button onClick={() => navigate('/finish')} type="submit" className="text-lg border hover:bg-transparent hover:text-black hover:border hover:border-gray-400 bg-green-400 border-transparent text-white w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 "  >
+                    <button onClick={() => navigate('/finish')} type="submit" className="text-lg border bg-green-400 border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 "  >
                       Next
                     </button>
                   </div>

@@ -6,7 +6,7 @@ import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import SendIcon from '@mui/icons-material/Send';
 import TodayIcon from '@mui/icons-material/Today';
-import WithDashboardLayout from '@/hoc/WithDashboardLayout';
+import third_img from '../../assets/third.png'
 const Third = () => {
   const params = useLocation()
   console.log(params.pathname)
@@ -15,6 +15,7 @@ const Third = () => {
       {params.pathname == '/walk_through' ? null : <Header />}
       <div className='container'>
         <div className='bg-white p-4 mt-5 rounded-xl'>
+          {/* <div>
           <div className='status'>
             <p className='text-red-500 text-end font-bold'>Not Completed</p>
           </div>
@@ -36,7 +37,7 @@ const Third = () => {
                   <p className='icon_width'><SendIcon sx={{ bgcolor: "#2ab2eb", color: "#fff", borderRadius: '100%', width: '35px', lineHeight: '30px', height: '35px', padding: '7px' }}></SendIcon></p>
                 </div>
               </div>
-              {/* partner */}
+            
               <div className='sm:w-full md:w-full'>
                 <div className='flex gap-5 items-center mt-3 send_icon justify-between'>
                   <p><b>Partners(s)</b> <span className='text-grey-500 font-semibold'>Kimber Stovall</span></p>
@@ -49,7 +50,7 @@ const Third = () => {
             </div>
           </div>
           <hr className='border-dashed border-gray-500  mt-5' />
-          {/* buildinginformation */}
+       
           <div className="building mt-4 flex  justify-between">
             <div>
               <div>
@@ -96,7 +97,7 @@ const Third = () => {
               </div>
             </div>
           </div>
-          {/* not complete */}
+     
           <hr className='border-dashed mt-5' />
           <div className='notcomplete flex justify-between mt-5 items-center' >
             <div className='flex gap-5 Details'>
@@ -122,7 +123,8 @@ const Third = () => {
               </div>
             </div>
           </div>
-          {/* takekeys */}
+        
+
           <hr className='border-dashed mt-5' />
           <div className='take_keys notcomplete flex justify-between mt-10'>
             <div>
@@ -142,11 +144,17 @@ const Third = () => {
               <p className='text-grey-500 font-semibold'>Tells you if before/After pictures are required of each area.</p>
             </div>
           </div>
-         
+          </div>
+          */}
+
+          <div className='flex justify-center'>
+            <img src={third_img} alt="" className='pointer-events-none w-[50%] sm:w-full' />
+            
+            </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default WithDashboardLayout(Third)
+export default Third

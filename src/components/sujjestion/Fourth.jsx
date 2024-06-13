@@ -1,6 +1,7 @@
 
 
 import { Link } from 'react-router-dom';
+import fourth_img from '../../assets/forth.png'
 
 const Fourth = () => {
     return (
@@ -9,8 +10,9 @@ const Fourth = () => {
             <div className='container '>
                 <div className='bg-white p-5 mt-5 rounded-xl mx-auto'>
                
-                  
-                    <div>
+               {/* <div>
+                   
+               <div>
                              <ul className='list-disc once_list'>
                                 <li className='text-grey-500 font-semibold'>Once you have brought in all your supplies and read the details carefully, click on the Start Job button</li>
                                 <li className='text-grey-500 font-semibold'>Once you click the Start Job button, your timer will begin.</li>
@@ -34,11 +36,8 @@ const Fourth = () => {
                   <button className='btn_start'>Start Job</button>
                     </div>
                     
-                    {/* <Link to={'/fifth'} className='flex items-center justify-center  mt-10'>
-                        <button type="submit" className="bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
-                            Next
-                        </button>
-                    </Link> */}
+               </div> */}
+                <div className='flex justify-center'><img src={fourth_img} alt="" className='pointer-events-none w-[50%] sm:w-full' /></div>
                 </div>
             </div>
         </div>

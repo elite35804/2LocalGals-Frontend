@@ -13,7 +13,7 @@ const Finish = () => {
     setchecked(!allchecked);
   };
 
-
+ 
   const handelcheck = () => {
     setcheked(!check);
   };
@@ -26,8 +26,8 @@ const Finish = () => {
           <div>
             <h3 className="font-bold text-lg">Finished Checklist</h3>
             <div className="timer_list w-[50%] md:w-full lg:w-[62%]">
-              <ul className="list-disc once_list flex gap-5 justify-between pe-4 items-center mt-4 bg-[#d9d9d9] py-3   rounded-xl">
-                <li className="text-grey-500 font-semibold mb-1 ">
+              <ul className="once_list flex gap-5 justify-between pe-4 items-center mt-4 bg-[#d9d9d9] py-3 rounded-xl">
+                <li className="text-grey-500 font-semibold circule_icon mb-1 circule_icon">
                   Did you upload all Before/After pics, if applicable
                 </li>
                 <input
@@ -41,8 +41,8 @@ const Finish = () => {
                 />
               </ul>
 
-              <ul className="list-disc once_list flex gap-5 justify-between pe-4 items-center mt-4 bg-[#d9d9d9] py-3   rounded-xl">
-                <li className="text-grey-500 font-semibold mb-1 ">
+              <ul className=" once_list flex gap-5 justify-between pe-4 items-center mt-4 bg-[#d9d9d9] py-3   rounded-xl">
+                <li className="text-grey-500 font-semibold circule_icon mb-1 ">
                   Have you double checked your work?
                 </li>
                 <input
@@ -56,8 +56,8 @@ const Finish = () => {
                 />
               </ul>
 
-              <ul className="list-disc justify-between pe-4 once_list flex gap-5 items-center mt-4 bg-[#d9d9d9] py-3   rounded-xl">
-                <li className="text-grey-500 font-semibold mb-1 ">
+              <ul className=" justify-between pe-4 once_list flex gap-5 items-center mt-4 bg-[#d9d9d9] py-3   rounded-xl">
+                <li className="text-grey-500 font-semibold circule_icon mb-1 ">
                   Did the customer do a walthrough, if possible?
                 </li>
                 <input
@@ -71,8 +71,8 @@ const Finish = () => {
                 />
               </ul>
 
-              <ul className="list-disc justify-between pe-4 once_list flex gap-5 items-center mt-4 bg-[#d9d9d9] py-3   rounded-xl">
-                <li className="text-grey-500 font-semibold mb-1 ">
+              <ul className=" justify-between pe-4 once_list flex gap-5 items-center mt-4 bg-[#d9d9d9] py-3   rounded-xl">
+                <li className="text-grey-500 font-semibold circule_icon mb-1 ">
                   Have you double checked your partners work, if you had one ?
                 </li>
                 <input
@@ -91,8 +91,9 @@ const Finish = () => {
             <button
               onClick={() => navigate("/home")}
               type="submit"
-              className={` ${allchecked ? `hover:bg-transparent hover:text-black hover:border hover:border-gray-400 bg-[green]` : 'bg-[grey]'} border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 `}
-              disabled={allchecked ? false : true}
+            style={allchecked?{background:"green"}:{background:"grey"}}
+              className="  border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 "
+              disabled={allchecked? false : true}
             >
               Finish Job
             </button>

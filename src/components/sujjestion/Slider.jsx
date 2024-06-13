@@ -11,6 +11,7 @@ import Seventh from '@/components/sujjestion/Seventh';
 import Eight from '@/components/sujjestion/Eight';
 import Ninth from '@/components/sujjestion/Ninth';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import WithDashboardLayout from '@/hoc/WithDashboardLayout';
 
 const Slider = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const Slider = () => {
   return (
     <div className='min-h-screen' {...handlers}>
       <div className='container'>
-        <div className='bg-white mt-5 rounded-xl'>
+        <div className='bg-white mt-5 rounded-xl relative'>
           {index > 0 && (
             <button onClick={handlePrev}>
               <KeyboardBackspaceIcon
@@ -50,8 +51,17 @@ const Slider = () => {
             </button>
           )}
           {data[index]}
+          {index > 0 ? ('') :
+            (<div className='w-[35%] sm:w-[70%] mx-auto flex justify-between items-center ' >
+              <h4 className='font-semibold text-xl sm:text-lg'>Don't show again</h4>
+              <label class="switch">
+
+                <input type="checkbox" />
+                <span class="slider round"></span>
+              </label>
+            </div>)}
           <div className='flex items-center justify-center flex-col pb-4 mt-10'>
-            <div className='dots-container'>
+            <div className='dots-container '>
               {data.map((_, dotIndex) => (
                 <span
                   key={dotIndex}
@@ -60,6 +70,7 @@ const Slider = () => {
                 ></span>
               ))}
             </div>
+
             <button onClick={handleNext} className='bg-yellow-900 main_btn border border-transparent text-white text-xs font-semibold px-12 py-3 rounded-lg next_button'>
               {index === data.length - 1 ? 'Continue' : 'Next'}
             </button>
@@ -70,4 +81,4 @@ const Slider = () => {
   );
 };
 
-export default Slider;
+export default WithDashboardLayout(Slider);

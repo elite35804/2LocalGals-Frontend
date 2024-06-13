@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import ninth_img from '../../assets/nine.png'
 const Ninth = () => {
   const [allchecked, setchecked] = useState(false);
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Ninth = () => {
       <div className='container '>
         <div className='bg-white p-3 mt-5 rounded-xl mx-auto'>
           {/* <Link to={'/eight'}><KeyboardBackspaceIcon sx={{ fontSize: "40px", cursor: "pointer", padding: "5px", borderRadius: "50%", color: "#fda839" }} /></Link> */}
-          <div className='w-[50%] sm:w-full mx-auto'>
+          {/* <div className='w-[50%] sm:w-full mx-auto'>
 
             <div className='timer_list'>
               <ul className='list-disc once_list'>
@@ -117,12 +117,13 @@ const Ninth = () => {
           </div>
 
 
-            {/* notes */}
 
 
 
-          </div>
+          </div> */}
 
+
+<div className='flex justify-center'><img src={ninth_img} alt="" className='pointer-events-none w-[50%] sm:w-full' /></div>
           {/* <Link to={'/home'} className='flex items-center justify-center  mt-10'>
                         <button type="submit" className="bg-yellow-900 text-white text-lg font-semibold px-12 py-3 rounded-lg">
                           Continue

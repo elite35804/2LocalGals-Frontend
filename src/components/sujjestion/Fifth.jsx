@@ -1,7 +1,7 @@
 import { useRef,useEffect,useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
+import fifth_img from '../../assets/fifth.png'
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 const Fifth = () => {
     const [seconds, setSeconds] = useState(3509);
@@ -45,7 +45,7 @@ const Fifth = () => {
             <div className='container '>
                 <div className='bg-white p-5 sm:p-2 mt-5 rounded-xl mx-auto'>
                    {/* <Link to={'/fourth'}><KeyboardBackspaceIcon sx={{ fontSize: "40px", cursor: "pointer", padding: "5px", borderRadius: "50%", color: "#fda839" }} /></Link> */}
-             <div className='w-[50%] md:w-full lg:w-[90%] xl:w-[60%] mx-auto'>
+             {/* <div className='w-[50%] md:w-full lg:w-[90%] xl:w-[60%] mx-auto'>
                      
              <div className='timer_list'>
                              <ul className='list-disc once_list'>
@@ -133,8 +133,8 @@ const Fifth = () => {
     </div>
 </div>
                   </div>
-             </div>
-               
+             </div> */}
+               <div className='flex justify-center'><img src={fifth_img} alt="" className='pointer-events-none w-[50%] sm:w-full' /></div>
                     {/* <Link to={'/sixth'} className='flex items-center justify-center  mt-10'>
                         <button type="submit" className="bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg">
                             Next
