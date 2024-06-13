@@ -2,7 +2,7 @@ import React from 'react'
 import EmailIcon from '@mui/icons-material/Email';
 import KeyIcon from '@mui/icons-material/Key';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const navigate = useNavigate()
@@ -16,7 +16,7 @@ const Login = () => {
                     <div className='flex justify-center'>
                     <img className='rounded-full border-2 w-28 h-28' src="https://scontent.fixc1-7.fna.fbcdn.net/v/t39.30808-6/277778836_401580788636662_7687958163370346394_n.png?_nc_cat=103&ccb=1-7&_nc_sid=5f2048&_nc_ohc=n1rh91JcfWYQ7kNvgGwO6FN&_nc_ht=scontent.fixc1-7.fna&oh=00_AYAZlM9hpL2MmcpYjioCEOWf9GKvHu85F0bceQfYC-AT5g&oe=6669ECD3" alt="" />
                     </div>
-                    <h2 className="font-bold text-white text-base heading mt-3">Welcome</h2>
+                    <h2 className="font-bold text-white text-2xl heading mt-3">Welcome</h2>
                 </div>
                 <h2 className="font-bold text-white text-base heading mt-8">Log In to your account</h2>
                 {/* <h4 className="2xl:text-base font-semibold text-xs">Welcome back!</h4>

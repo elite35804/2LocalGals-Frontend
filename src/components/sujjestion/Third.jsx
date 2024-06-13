@@ -6,6 +6,7 @@ import InsertCommentIcon from '@mui/icons-material/InsertComment';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import SendIcon from '@mui/icons-material/Send';
 import TodayIcon from '@mui/icons-material/Today';
+import WithDashboardLayout from '@/hoc/WithDashboardLayout';
 const Third = () => {
   const params = useLocation()
   console.log(params.pathname)
@@ -148,4 +149,4 @@ const Third = () => {
   )
 }
 
-export default Third
+export default WithDashboardLayout(Third)

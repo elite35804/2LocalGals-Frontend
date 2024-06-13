@@ -1,12 +1,11 @@
 import React from 'react'
-import Header from '../../components/Header'
 import WeeklyData from '../../components/WeeklyData'
 import Schedule from '../../components/Schedule'
+import WithDashboardLayout from '@/hoc/WithDashboardLayout'
 
 const Home = () => {
   return (
     <div className='login_page min-h-screen'>
-      <Header />
       <div className="container">
         <div className='py-4'>
           <div className='flex items-center'>
@@ -23,4 +22,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default WithDashboardLayout(Home)

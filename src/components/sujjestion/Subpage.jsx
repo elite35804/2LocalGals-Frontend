@@ -7,9 +7,8 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import SendIcon from '@mui/icons-material/Send';
 import TodayIcon from '@mui/icons-material/Today';
 import { useState } from 'react';
+import WithDashboardLayout from '@/hoc/WithDashboardLayout';
 const Subpage = () => {
-  const params = useLocation()
-  console.log(params.pathname)
   const [show, setshow] = useState(false);
   const [check, setcheked] = useState(false);
   const handleCheckboxChange = () => {
@@ -22,7 +21,6 @@ const Subpage = () => {
   const navigate = useNavigate();
   return (
     <div className='min-h-screen'>
-      {params.pathname == '/walk_through' ? null : <Header />}
       <div className='container'>
         <div className='bg-white p-4 mt-5 rounded-xl'>
           <div className='status'>
@@ -176,4 +174,4 @@ const Subpage = () => {
   )
 }
 
-export default Subpage
+export default WithDashboardLayout(Subpage)

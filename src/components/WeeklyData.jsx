@@ -1,4 +1,7 @@
 import React from 'react'
+import balance_img from '../assets/balance.png'
+import wallet_img from '../assets/wallet.png'
+import calender_img from '../assets/calender.png'
 
 const WeeklyData = () => {
     return (
@@ -12,7 +15,7 @@ const WeeklyData = () => {
                 <div className='flex items-center gap-4 justify-end w-[75%]'>
                     <div className='flex flex-col justify-center items-center w-[25%]'>
                         <span className='text-[#747474] sm:text-xs font-semibold'>Today</span>
-                        <img className='w-20' src="https://www.shutterstock.com/image-vector/calendar-icon-clock-notice-message-600nw-1981476518.jpg" alt="" />
+                        <img className='w-14' src={calender_img} alt="" />
                         <div className='mt-3 flex flex-col gap-3'>
                             <div>
                                 <p className='text-sm'>6.5</p>
@@ -27,7 +30,7 @@ const WeeklyData = () => {
                     </div>
                     <div className='flex flex-col justify-center items-center w-[25%]'>
                         <span className='text-[#747474] sm:text-xs font-semibold'>This Week</span>
-                        <img className='w-20' src="https://www.shutterstock.com/image-vector/calendar-icon-clock-notice-message-600nw-1981476518.jpg" alt="" />
+                        <img className='w-14' src={balance_img} alt="" />
                         <div className='mt-3 flex flex-col gap-3'>
                             <div>
                                 <p className='text-sm'>$209</p>
@@ -42,7 +45,7 @@ const WeeklyData = () => {
                     </div>
                     <div className='flex flex-col justify-center items-center w-[25%]'>
                         <span className='text-[#747474] sm:text-xs font-semibold'>Next Week</span>
-                        <img className='w-20' src="https://www.shutterstock.com/image-vector/calendar-icon-clock-notice-message-600nw-1981476518.jpg" alt="" />
+                        <img className='w-14' src={wallet_img} alt="" />
                         <div className='mt-3 flex flex-col gap-3'>
                             <div>
                                 <p className='text-sm'>$27.26</p>
