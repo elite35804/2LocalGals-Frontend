@@ -54,10 +54,10 @@ const Slider = () => {
           {index > 0 ? ('') :
             (<div className='w-[35%] sm:w-[70%] mx-auto flex justify-between items-center ' >
               <h4 className='font-semibold text-xl sm:text-lg'>Don't show again</h4>
-              <label class="switch">
+              <label className="switch">
 
                 <input type="checkbox" />
-                <span class="slider round"></span>
+                <span className="slider round"></span>
               </label>
             </div>)}
           <div className='flex items-center justify-center flex-col pb-4 mt-10'>

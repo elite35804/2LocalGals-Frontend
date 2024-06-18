@@ -5,7 +5,7 @@ import calender_img from '../assets/calender.png'
 
 const WeeklyData = () => {
     return (
-        <div className='bg-white p-3 mt-3 w-1/2 rounded-lg sm:w-full'>
+        <div className='bg-white p-3 mt-3 w-[49%] rounded-lg sm:w-full'>
             <div className='flex items-end'>
                 <div className='w-[25%] mt-3 flex flex-col gap-3'>
                     <p className='text-yellow-900 font-semibold text-sm'>Hours</p>

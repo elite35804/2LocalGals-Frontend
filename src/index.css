@@ -352,3 +352,20 @@ input[type="checkbox"]:not(:checked){
   .slider.round:before {
     border-radius: 50%;
   }
+  @keyframes unfillBorder {
+    0% {
+      border-width: 10px;
+      border-radius: 50%; /* Start with full circle */
+    }
+    100% {
+      border-width: 10px;
+      border-radius: 0; /* End with no radius, effectively a line */
+    }
+  }
+  
+  .unfill-animate {
+    animation-name: unfillBorder;
+    animation-duration: 60s; /* Match with your timer duration */
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }

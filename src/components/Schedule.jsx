@@ -1,14 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const Schedule = () => {
+const Schedule = ({date,pay}) => {
     return (
         <>
-            <h2 className="font-bold text-white text-base heading mt-3 w-1/2 pl-3 main_hide">Schedule</h2>
-            <div className='bg-white mt-3 w-1/2 rounded-lg sm:w-full'>
+      
+            <div className='bg-white mt-3 w-[49%] rounded-lg sm:w-full'>
                 <div className='flex p-3 justify-between'>
-                    <h2 className='text-grey-500'>Mar 30</h2>
-                    <p className='text-grey-500'>Approx. Pay: <span className='font-semibold text-[red]'>$209</span></p>
+                    <h2 className='text-grey-500'>{date}</h2>
+                    <p className='text-grey-500'>Approx. Pay: <span className='font-semibold text-[red]'>${pay}</span></p>
                 </div>
                 <Link to={'/schedule_details'}> <div className='flex sm:justify-between border-b border-dashed py-2 p-3 hover:bg-[#cccccc45]'>
                     <div className='w-[33%] sm:w-[37%] '>

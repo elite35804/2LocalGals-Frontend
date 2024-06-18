@@ -1,0 +1,58 @@
+@keyframes circletimer {
+    0% {
+      stroke-dashoffset: 500;
+      stroke-dasharray: 500; }
+    100% {
+      stroke-dashoffset: 0;
+      stroke-dasharray: 500; } }
+  
+  .custom_svg svg {
+    background-color: transparent;
+    position: absolute;
+    background-color: transparent;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotateZ(-90deg); }
+    .custom_svg svg .circle {
+      stroke: #468F00;
+      stroke-width: 3;
+      fill:transparent;
+      stroke-dashoffset: 500;
+      stroke-dasharray: 0;
+      
+     }
+  
+  .timer {
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: black;
+    font-size: 42px;
+    font-weight: 700; }
+  
+    .custom_svg {
+        background-color: #C4FFD5; /* Default background color */
+      }
+      
+      .custom_svg.red {
+        background-color: red; /* Background color when time is 0 */
+      }
+      
+      .custom_svg.yellow {
+        background-color: #FDFEC4; /* Background color when time is below 600 seconds */
+      }
+      
+      .custom_svg.green svg .circle {
+        stroke: #468F00;
+      }
+      
+      .custom_svg.yellow svg .circle {
+        stroke: #FFD808;
+      }
+      
+      .custom_svg.red svg .circle {
+        stroke: red;
+      
+      }

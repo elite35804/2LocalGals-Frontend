@@ -10,11 +10,16 @@ import Subpage from '@/components/sujjestion/Subpage';
 import Finish from '@/components/sujjestion/Finish'
 import WithDashboardLayout from '@/hoc/WithDashboardLayout'
 
+
+
+
 const Routing = () => {
     return (
         <BrowserRouter>
             <Routes>
+           
                 <Route path='/' element={<Login />} />
+      
                 <Route path='/home' element={<Home />} />
                 <Route path='/schedule_details' element={<Subpage />} />
                 <Route path='/Startjob' element={<Startjob />} />
