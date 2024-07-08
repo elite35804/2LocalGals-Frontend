@@ -55,7 +55,7 @@ const Login = (props) => {
       }
     } catch (e) {
       console.log(e);
-      actions.alert.shoeError({ message: "Login failed. Please try again" });
+      actions.alert.showError({ message: "Login failed. Please try again" });
     } finally {
       setLoading(false);
     }
