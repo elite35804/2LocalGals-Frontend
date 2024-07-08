@@ -1,23 +1,26 @@
 "use client";
-import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import * as React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DayPicker } from "react-day-picker";
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import moment from "moment";
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  dates,
   ...props
 }) {
   return (
-    (<DayPicker
+    <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
-        months: "flex flex-col sm:flex-row sm:justify-center space-y-4 sm:space-x-4 sm:space-y-0",
+        months:
+          "flex flex-col sm:flex-row sm:justify-center space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
@@ -41,7 +44,8 @@ function Calendar({
         day_range_end: "day-range-end",
         day_selected:
           "bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50 dark:hover:text-slate-900 dark:focus:bg-slate-50 dark:focus:text-slate-900",
-        day_today: "bg-slate-100 text-slate-900-[#fff] dark:bg-slate-800 dark:text-slate-50",
+        day_today:
+          "bg-slate-100 text-slate-900-[#fff] dark:bg-slate-800 dark:text-slate-50",
         day_outside:
           "day-outside text-slate-500 opacity-50 aria-selected:bg-slate-100/50 aria-selected:text-slate-500 aria-selected:opacity-30 dark:text-slate-400 dark:aria-selected:bg-slate-800/50 dark:aria-selected:text-slate-400",
         day_disabled: "text-slate-500 opacity-50 dark:text-slate-400",
@@ -53,10 +57,31 @@ function Calendar({
       components={{
         IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        DayContent: ({ date, className, classNames, ...props }) => {
+          return (
+            <div
+              className={cn(
+                className,
+                "flex items-center justify-center text-sm text-center ",
+                dates.find(
+                  (d) =>
+                    moment(d?.dateRequested).format("YYYY-MM-DD") ===
+                    moment(date).format("YYYY-MM-DD")
+                )
+                  ? "bg-red-500 px-2 py-0.5 rounded-full"
+                  : ""
+              )}
+              {...props}
+            >
+              {date.getDate()}
+            </div>
+          );
+        },
       }}
-      {...props} />)
+      {...props}
+    />
   );
 }
-Calendar.displayName = "Calendar"
+Calendar.displayName = "Calendar";
 
-export { Calendar }
+export { Calendar };
