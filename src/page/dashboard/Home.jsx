@@ -10,6 +10,8 @@ const Home = () => {
   const actions = useActions();
   const [report, setReport] = useState({});
 
+  console.log(state.currentUser)
+
   useEffect(() => {
     getPosition();
     getPayments();
@@ -115,7 +117,7 @@ const Home = () => {
         <div className="py-4">
           <div className="flex items-center">
             <h2 className="font-bold text-white text-base heading mt-3 w-1/2 ">
-              Good Morning Carly!
+              Good Morning {state.currentUser?.username}!
             </h2>
 
             {/* <h2 className="font-bold text-white text-base heading mt-3 w-1/2 pl-3 sm:hidden">
@@ -128,7 +130,7 @@ const Home = () => {
               Schedules
             </h2>
             <div className="grid grid-cols-2 gap-5 -mt-5">
-              {Object.keys(state.appointment?.appointments)?.map((key) => {
+              {Object.keys(state.appointment?.appointments || {})?.map((key) => {
                 return (
                   <Schedule
                     key={key}
