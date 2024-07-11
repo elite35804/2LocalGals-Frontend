@@ -8,10 +8,14 @@ export const getAppointments = async ({ state, effects, actions }, data) => {
       "get"
     );
     if (res) {
-      const data = res?.sort((a, b) => a?.ScheduleDate > b?.ScheduleDate ? 1 : -1);
-      state.appointment.appointments = groupBy(data, 'ScheduleDate');
+      const data = res?.sort((a, b) =>
+        a?.ScheduleDate > b?.ScheduleDate && a?.startTime > b?.startTime
+          ? -1
+          : 1
+      );
+      state.appointment.appointments = groupBy(data, "ScheduleDate");
     }
-    
+
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {
@@ -45,7 +49,7 @@ export const getAppointmentById = async ({ state, actions }, id) => {
 export const startJob = async ({ state, actions }, id) => {
   try {
     const res = await API(`schedule/StartJob/${id}`, "post", {});
-    console.log(res, 'res')
+    console.log(res, "res");
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {
@@ -79,7 +83,11 @@ export const endJob = async ({ state, actions }, id) => {
 export const updateCoordinate = async ({ state, actions }, data) => {
   console.log(data, "data");
   try {
-    const res = await API(`Schedule/UpdateCoordinates/${data?.id}`, "post", data);
+    const res = await API(
+      `Schedule/UpdateCoordinates/${data?.id}`,
+      "post",
+      data
+    );
     console.log(res, "res");
     return res;
   } catch (e) {

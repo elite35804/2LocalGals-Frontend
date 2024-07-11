@@ -12,7 +12,15 @@ const Finish = () => {
 
   useEffect(() => {
     getAppointment();
+    getAppointments();
   }, []);
+
+  const getAppointments = async () => {
+    await actions.appointment.getAppointments({
+      startDate: moment().format("M/D/YYYY"),
+      endDate: moment().endOf("week").add("days", 7).format("M/D/YYYY"),
+    });
+  };
 
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
@@ -64,7 +72,10 @@ const Finish = () => {
   const navigate = useNavigate();
 
   const allChecked = () => {
-    return options?.length > 0 && options?.filter((o) => o?.isChecked)?.length === options?.length;
+    return (
+      options?.length > 0 &&
+      options?.filter((o) => o?.isChecked)?.length === options?.length
+    );
   };
 
   const onFinish = async () => {
@@ -74,6 +85,19 @@ const Finish = () => {
       endDate: moment().endOf("month").format("M/D/YYYY"),
     });
     if (res) {
+      const appointments =
+        state.appointment.appointments[
+          Object.keys(state.appointment.appointments).find(
+            (k) => moment(k).format("M/D/YYYY") === moment().format("M/D/YYYY")
+          )
+        ];
+      const index = appointments.findIndex((a) => a?.id === params?.id);
+      if (index >= 0 && appointments?.[index + 1]?.AppointmentId) {
+        localStorage.setItem(
+          "current_appointment",
+          JSON.stringify(appointments[index + 1])
+        );
+      }
       actions.alert.showSuccess({ message: "Job finished successfully!" });
       navigate("/home");
     }

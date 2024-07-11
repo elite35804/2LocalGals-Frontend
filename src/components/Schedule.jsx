@@ -4,12 +4,20 @@ import moment from "moment";
 import numeral from "numeral";
 import { useNavigate } from "react-router-dom";
 import key from "../assets/key.png";
-import location from "../assets/location.png";
+import location_icon from "../assets/location.png";
 
-const Schedule = ({ appointments, date }) => {
+const Schedule = ({ appointments, date, currentAppointment, location }) => {
   let pay = 0;
   appointments?.map((a) => (pay += a?.AproxPay));
   const navigate = useNavigate();
+  const getLocation = () => {
+    console.log(`geo:${location?.longitude},${location?.latitude}`);
+    if (location?.latitude && location?.longitude) {
+      return `geo:${location?.longitude},${location?.latitude}`;
+    } else {
+      return "";
+    }
+  };
   return (
     <>
       <div className="bg-white w-full rounded-lg sm:w-full">
@@ -23,18 +31,17 @@ const Schedule = ({ appointments, date }) => {
           </p>
         </div>
         {appointments?.map((appointment, id) => (
-          <a
+          <div
             onClick={() =>
-              !appointment?.JobCompleted
-                ? navigate(`/schedule_detail/${appointment?.AppointmentId}`)
-                : {}
+              navigate(`/schedule_detail/${appointment?.AppointmentId}`)
             }
             key={id}
             className="cursor-pointer relative "
           >
             <div
               className={`flex sm:justify-between border-b border-dashed py-2 p-3 hover:bg-[#cccccc45] ${
-                appointment?.JobCompleted && "bg-green-200"
+                appointment?.AppointmentId ===
+                  currentAppointment?.AppointmentId && "bg-green-200"
               }`}
             >
               <div className="w-[33%] sm:w-[37%] ">
@@ -81,10 +88,14 @@ const Schedule = ({ appointments, date }) => {
                 <img src={key} alt="" />
               </div>
             )}
-            <div className="absolute -right-7 top-7 bg-blue-300 pl-1 rounded-r-full cursor-pointer">
-              <img src={location} alt="" />
-            </div>
-          </a>
+            <a
+              href={getLocation()}
+              target="_blank"
+              className="absolute -right-7 top-7 bg-blue-300 pl-1 rounded-r-full cursor-pointer"
+            >
+              <img src={location_icon} alt="" />
+            </a>
+          </div>
         ))}
       </div>
     </>

@@ -14,6 +14,34 @@ function Calendar({
   dates,
   ...props
 }) {
+  const checkList = (items) => {
+    if (
+      items.find(
+        (d) =>
+          moment(
+            new Date(d?.startTime).setHours(
+              new Date(d?.startTime).getHours() -
+                new Date().getTimezoneOffset() / 60
+            )
+          ).format("HH:mm") <= "06:00"
+      ) &&
+      items.find(
+        (d) =>
+          moment(
+            new Date(d?.endTime).setHours(
+              new Date(d?.endTime).getHours() -
+                new Date().getTimezoneOffset() / 60
+            )
+          ).format("HH:mm") >= "21:00"
+      )
+    ) {
+      return "full";
+    } else if (items?.length > 0) {
+      return "part";
+    } else {
+      return "none";
+    }
+  };
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -58,18 +86,21 @@ function Calendar({
         IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
         DayContent: ({ date, className, classNames, ...props }) => {
+          const items = dates.filter(
+            (d) =>
+              moment(d?.dateRequested).format("YYYY-MM-DD") ===
+              moment(date).format("YYYY-MM-DD")
+          );
           return (
             <div
               className={cn(
                 className,
                 "flex items-center justify-center text-sm text-center ",
-                dates.find(
-                  (d) =>
-                    moment(d?.dateRequested).format("YYYY-MM-DD") ===
-                    moment(date).format("YYYY-MM-DD")
-                )
+                checkList(items) === "full"
                   ? "bg-red-500 px-2 py-0.5 rounded-full"
-                  : ""
+                  : checkList(items) === "part"
+                  ? "bg-yellow-500 px-2 py-0.5 rounded-full"
+                  : "px-2 py-0.5 rounded-full"
               )}
               {...props}
             >

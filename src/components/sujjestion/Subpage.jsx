@@ -16,6 +16,9 @@ const Subpage = () => {
   const [appointment, setAppointment] = useState({});
   const [show, setshow] = useState(false);
   const [check, setcheked] = useState(false);
+  const [phones, setPhones] = useState([]);
+  const [isShowPhone, setShowPhone] = useState(false);
+  const [isShowSms, setShowSms] = useState(false);
 
   useEffect(() => {
     getAppointment();
@@ -24,7 +27,23 @@ const Subpage = () => {
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
     console.log(res, "res");
+    getPhones(res);
     setAppointment(res);
+  };
+
+  const getPhones = async (appointment) => {
+    const list = [];
+    if (appointment?.bestPhone?.length > 0) {
+      list.push(appointment?.bestPhone);
+    }
+    if (appointment?.alternatePhoneOne?.length > 0) {
+      list.push(appointment?.alternatePhoneOne);
+    }
+    if (appointment?.alternatePhoneTwo?.length > 0) {
+      list.push(appointment?.alternatePhoneTwo);
+    }
+    console.log(list, "list");
+    setPhones(list);
   };
   const handleCheckboxChange = () => {
     setshow(!show);
@@ -93,7 +112,18 @@ const Subpage = () => {
     if (a?.locationZip) text.push(a?.locationZip);
     return text.join(", ");
   };
-  
+
+  const onStart = () => {
+    const job = JSON.parse(localStorage.getItem("current_appointment"));
+    if (job?.AppointmentId === params?.id) {
+      navigate(`/Startjob/${params?.id}`);
+    } else {
+      actions.alert.showError({
+        message: "Please complete previous job to start new job",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {params.pathname == "/walk_through" ? null : <Header />}
@@ -110,12 +140,70 @@ const Subpage = () => {
                 <p className=" font-semibold text-lg">
                   {appointment?.CustomerName}
                 </p>
-                <p className="space-x-3">
-                  <AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>
-                  <InsertCommentIcon
-                    sx={{ color: "#6fc1e9" }}
-                  ></InsertCommentIcon>
-                </p>
+                <div className="space-x-3 flex items-center">
+                  <div className="relative">
+                    <a
+                      onClick={(e) => {
+                        setShowPhone(!isShowPhone);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>
+                    </a>
+                    {isShowPhone ? (
+                      <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                        {phones.map((phone, index) => (
+                          <a
+                            key={index}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.open(
+                                `tel:${phone.replace(/[^0-9]/g, "")}`,
+                                "_blank"
+                              );
+                              setShowPhone(false);
+                            }}
+                            className="flex items-center px-2 py-1.5 hover:bg-gray-100 cursor-pointer"
+                          >
+                            <p className="text-sm">{phone}</p>
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="relative">
+                    <a
+                      onClick={(e) => {
+                        setShowSms(!isShowSms);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <InsertCommentIcon
+                        sx={{ color: "#6fc1e9" }}
+                      ></InsertCommentIcon>
+                    </a>
+                    {isShowSms ? (
+                      <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                        {phones.map((phone, index) => (
+                          <a
+                            key={index}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.open(
+                                `sms:${phone.replace(/[^0-9]/g, "")}`,
+                                "_blank"
+                              );
+                              setShowSms(false);
+                            }}
+                            className="flex items-center px-2 py-1.5 hover:bg-gray-100 cursor-pointer"
+                          >
+                            <p className="text-sm">{phone}</p>
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
               </div>
               <div className="flex flex-col items-start w-full mt-7">
                 <div>
@@ -361,7 +449,7 @@ const Subpage = () => {
           </div>
           <div className="flex items-center justify-center mt-10">
             <button
-              onClick={() => navigate(`/Startjob/${params?.id}`)}
+              onClick={() => onStart()}
               type="submit"
               style={
                 show && check ? { background: "green" } : { background: "grey" }
