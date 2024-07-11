@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import WeeklyData from "../../components/WeeklyData";
 import Schedule from "../../components/Schedule";
 import WithDashboardLayout from "@/hoc/WithDashboardLayout";
-import { useAppState, useActions, useEffects, useReaction } from "@/store";
+import { useAppState, useActions } from "@/store";
 import moment from "moment";
 
 const Home = () => {
   const state = useAppState();
   const actions = useActions();
   const [report, setReport] = useState({});
-
-  console.log(state.currentUser)
+  const [location, setLocation] = useState({});
 
   useEffect(() => {
     getPosition();
@@ -18,25 +17,42 @@ const Home = () => {
     getAppointments();
   }, []);
 
+  useEffect(() => {
+    updateCoords();
+  }, [location]);
+
   const getAppointments = async () => {
     await actions.appointment.getAppointments({
       startDate: moment().format("M/D/YYYY"),
-      endDate: moment().endOf("month").format("M/D/YYYY"),
+      endDate: moment().endOf("week").add("days", 7).format("M/D/YYYY"),
     });
     console.log(state.appointment.appointments, "appointments");
   };
 
-  const getPosition = () => {
+  const updateCoords = async (data) => {
+    if (state.currentUser?.contractorID) {
+      await updateCoords({
+        latitude: data.latitude,
+        longitude: data.longitude,
+      });
+    }
+  };
+
+  const getPosition = async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
     } else {
       console.log("Geolocation not supported");
     }
 
-    function success(position) {
+    async function success(position) {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
       console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      setLocation({
+        latitude,
+        longitude,
+      });
     }
 
     function error() {
@@ -111,34 +127,47 @@ const Home = () => {
     setReport(reports);
   };
 
+  const getTime = () => {
+    const hour = new Date().getHours();
+    if (hour >= 12 && hour < 18) {
+      return "Afternoon";
+    } else if (hour >= 18 && hour < 21) {
+      return "Evening";
+    } else if (hour >= 6 && hour < 12) {
+      return "Morning";
+    } else {
+      return "Night";
+    }
+  };
+
+  console.log(Object.values(state.appointment?.appointments || {}));
+
   return (
     <div className="login_page min-h-screen">
       <div className="container">
         <div className="py-4">
           <div className="flex items-center">
             <h2 className="font-bold text-white text-base heading mt-3 w-1/2 ">
-              Good Morning {state.currentUser?.username}!
+              Good {getTime()} {state.currentUser?.username}!
             </h2>
-
-            {/* <h2 className="font-bold text-white text-base heading mt-3 w-1/2 pl-3 sm:hidden">
-              Schedule
-            </h2> */}
           </div>
           <div className="grid grid-cols-1 gap-5">
             <WeeklyData report={report} />
             <h2 className="font-bold text-white text-base heading mt-3 mb-3">
               Schedules
             </h2>
-            <div className="grid grid-cols-2 gap-5 -mt-5">
-              {Object.keys(state.appointment?.appointments || {})?.map((key) => {
-                return (
-                  <Schedule
-                    key={key}
-                    date={key}
-                    appointments={state.appointment?.appointments?.[key]}
-                  />
-                );
-              })}
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-5 -mt-5">
+              {Object.keys(state.appointment?.appointments || {})?.map(
+                (key) => {
+                  return (
+                    <Schedule
+                      key={key}
+                      date={key}
+                      appointments={state.appointment?.appointments?.[key]}
+                    />
+                  );
+                }
+              )}
             </div>
           </div>
         </div>

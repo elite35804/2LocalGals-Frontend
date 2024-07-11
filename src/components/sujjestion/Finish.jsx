@@ -1,32 +1,58 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useActions, useAppState } from "@/store";
 import moment from "moment";
 const Finish = () => {
   const params = useParams();
   const actions = useActions();
   const state = useAppState();
-  const data = [
-    {
-      label: "Did you upload all Before/After pics, if applicable",
-      isChecked: false,
-    },
-    {
-      label: "Have you double checked your work?",
-      isChecked: false,
-    },
-    {
-      label: "Did the customer do a walthrough, if possible?",
-      isChecked: false,
-    },
-    {
-      label: "Have you double checked your partners work, if you had one?",
-      isChecked: false,
-    },
-  ];
-  const [options, setOptions] = useState(data);
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    getAppointment();
+  }, []);
+
+  const getAppointment = async () => {
+    const res = await actions.appointment.getAppointmentById(params?.id);
+    console.log(res, "res");
+    if (res?.TakePic) {
+      setOptions([
+        {
+          label: "Did you upload all Before/After pics, if applicable",
+          isChecked: false,
+        },
+        {
+          label: "Have you double checked your work?",
+          isChecked: false,
+        },
+        {
+          label: "Did the customer do a walthrough, if possible?",
+          isChecked: false,
+        },
+        {
+          label: "Have you double checked your partners work, if you had one?",
+          isChecked: false,
+        },
+      ]);
+    } else {
+      setOptions([
+        {
+          label: "Have you double checked your work?",
+          isChecked: false,
+        },
+        {
+          label: "Did the customer do a walthrough, if possible?",
+          isChecked: false,
+        },
+        {
+          label: "Have you double checked your partners work, if you had one?",
+          isChecked: false,
+        },
+      ]);
+    }
+  };
 
   const handleChecked = (checked, item) => {
     console.log(checked, item);
@@ -38,7 +64,7 @@ const Finish = () => {
   const navigate = useNavigate();
 
   const allChecked = () => {
-    return options?.filter((o) => o?.isChecked)?.length === options?.length;
+    return options?.length > 0 && options?.filter((o) => o?.isChecked)?.length === options?.length;
   };
 
   const onFinish = async () => {

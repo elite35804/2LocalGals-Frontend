@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 import numeral from "numeral";
 import { useNavigate } from "react-router-dom";
+import key from "../assets/key.png";
+import location from "../assets/location.png";
 
 const Schedule = ({ appointments, date }) => {
   let pay = 0;
@@ -28,7 +30,7 @@ const Schedule = ({ appointments, date }) => {
                 : {}
             }
             key={id}
-            className="cursor-pointer"
+            className="cursor-pointer relative "
           >
             <div
               className={`flex sm:justify-between border-b border-dashed py-2 p-3 hover:bg-[#cccccc45] ${
@@ -73,6 +75,14 @@ const Schedule = ({ appointments, date }) => {
                   </span>
                 </div>
               </div>
+            </div>
+            {appointment.NC_RequiresKeys && (
+              <div className="absolute -left-6 top-7 p-1 bg-[#1BD30B] rounded-l-full">
+                <img src={key} alt="" />
+              </div>
+            )}
+            <div className="absolute -right-7 top-7 bg-blue-300 pl-1 rounded-r-full cursor-pointer">
+              <img src={location} alt="" />
             </div>
           </a>
         ))}

@@ -38,7 +38,7 @@ const Header = () => {
             )}
           </Link>
           <Popover>
-            {params.pathname == "/walk_through" ? (
+            {params.pathname != "/home" ? (
               <Link to={"/home"}>
                 {" "}
                 <HomeIcon

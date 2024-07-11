@@ -141,7 +141,6 @@ const Startjob = () => {
     var d = moment.duration(ms);
 
     if (seconds === d?.asSeconds()) {
-      console.log("-=-=-=-=-");
       getStarted();
     }
     if (seconds === 0) {
@@ -441,6 +440,20 @@ const Startjob = () => {
       setLoading(false);
     }
   };
+
+  const getButtonText = () => {
+    const timers = JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+    const timer = timers?.find((t) => t.appointmentId === params?.id);
+    var ms = moment(appointment?.endTime, "hh:mm A").diff(
+      moment(appointment?.startTime, "hh:mm A")
+    );
+    var d = moment.duration(ms);
+    if (timer?.time && timer?.time !== d?.asSeconds()) {
+      return "Continue";
+    } else {
+      return "Start";
+    }
+  };
   return (
     <div className="min-h-screen">
       <Header />
@@ -547,7 +560,7 @@ const Startjob = () => {
                     }`}
                     disabled={isActive}
                   >
-                    Start
+                    {getButtonText()}
                   </button>
                 </div>
               </div>

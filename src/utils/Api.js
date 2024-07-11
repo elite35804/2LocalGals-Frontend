@@ -33,6 +33,8 @@ export const API = async (url, method, params) => {
   } catch (e) {
     if (e?.response?.status === 401) {
       throw new Error("Unauthorized");
+    } else {
+      throw new Error(e?.response?.data?.Message);
     }
   }
 };

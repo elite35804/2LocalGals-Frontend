@@ -7,6 +7,8 @@ import { useAppState, useActions } from "@/store";
 import { Settings } from "../../../settings";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.png";
+import plusIcon from "../../assets/plus-icon.png";
 
 const UpdateProfilePicture = () => {
   const state = useAppState();
@@ -83,19 +85,18 @@ const UpdateProfilePicture = () => {
               Update Profile Picture
             </h2>
             <div className="mt-10">
-              <div
-                onClick={onUploadFile}
-                className="w-[120px] mx-auto h-[120px] cursor-pointer flex justify-center items-center bg-gray-100"
-              >
-                {!avatar ? (
-                  <Person style={{ fontSize: "120px", color: "gray" }} />
-                ) : (
-                  <img
-                    className="w-[120px] mx-auto h-[120px] cursor-pointer object-cover"
-                    src={avatar}
-                    alt=""
-                  />
-                )}
+              <div className="w-36 mx-auto h-36 flex justify-center items-center bg-gray-100 border-2 border-[#6FC1E9] rounded-md relative">
+                <img
+                  className="w-full mx-auto h-full rounded cursor-pointer object-cover"
+                  src={!avatar ? logo : avatar}
+                  alt=""
+                />
+                <div
+                  className="absolute cursor-pointer right-5 top-12"
+                  onClick={onUploadFile}
+                >
+                  <img src={plusIcon} alt="" />
+                </div>
               </div>
             </div>
             <div className="w-[300px] mx-auto">

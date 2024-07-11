@@ -24,6 +24,24 @@ const Login = (props) => {
     setShowPassword(!showPassword);
   };
   const navigate = useNavigate();
+
+  const getPosition = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+      console.log("Geolocation not supported");
+    }
+
+    function success(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    }
+
+    function error() {
+      console.log("Unable to retrieve your location");
+    }
+  };
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!username) {
@@ -42,6 +60,7 @@ const Login = (props) => {
       });
       console.log(data, "data");
       if (data?.Token) {
+        getPosition();
         actions.alert.showSuccess({
           message: "Logged in successfully!",
         });
@@ -54,8 +73,8 @@ const Login = (props) => {
         }
       }
     } catch (e) {
-      console.log(e);
-      actions.alert.showError({ message: "Login failed. Please try again" });
+      console.log(e?.message);
+      actions.alert.showError({ message: e?.message });
     } finally {
       setLoading(false);
     }

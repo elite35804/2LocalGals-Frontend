@@ -26,8 +26,7 @@ const UpdateUnavailability = () => {
   const recurrences = [
     { id: 0, label: "None" },
     { id: 1, label: "Weekly" },
-    { id: 2, label: "Bi-Weekly" },
-    { id: 3, label: "Monthly" },
+    { id: 2, label: "Bi-Weekly" }
   ];
   const [recurrence, setRecerrence] = useState(0);
   const [selected, setSelected] = useState(null);
