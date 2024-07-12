@@ -29,7 +29,11 @@ const Home = () => {
     });
     console.log(state.appointment.appointments, "appointments");
     const data = JSON.parse(localStorage.getItem("current_appointment"));
-    if (data) {
+    if (
+      data &&
+      moment(data?.ScheduleDate).format("M/D/YYYY") ===
+        moment().format("M/D/YYYY")
+    ) {
       setCurrentAppointment(data);
     } else {
       const appointment =
@@ -155,8 +159,6 @@ const Home = () => {
       return "Night";
     }
   };
-
-  console.log(Object.values(state.appointment?.appointments || {}));
 
   return (
     <div className="login_page min-h-screen">

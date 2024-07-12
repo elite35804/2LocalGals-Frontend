@@ -1,10 +1,9 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import { useEffect, useState, useRef } from "react";
 import AddIcCallIcon from "@mui/icons-material/AddIcCall";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
-
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import TodayIcon from "@mui/icons-material/Today";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
@@ -14,6 +13,12 @@ import { Settings } from "../../../settings";
 import { RotatingLines } from "react-loader-spinner";
 import moment from "moment";
 import axios from "axios";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
 import "./Style.css";
 
 const Startjob = () => {
@@ -36,6 +41,7 @@ const Startjob = () => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [isOpen, setOpen] = useState(false);
   const circleRef = useRef(null);
   const intervalRef = useRef(null);
 
@@ -158,14 +164,12 @@ const Startjob = () => {
       items
         .find((i) => i.label === parent.label)
         .options.find((o) => o.label === child.label).isCompleted = checked;
-      console.log(items);
       items.map(
         (i) =>
           (i.isCompleted =
             i?.options?.filter((o) => o?.isCompleted)?.length ===
             i?.options?.length)
       );
-      console.log(items, "items");
       setGeneralItems(items);
     } else {
       const items = isGeneral ? [...generalItems] : [...deepItems];
@@ -173,15 +177,12 @@ const Startjob = () => {
       items
         .find((i) => i.label === parent.label)
         ?.options?.map((o) => (o.isCompleted = checked));
-      console.log(items);
       if (isGeneral) {
         setGeneralItems(items);
       } else {
         setDeepItems(items);
       }
     }
-    // setAllChecked(!allChecked);
-    // Implement logic for individual checkboxes if needed
   };
 
   // Format time as HH:MM:SS
@@ -194,8 +195,6 @@ const Startjob = () => {
       "0"
     )}:${String(secondss).padStart(2, "0")}`;
   };
-
-  // Calculate circle style based on remaining time
 
   // Effect for countdown timer
   useEffect(() => {
@@ -252,53 +251,213 @@ const Startjob = () => {
   const getGeneralItems = (a) => {
     const items = [];
     if (!isNaN(parseInt(a?.Bedrooms))) {
-      const item = {
-        label: `Bedrooms(${a?.Bedrooms})`,
-        isCompleted: false,
-        options: [],
-      };
-      for (let i = 1; i <= parseInt(a?.Bedrooms); i++) {
-        item.options.push({
-          label: `Bedroom ${i}`,
+      for (let i = 0; i < parseInt(a?.Bedrooms); i++) {
+        const options = [];
+        if (a?.TakePic) {
+          options.push({
+            label: "Take Before/After Pictures",
+            isCompleted: false,
+          });
+        }
+        if (a?.DC_Blinds) options.push({ label: `Blinds`, isCompleted: false });
+        if (a?.DC_Windows)
+          options.push({ label: `Windows`, isCompleted: false });
+        if (a?.DC_WindowsSills)
+          options.push({ label: `Tracks & Sills`, isCompleted: false });
+        if (a?.DC_Walls) options.push({ label: `Walls`, isCompleted: false });
+        if (a?.DC_CeilingFans)
+          options.push({ label: `Ceiling Fans`, isCompleted: false });
+        if (a?.DC_Baseboards)
+          options.push({ label: "Baseboards", isCompleted: false });
+        if (a?.DC_DoorFrames)
+          options.push({ label: "Doors/Door Frames", isCompleted: false });
+        if (a?.DC_LightFixtures)
+          options.push({ label: "Light Fixtures", isCompleted: false });
+        if (a?.DC_LightSwitches)
+          options.push({ label: "Light Switches", isCompleted: false });
+        if (a?.DC_VentCovers)
+          options.push({ label: "Vent Covers", isCompleted: false });
+        if (a?.DC_InsideVents)
+          options.push({ label: "Inside Vents", isCompleted: false });
+        if (a?.NC_ChangeBed)
+          options.push({ label: `Change Bed Lines`, isCompleted: false });
+        // if (a?.DC_Pantry)
+        //   items.push({ label: "Clean Pantry", isCompleted: false });
+        // if (a?.DC_LaundryRoom)
+        //   items.push({ label: "Clean Laundry Room", isCompleted: false });
+        items.push({
+          label: i === 0 ? "Master Bedroom" : `Bedroom ${i}`,
           isCompleted: false,
+          options,
         });
       }
-      items.push(item);
     }
 
     if (!isNaN(parseInt(a?.Bathrooms))) {
-      const item = {
-        label: `Bathrooms(${a?.Bathrooms})`,
-        isCompleted: false,
-        options: [],
-      };
-      for (let i = 1; i <= parseInt(a?.Bathrooms); i++) {
-        item.options.push({
-          label: `Bathroom ${i}`,
+      for (let i = 0; i < parseInt(a?.Bathrooms); i++) {
+        const options = [];
+        if (a?.TakePic) {
+          options.push({
+            label: "Take Before/After Pictures",
+            isCompleted: false,
+          });
+        }
+        if (a?.DC_Blinds) options.push({ label: `Blinds`, isCompleted: false });
+        if (a?.DC_Windows)
+          options.push({ label: `Windows`, isCompleted: false });
+        if (a?.DC_WindowsSills)
+          options.push({ label: `Tracks & Sills`, isCompleted: false });
+        if (a?.DC_Walls) options.push({ label: `Walls`, isCompleted: false });
+        if (a?.DC_Baseboards)
+          options.push({ label: "Baseboards", isCompleted: false });
+        if (a?.DC_DoorFrames)
+          options.push({ label: "Doors/Door Frames", isCompleted: false });
+        if (a?.DC_LightFixtures)
+          options.push({ label: "Light Fixtures", isCompleted: false });
+        if (a?.DC_LightSwitches)
+          options.push({ label: "Light Switches", isCompleted: false });
+        if (a?.DC_VentCovers)
+          options.push({ label: "Vent Covers", isCompleted: false });
+        if (a?.DC_InsideVents)
+          options.push({ label: "Inside Vents", isCompleted: false });
+        if (a?.DC_BathroomCuboards)
+          options.push({
+            label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
+            isCompleted: false,
+          });
+        // if (a?.DC_Pantry)
+        //   items.push({ label: "Clean Pantry", isCompleted: false });
+        // if (a?.DC_LaundryRoom)
+        //   items.push({ label: "Clean Laundry Room", isCompleted: false });
+        items.push({
+          label: i === 0 ? "Master Bashroom" : `Bashroom ${i}`,
           isCompleted: false,
+          options,
         });
       }
-      items.push(item);
     }
 
-    const item = {
-      label: `Floor`,
+    // Kitchen
+    const options = [];
+    if (a?.TakePic) {
+      options.push({
+        label: "Take Before/After Pictures",
+        isCompleted: false,
+      });
+    }
+    if (a?.DC_Blinds) options.push({ label: `Blinds`, isCompleted: false });
+    if (a?.DC_Windows) options.push({ label: `Windows`, isCompleted: false });
+    if (a?.DC_WindowsSills)
+      options.push({ label: `Tracks & Sills`, isCompleted: false });
+    if (a?.DC_Walls) options.push({ label: `Walls`, isCompleted: false });
+    if (a?.DC_Baseboards)
+      options.push({ label: "Baseboards", isCompleted: false });
+    if (a?.DC_DoorFrames)
+      options.push({ label: "Doors/Door Frames", isCompleted: false });
+    if (a?.DC_LightFixtures)
+      options.push({ label: "Light Fixtures", isCompleted: false });
+    if (a?.DC_LightSwitches)
+      options.push({ label: "Light Switches", isCompleted: false });
+    if (a?.DC_VentCovers)
+      options.push({ label: "Vent Covers", isCompleted: false });
+    if (a?.DC_InsideVents)
+      options.push({ label: "Inside Vents", isCompleted: false });
+    if (a?.DC_BathroomCuboards)
+      options.push({
+        label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
+        isCompleted: false,
+      });
+    if (a?.DC_KitchenCuboards)
+      options.push({
+        label: `Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`,
+        isCompleted: false,
+      });
+    if (a?.DC_Pantry)
+      options.push({ label: "Clean Pantry", isCompleted: false });
+    if (a?.DC_Oven) options.push({ label: "Inside Oven", isCompleted: false });
+    if (a?.DC_Refrigerator)
+      options.push({ label: "Inside Fridge/Freezer", isCompleted: false });
+    if (a?.NC_DoDishes)
+      options.push({ label: "Do Dishes", isCompleted: false });
+
+    const kitchen = {
+      label: `Kitchen`,
       isCompleted: false,
-      options: [],
+      options,
     };
-    if (a?.NC_FlooringCarpet)
-      item.options.push({ label: "Carpet", isCompleted: false });
-    if (a?.NC_FlooringHardwood)
-      item.options.push({ label: "Hardwood", isCompleted: false });
-    if (a?.NC_FlooringLinoleum)
-      item.options.push({ label: "Linoleum", isCompleted: false });
-    if (a?.NC_FlooringMarble)
-      item.options.push({ label: "Marble", isCompleted: false });
-    if (a?.NC_FlooringSlate)
-      item.options.push({ label: "Slate", isCompleted: false });
-    if (a?.NC_FlooringTile)
-      item.options.push({ label: "Tile", isCompleted: false });
-    items.push(item);
+    items.push(kitchen);
+
+    // Other rooms/areas
+    const options1 = [];
+    if (a?.TakePic) {
+      options.push({
+        label: "Take Before/After Pictures",
+        isCompleted: false,
+      });
+    }
+    if (a?.DC_Blinds) options1.push({ label: `Blinds`, isCompleted: false });
+    if (a?.DC_Windows) options1.push({ label: `Windows`, isCompleted: false });
+    if (a?.DC_WindowsSills)
+      options1.push({ label: `Tracks & Sills`, isCompleted: false });
+    if (a?.DC_Walls) options1.push({ label: `Walls`, isCompleted: false });
+    if (a?.DC_CeilingFans)
+      options1.push({ label: `Ceiling Fans`, isCompleted: false });
+    if (a?.DC_Baseboards)
+      options1.push({ label: "Baseboards", isCompleted: false });
+    if (a?.DC_DoorFrames)
+      options1.push({ label: "Doors/Door Frames", isCompleted: false });
+    if (a?.DC_LightFixtures)
+      options1.push({ label: "Light Fixtures", isCompleted: false });
+    if (a?.DC_LightSwitches)
+      options1.push({ label: "Light Switches", isCompleted: false });
+    if (a?.DC_VentCovers)
+      options1.push({ label: "Vent Covers", isCompleted: false });
+    if (a?.DC_InsideVents)
+      options1.push({ label: "Inside Vents", isCompleted: false });
+    if (a?.DC_BathroomCuboards)
+      options1.push({
+        label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
+        isCompleted: false,
+      });
+    if (a?.DC_KitchenCuboards)
+      options1.push({
+        label: `Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`,
+        isCompleted: false,
+      });
+    if (a?.DC_Pantry)
+      options1.push({ label: "Clean Pantry", isCompleted: false });
+    if (a?.DC_Oven) options1.push({ label: "Inside Oven", isCompleted: false });
+    if (a?.DC_Refrigerator)
+      options1.push({ label: "Inside Fridge/Freezer", isCompleted: false });
+    if (a?.DC_LaundryRoom)
+      options1.push({ label: "Clean Laundry Room", isCompleted: false });
+
+    const otherRoom = {
+      label: `Othre Rooms/Areas`,
+      isCompleted: false,
+      options: options1,
+    };
+    items.push(otherRoom);
+
+    // const item = {
+    //   label: `Floor`,
+    //   isCompleted: false,
+    //   options: [],
+    // };
+    // if (a?.NC_FlooringCarpet)
+    //   item.options.push({ label: "Carpet", isCompleted: false });
+    // if (a?.NC_FlooringHardwood)
+    //   item.options.push({ label: "Hardwood", isCompleted: false });
+    // if (a?.NC_FlooringLinoleum)
+    //   item.options.push({ label: "Linoleum", isCompleted: false });
+    // if (a?.NC_FlooringMarble)
+    //   item.options.push({ label: "Marble", isCompleted: false });
+    // if (a?.NC_FlooringSlate)
+    //   item.options.push({ label: "Slate", isCompleted: false });
+    // if (a?.NC_FlooringTile)
+    //   item.options.push({ label: "Tile", isCompleted: false });
+    // items.push(item);
+
     // if (a?.NC_DoDishes) text.push(`Do Dishes`);
     // if (a?.NC_ChangeBed) text.push(`Change Bed Lines`);
     // if (a?.NC_RequestEcoCleaners) text.push("Eco Cleaners Requested");
@@ -322,6 +481,8 @@ const Startjob = () => {
       };
       items.push(item);
     }
+    if (a?.DC_WindowsSills)
+      items.push({ label: `Tracks & Sills`, isCompleted: false });
     if (a?.DC_Walls)
       items.push({ label: `Walls (${a?.DC_WallsDetail})`, isCompleted: false });
     if (a?.DC_CeilingFans)
@@ -333,7 +494,7 @@ const Startjob = () => {
       items.push({ label: "Baseboards", isCompleted: false });
 
     if (a?.DC_DoorFrames)
-      items.push({ label: "Door Frames", isCompleted: false });
+      items.push({ label: "Doors/Door Frames", isCompleted: false });
     if (a?.DC_LightFixtures)
       items.push({ label: "Light Fixtures", isCompleted: false });
     if (a?.DC_LightSwitches)
@@ -355,9 +516,12 @@ const Startjob = () => {
         label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
         isCompleted: false,
       });
-    if (a?.DC_Oven) items.push({ label: "Oven", isCompleted: false });
+    if (a?.DC_Oven) items.push({ label: "Inside Oven", isCompleted: false });
     if (a?.DC_Refrigerator)
-      items.push({ label: "Refrigerator", isCompleted: false });
+      items.push({ label: "Fridge/Freezer", isCompleted: false });
+    if (a?.NC_Organize) items.push({ label: "Organize", isCompleted: false });
+    if (a?.DC_OtherOne) items.push({ label: "Other 1", isCompleted: false });
+    if (a?.DC_OtherTwo) items.push({ label: "Other 2", isCompleted: false });
     setDeepItems(items);
   };
 
@@ -401,20 +565,15 @@ const Startjob = () => {
   };
 
   const onSave = async () => {
-    if (!isGeneralItemsCompleted() || !isDeepItemsCompleted()) {
-      actions.alert.showError({
-        message: "Please complete all the required options before go ahead",
-      });
-      return false;
-    }
-    if (!notes) {
-      actions.alert.showError({ message: "Please input the notes" });
-      return false;
-    }
-    if (files?.length === 0) {
+    // if (!notes) {
+    //   actions.alert.showError({ message: "Please input the notes" });
+    //   return false;
+    // }
+    if (a?.TakePic && files?.length === 0) {
       actions.alert.showError({ message: "Please upload images" });
       return false;
     }
+
     try {
       setLoading(true);
       const formData = new FormData();
@@ -432,7 +591,7 @@ const Startjob = () => {
       console.log(res);
       if (res?.data?.Message) {
         actions.alert.showSuccess({ message: res?.data?.Message });
-        setCompleted(true);
+        // setCompleted(true);
       }
     } catch (e) {
       console.log(e);
@@ -453,6 +612,14 @@ const Startjob = () => {
     } else {
       return "Start";
     }
+  };
+
+  const onNext = () => {
+    if (!isGeneralItemsCompleted() || !isDeepItemsCompleted()) {
+      setOpen(true);
+      return false;
+    }
+    navigate("/finish/" + params?.id);
   };
   return (
     <div className="min-h-screen">
@@ -489,10 +656,8 @@ const Startjob = () => {
                 {appointment?.CustomerName}
               </p>
               <p className="space-x-2">
-                <AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>{" "}
-                <InsertCommentIcon
-                  sx={{ color: "#6fc1e9" }}
-                ></InsertCommentIcon>{" "}
+                <AddIcCallIcon sx={{ color: "#478e00" }} />
+                <InsertCommentIcon sx={{ color: "#6fc1e9" }} />
               </p>
             </div>
             <div className="flex flex-col items-start gap-2 justify-between mt-5 march_date">
@@ -621,6 +786,17 @@ const Startjob = () => {
                 <div className="flex flex-col justify-between  items-start md:block">
                   <div className="flex justify-between w-full items-center mt-10">
                     <div className="font-medium text-start text-lg sm:text-sm">
+                      Before/After Pics Required:
+                    </div>
+                  </div>
+                  <p className="text-[#a1d6f1] text-lg underline">
+                    {appointment?.TakePic ? "Yes" : "No"}
+                  </p>
+                </div>
+
+                <div className="flex flex-col justify-between  items-start md:block">
+                  <div className="flex justify-between w-full items-center mt-10">
+                    <div className="font-medium text-start text-lg sm:text-sm">
                       General clean items
                     </div>
                     <h4
@@ -674,87 +850,48 @@ const Startjob = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="w-full ">
-                    <div className="flex justify-between items-center mt-10">
-                      <h4 className="font-medium sm:text-sm text-lg">
-                        Deep clean items
-                      </h4>
-                      <h4
-                        className={
-                          (" font-semibold  text-lg",
-                          isDeepItemsCompleted()
-                            ? "text-green-600"
-                            : "text-red-600")
-                        }
-                      >
-                        {isDeepItemsCompleted() ? "Completed" : "Not Completed"}
-                      </h4>
-                    </div>
+                  {deepItems?.length > 0 ? (
+                    <div className="w-full ">
+                      <div className="flex justify-between items-center mt-10">
+                        <h4 className="font-medium sm:text-sm text-lg">
+                          Deep clean items
+                        </h4>
+                        <h4
+                          className={
+                            (" font-semibold  text-lg",
+                            isDeepItemsCompleted()
+                              ? "text-green-600"
+                              : "text-red-600")
+                          }
+                        >
+                          {isDeepItemsCompleted()
+                            ? "Completed"
+                            : "Not Completed"}
+                        </h4>
+                      </div>
 
-                    {deepItems?.map((di) => (
-                      <ul
-                        key={di?.label}
-                        className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between"
-                      >
-                        <li className="text-grey-500 font-semibold sm:text-sm">
-                          {di?.label}
-                        </li>
-                        <input
-                          className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
-                          type="checkbox"
-                          id="vehicle2"
-                          name="vehicle1"
-                          checked={di?.isCompleted}
-                          onChange={(e) => handleChecked(e.target.checked, di)}
-                        />
-                      </ul>
-                    ))}
-                    {/* <div>
-                      <ul className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between">
-                        <li className="text-grey-500 font-semibold sm:text-sm">
-                          Bath Cupboards(Outside only){" "}
-                        </li>
-                        <input
-                          className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
-                          type="checkbox"
-                          id="vehicle2"
-                          name="vehicle1"
-                          value="Bike"
-                          onChange={handleChecked}
-                        />
-                      </ul>
+                      {deepItems?.map((di) => (
+                        <ul
+                          key={di?.label}
+                          className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between"
+                        >
+                          <li className="text-grey-500 font-semibold sm:text-sm">
+                            {di?.label}
+                          </li>
+                          <input
+                            className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
+                            type="checkbox"
+                            id="vehicle2"
+                            name="vehicle1"
+                            checked={di?.isCompleted}
+                            onChange={(e) =>
+                              handleChecked(e.target.checked, di)
+                            }
+                          />
+                        </ul>
+                      ))}
                     </div>
-                    <div>
-                      <ul className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between">
-                        <li className="text-grey-500 font-semibold sm:text-sm">
-                          Inside Oven{" "}
-                        </li>
-                        <input
-                          className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
-                          type="checkbox"
-                          id="vehicle2"
-                          name="vehicle1"
-                          value="Bike"
-                          onChange={handleChecked}
-                        />
-                      </ul>
-                    </div>
-                    <div>
-                      <ul className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between">
-                        <li className="text-grey-500 font-semibold sm:text-sm">
-                          Fridge/Freezer{" "}
-                        </li>
-                        <input
-                          className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
-                          type="checkbox"
-                          id="vehicle2"
-                          name="vehicle1"
-                          value="Bike"
-                          onChange={handleChecked}
-                        />
-                      </ul>
-                    </div> */}
-                  </div>
+                  ) : null}
                 </div>
 
                 <hr className="border-dashed mt-4" />
@@ -820,9 +957,7 @@ const Startjob = () => {
                   </div>
                   <div className="flex items-center justify-center  mt-10">
                     <button
-                      onClick={() =>
-                        completed ? navigate("/finish/" + params?.id) : {}
-                      }
+                      onClick={() => onNext()}
                       className={`border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 ${
                         completed ? "bg-green-400" : "bg-gray-400"
                       }`}
@@ -843,6 +978,35 @@ const Startjob = () => {
           multiple="multiple"
           onChange={onUpload}
         />
+        <Dialog
+          open={isOpen}
+          onClose={() => setOpen(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          {/* <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle> */}
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              All of the cleaning items are not completed. Are you sure you want
+              to continue?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setOpen(false);
+                navigate("/finish/" + params?.id);
+              }}
+            >
+              Continue
+            </Button>
+            <Button onClick={() => setOpen(false)} autoFocus>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );

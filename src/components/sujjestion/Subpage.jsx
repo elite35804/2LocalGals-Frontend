@@ -8,6 +8,11 @@ import TodayIcon from "@mui/icons-material/Today";
 import { useEffect, useState } from "react";
 import { useActions, useAppState } from "@/store";
 import moment from "moment";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import Button from "@mui/material/Button";
 
 const Subpage = () => {
   const params = useParams();
@@ -19,16 +24,32 @@ const Subpage = () => {
   const [phones, setPhones] = useState([]);
   const [isShowPhone, setShowPhone] = useState(false);
   const [isShowSms, setShowSms] = useState(false);
+  const [isOpenHour, setOpenHour] = useState(false);
+  const [isOpenLocation, setOpenLocation] = useState(false);
+  const [location, setLocation] = useState({});
 
   useEffect(() => {
+    getPosition();
     getAppointment();
   }, []);
 
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
     console.log(res, "res");
+    const address = getLocation(res);
+    console.log(address, "address");
+    getGps(address);
     getPhones(res);
     setAppointment(res);
+  };
+
+  const getGps = async (address) => {
+    let res = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`
+    );
+    res = await res.json();
+
+    console.log(res, "location");
   };
 
   const getPhones = async (appointment) => {
@@ -50,6 +71,25 @@ const Subpage = () => {
   };
   const handelcheck = () => {
     setcheked(!check);
+  };
+  const key = "AIzaSyDFdxggzKvZHQFlTiTDs - p87IWX0YYeJ3U";
+  const getPosition = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+      console.log("Geolocation not supported");
+    }
+
+    function success(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      setLocation({ latitude, longitude });
+    }
+
+    function error() {
+      console.log("Unable to retrieve your location");
+    }
   };
   const navigate = useNavigate();
   console.log(appointment, "appointment");
@@ -84,11 +124,12 @@ const Subpage = () => {
     if (a?.DC_Blinds)
       items.push(`Blinds ${a?.DC_BlindsAmount} (${a?.DC_BlindsCondition})`);
     if (a?.DC_Windows) items.push(`Windows (${a?.DC_WindowsAmount})`);
+    if (a?.DC_WindowsSills) items.push(`Tracks & Sills`);
     if (a?.DC_Walls) items.push(`Walls (${a?.DC_WallsDetail})`);
     if (a?.DC_CeilingFans)
       items.push(`Ceiling Fans(${a?.DC_CeilingFansAmount})`);
     if (a?.DC_Baseboards) items.push("Baseboards");
-    if (a?.DC_DoorFrames) items.push("Door Frames");
+    if (a?.DC_DoorFrames) items.push("Doors/Door Frames");
     if (a?.DC_LightFixtures) items.push("Light Fixtures");
     if (a?.DC_LightSwitches) items.push("Light Switches");
     if (a?.DC_VentCovers) items.push("Vent Covers");
@@ -99,8 +140,8 @@ const Subpage = () => {
       items.push(`Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`);
     if (a?.DC_BathroomCuboards)
       items.push(`Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`);
-    if (a?.DC_Oven) items.push("Oven");
-    if (a?.DC_Refrigerator) items.push("Refrigerator");
+    if (a?.DC_Oven) items.push("Inside Oven");
+    if (a?.DC_Refrigerator) items.push("Fridge/Freezer");
     return items;
   };
 
@@ -115,7 +156,21 @@ const Subpage = () => {
 
   const onStart = () => {
     const job = JSON.parse(localStorage.getItem("current_appointment"));
-    if (job?.AppointmentId === params?.id) {
+    console.log(job, "job");
+    if (job?.AppointmentId === parseInt(params?.id)) {
+      if (!location?.latitude) {
+        setOpenLocation(true);
+        return false;
+      }
+      const startTime = new Date(
+        moment(job?.ScheduleDate).format("YYYY-MM-DD") + " " + job?.startTime
+      );
+      var duration = moment.duration(moment(startTime).diff(new Date()));
+      var minutes = duration.asMinutes();
+      if (minutes < 10) {
+        setOpenHour(true);
+        return false;
+      }
       navigate(`/Startjob/${params?.id}`);
     } else {
       actions.alert.showError({
@@ -462,6 +517,54 @@ const Subpage = () => {
           </div>
         </div>
       </div>
+      <Dialog
+        open={isOpenHour}
+        onClose={() => setOpenHour(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        {/* <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle> */}
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you have authorization to start the job early?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenHour(false);
+              navigate(`/Startjob/${params?.id}`);
+            }}
+          >
+            Yes
+          </Button>
+          <Button onClick={() => setOpenHour(false)} autoFocus>
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={isOpenLocation}
+        onClose={() => setOpenLocation(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        {/* <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle> */}
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Location Sharing is not turned on. Turn on now to continue.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenLocation(false)} autoFocus>
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
