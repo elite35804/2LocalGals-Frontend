@@ -23,10 +23,9 @@ const UpdateUnavailability = () => {
   const actions = useActions();
   const recurrences = [
     { id: 0, label: "None" },
-    { id: 1, label: "Weekly" },
-    { id: 2, label: "Bi-Weekly" },
+    { id: 2, label: "Weekly" },
+    { id: 3, label: "Bi-Weekly" },
   ];
-  const [selected, setSelected] = useState(null);
   const [list, setList] = useState([]);
   const navigate = useNavigate();
 

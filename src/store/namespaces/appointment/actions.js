@@ -101,3 +101,37 @@ export const updateCoordinate = async ({ state, actions }, data) => {
     throw new Error(e?.message);
   }
 };
+
+export const updateJobLog = async ({ state, actions }, data) => {
+  try {
+    const res = await API(`schedule/UpdateJobLog`, "post", data);
+    console.log(res, "res");
+    return res;
+  } catch (e) {
+    if (e?.message === "Unauthorized") {
+      actions.logout();
+      actions.alert.showError({
+        message: "Session expired. Please login again.",
+      });
+      window.location.href = "/";
+    }
+    throw new Error(e?.message);
+  }
+};
+
+export const getJobLogs = async ({ state, actions }, data) => {
+  try {
+    const res = await API(`schedule/GetJobLogs?AppointmentId=${data?.AppointmentId}&contractorID=${data?.contractorID}&isGeneral=${data?.isGeneral}`, "get");
+    console.log(res, "res");
+    return res;
+  } catch (e) {
+    if (e?.message === "Unauthorized") {
+      actions.logout();
+      actions.alert.showError({
+        message: "Session expired. Please login again.",
+      });
+      window.location.href = "/";
+    }
+    throw new Error(e?.message);
+  }
+};

@@ -20,6 +20,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import "./Style.css";
+import warning from "../../assets/warning.mp3";
 
 const Startjob = () => {
   const params = useParams();
@@ -44,6 +45,7 @@ const Startjob = () => {
   const [isOpen, setOpen] = useState(false);
   const circleRef = useRef(null);
   const intervalRef = useRef(null);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     getAppointment();
@@ -51,6 +53,21 @@ const Startjob = () => {
 
   useEffect(() => {
     if (seconds > 0) {
+      if (
+        seconds === 600 ||
+        seconds === 540 ||
+        seconds === 480 ||
+        seconds === 420 ||
+        seconds === 360 ||
+        seconds === 300 ||
+        seconds === 240 ||
+        seconds === 180 ||
+        seconds === 120 ||
+        seconds === 60 ||
+        seconds === 0
+      ) {
+        playAudio();
+      }
       const timers =
         JSON.parse(localStorage.getItem("2localgals-timers")) || [];
       const timer = timers?.find((t) => t.appointmentId === params?.id);
@@ -69,12 +86,58 @@ const Startjob = () => {
     }
   }, [appointment]);
 
+  useEffect(() => {
+    const data =
+      JSON.parse(localStorage.getItem(`checked-items-${params?.id}`)) || [];
+    if (data) {
+      if (generalItems?.length > 0 || deepItems?.length > 0) {
+        localStorage.setItem(
+          `checked-items-${params?.id}`,
+          JSON.stringify({ generalItems, deepItems })
+        );
+      }
+    } else {
+      if (generalItems?.length > 0 || deepItems?.length > 0) {
+        localStorage.setItem(
+          `checked-items-${params?.id}`,
+          JSON.stringify({ generalItems, deepItems })
+        );
+      }
+    }
+  }, [generalItems, deepItems]);
+
+  const playAudio = () => {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    audioRef.current.play();
+  };
+
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
     console.log(res, "res");
     setAppointment(res);
-    getGeneralItems(res);
-    getDeepItems(res);
+    const data =
+      JSON.parse(localStorage.getItem(`checked-items-${params?.id}`)) || {};
+    if (data?.generalItems?.length > 0 || data?.deepItems?.length > 0) {
+      setGeneralItems(data.generalItems);
+      setDeepItems(data.deepItems);
+    } else {
+      getGeneralItems(res);
+      getDeepItems(res);
+    }
+    getJobLogs();
+  };
+
+  const getJobLogs = async () => {
+    console.log(state.currentUser, "state.currentUser");
+    if (state.currentUser) {
+      const res = await actions.appointment.getJobLogs({
+        AppointmentId: params?.id,
+        contractorID: state.currentUser?.contractorID,
+        isGeneral: false,
+      });
+      console.log(res, "res");
+    }
   };
 
   const getDuration = () => {
@@ -158,7 +221,7 @@ const Startjob = () => {
   };
 
   // Handle checkbox toggle
-  const handleChecked = (checked, parent, child, isGeneral) => {
+  const handleChecked = async (checked, parent, child, isGeneral) => {
     if (child) {
       const items = [...generalItems];
       items
@@ -182,6 +245,15 @@ const Startjob = () => {
       } else {
         setDeepItems(items);
       }
+      await actions.appointment.updateJobLog({
+        contractorId: state.currentUser?.contractorID,
+        customerId: appointment?.CustomerId,
+        appointmentId: appointment?.AppointmentId,
+        content: parent?.label,
+        checked,
+        checkedBy: state.currentUser?.username,
+        isGeneral,
+      });
     }
   };
 
@@ -969,6 +1041,9 @@ const Startjob = () => {
               </div>
             )}
           </div>
+          <audio ref={audioRef} controls className="hidden">
+            <source src={warning} type="audio/mpeg" />
+          </audio>
         </div>
         <input
           type="file"

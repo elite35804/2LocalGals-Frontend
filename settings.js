@@ -1,4 +1,4 @@
 export const Settings = {
   appName: "2LocalGals-Frontend",
-  api_url: "http://167.88.164.32:3000/api/v1/",
+  api_url: "http://45.61.128.213:3000//api/v1/",
 };
