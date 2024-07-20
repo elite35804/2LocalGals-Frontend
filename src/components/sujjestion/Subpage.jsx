@@ -13,6 +13,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
+import axios from "axios";
 
 const Subpage = () => {
   const params = useParams();
@@ -26,7 +27,9 @@ const Subpage = () => {
   const [isShowSms, setShowSms] = useState(false);
   const [isOpenHour, setOpenHour] = useState(false);
   const [isOpenLocation, setOpenLocation] = useState(false);
+  const [isOpenGeofence, setOpenGeofence] = useState(false);
   const [location, setLocation] = useState({});
+  const GOOGLE_MAP_KEY = "AIzaSyDfEYZOxYfhwqXUK-yXDZP8vnbf_79lpuk";
 
   useEffect(() => {
     getPosition();
@@ -38,18 +41,8 @@ const Subpage = () => {
     console.log(res, "res");
     const address = getLocation(res);
     console.log(address, "address");
-    getGps(address);
     getPhones(res);
     setAppointment(res);
-  };
-
-  const getGps = async (address) => {
-    let res = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`
-    );
-    res = await res.json();
-
-    console.log(res, "location");
   };
 
   const getPhones = async (appointment) => {
@@ -72,7 +65,6 @@ const Subpage = () => {
   const handelcheck = () => {
     setcheked(!check);
   };
-  const key = "AIzaSyDFdxggzKvZHQFlTiTDs - p87IWX0YYeJ3U";
   const getPosition = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
@@ -154,11 +146,28 @@ const Subpage = () => {
     return text.join(", ");
   };
 
-  const onStart = () => {
+  const onStart = async () => {
     const job = JSON.parse(localStorage.getItem("current_appointment"));
     console.log(job, "job");
     if (job?.AppointmentId === parseInt(params?.id)) {
       if (!location?.latitude) {
+        setOpenLocation(true);
+        return false;
+      }
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location?.latitude},${location?.longitude}&key=${GOOGLE_MAP_KEY}`;
+      let res = await fetch(url);
+      res = await res.json();
+      console.log(res?.results[0].formatted_address);
+
+      const url1 = `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${getLocation(
+        appointment
+      )}&origins=${
+        res?.results[0].formatted_address
+      }&units=imperial&key=${GOOGLE_MAP_KEY}`;
+      let res1 = await fetch(url1);
+      res1 = await res1.json();
+      console.log(res1);
+      if (res1?.rows[0]?.elements[0]?.distance?.value >= 100) {
         setOpenLocation(true);
         return false;
       }
@@ -562,6 +571,51 @@ const Subpage = () => {
         <DialogActions>
           <Button onClick={() => setOpenLocation(false)} autoFocus>
             Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={isOpenGeofence}
+        onClose={() => setOpenGeofence(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        {/* <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle> */}
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            It appears you are not at the address yet. Are you sure you wish to
+            start the job?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenGeofence(false);
+              const job = JSON.parse(
+                localStorage.getItem("current_appointment")
+              );
+              const startTime = new Date(
+                moment(job?.ScheduleDate).format("YYYY-MM-DD") +
+                  " " +
+                  job?.startTime
+              );
+              var duration = moment.duration(
+                moment(startTime).diff(new Date())
+              );
+              var minutes = duration.asMinutes();
+              if (minutes < 10) {
+                setOpenHour(true);
+                return false;
+              }
+              navigate(`/Startjob/${params?.id}`);
+            }}
+          >
+            Continue
+          </Button>
+          <Button onClick={() => setOpenGeofence(false)} autoFocus>
+            Cancel
           </Button>
         </DialogActions>
       </Dialog>

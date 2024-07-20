@@ -9,7 +9,7 @@ export const getAppointments = async ({ state, effects, actions }, data) => {
     );
     if (res) {
       const data = res?.sort((a, b) =>
-        a?.ScheduleDate > b?.ScheduleDate && a?.startTime > b?.startTime
+        a?.ScheduleDate < b?.ScheduleDate && a?.startTime < b?.startTime
           ? -1
           : 1
       );
@@ -121,7 +121,10 @@ export const updateJobLog = async ({ state, actions }, data) => {
 
 export const getJobLogs = async ({ state, actions }, data) => {
   try {
-    const res = await API(`schedule/GetJobLogs?AppointmentId=${data?.AppointmentId}&contractorID=${data?.contractorID}&isGeneral=${data?.isGeneral}`, "get");
+    const res = await API(
+      `schedule/GetJobLogs?AppointmentId=${data?.AppointmentId}&contractorID=${data?.contractorID}&isGeneral=${data?.isGeneral}`,
+      "get"
+    );
     console.log(res, "res");
     return res;
   } catch (e) {
