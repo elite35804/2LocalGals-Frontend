@@ -146,6 +146,27 @@ const Subpage = () => {
     return text.join(", ");
   };
 
+  function haversineDistance(coord1, coord2) {
+    const toRad = (value) => (value * Math.PI) / 180;
+
+    const R = 6371e3; // Earth radius in meters
+    const lat1 = toRad(coord1.latitude);
+    const lat2 = toRad(coord2.latitude);
+    const deltaLat = toRad(coord2.latitude - coord1.latitude);
+    const deltaLon = toRad(coord2.longitude - coord1.longitude);
+
+    const a =
+      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+      Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(deltaLon / 2) *
+        Math.sin(deltaLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+  }
+
   const onStart = async () => {
     const job = JSON.parse(localStorage.getItem("current_appointment"));
     console.log(job, "job");
@@ -154,21 +175,21 @@ const Subpage = () => {
         setOpenLocation(true);
         return false;
       }
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location?.latitude},${location?.longitude}&key=${GOOGLE_MAP_KEY}`;
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${getLocation(
+        job
+      )}&key=${GOOGLE_MAP_KEY}`;
       let res = await fetch(url);
       res = await res.json();
-      console.log(res?.results[0].formatted_address);
+      console.log(res?.results?.[0]?.geometry?.location);
+      const loc = res?.results?.[0]?.geometry?.location;
+      const distance = haversineDistance(
+        { latitude: loc?.lat, longitude: loc?.lng },
+        location
+      );
+      console.log(distance, "distance");
 
-      const url1 = `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${getLocation(
-        appointment
-      )}&origins=${
-        res?.results[0].formatted_address
-      }&units=imperial&key=${GOOGLE_MAP_KEY}`;
-      let res1 = await fetch(url1);
-      res1 = await res1.json();
-      console.log(res1);
-      if (res1?.rows[0]?.elements[0]?.distance?.value >= 100) {
-        setOpenLocation(true);
+      if (distance >= 100) {
+        setOpenGeofence(true);
         return false;
       }
       const startTime = new Date(
