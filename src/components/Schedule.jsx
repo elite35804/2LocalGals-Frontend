@@ -10,14 +10,16 @@ const Schedule = ({ appointments, date, currentAppointment, location }) => {
   let pay = 0;
   appointments?.map((a) => (pay += a?.AproxPay));
   const navigate = useNavigate();
-  const getLocation = () => {
-    console.log(`geo:${location?.longitude},${location?.latitude}`);
-    if (location?.latitude && location?.longitude) {
-      return `geo:${location?.longitude},${location?.latitude}`;
-    } else {
-      return "";
-    }
+  const getLocation = (e, a) => {
+    e.stopPropagation();
+    let text = [];
+    if (a?.locationAddress) text.push(a?.locationAddress);
+    if (a?.locationCity) text.push(a?.locationCity);
+    if (a?.locationState) text.push(a?.locationState);
+    if (a?.locationZip) text.push(a?.locationZip);
+    window.open(`https://maps.apple.com?q=${text.join(", ")}`, "_blank");
   };
+
   return (
     <>
       <div className="bg-white w-full rounded-lg sm:w-full">
@@ -89,8 +91,7 @@ const Schedule = ({ appointments, date, currentAppointment, location }) => {
               </div>
             )}
             <a
-              href={getLocation()}
-              target="_blank"
+              onClick={(e) => getLocation(e, appointment)}
               className="absolute -right-7 top-7 bg-blue-300 pl-1 rounded-r-full cursor-pointer"
             >
               <img src={location_icon} alt="" />

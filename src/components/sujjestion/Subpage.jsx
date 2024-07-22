@@ -160,6 +160,13 @@ const Subpage = () => {
     return text.join(", ");
   };
 
+  const onClickLocation = () => {
+    window.open(
+      `https://maps.apple.com?q=${getLocation(appointment)}`,
+      "_blank"
+    );
+  };
+
   const getLocForContractor = async (job) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${getLocation(
       job
@@ -342,6 +349,8 @@ const Subpage = () => {
                         height: "30px",
                         padding: "7px",
                       }}
+                      className="cursor-pointer"
+                      onClick={onClickLocation}
                     />
                   </div>
                 </div>
