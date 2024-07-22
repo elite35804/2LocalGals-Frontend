@@ -13,7 +13,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
-import axios from "axios";
 
 const Subpage = () => {
   const params = useParams();
@@ -29,20 +28,35 @@ const Subpage = () => {
   const [isOpenLocation, setOpenLocation] = useState(false);
   const [isOpenGeofence, setOpenGeofence] = useState(false);
   const [location, setLocation] = useState({});
+  const [isValidLocation, setIsValidLocation] = useState(false);
+  const [loc, setLoc] = useState({});
   const GOOGLE_MAP_KEY = "AIzaSyDfEYZOxYfhwqXUK-yXDZP8vnbf_79lpuk";
 
   useEffect(() => {
-    getPosition();
     getAppointment();
   }, []);
+
+  useEffect(() => {
+    if (location && loc) {
+      if (location?.latitude && location?.longitude && loc?.lat && loc?.lng) {
+        const distance = haversineDistance(
+          { latitude: loc?.lat, longitude: loc?.lng },
+          location
+        );
+        console.log(distance, "distance");
+        setIsValidLocation(distance <= 100);
+      }
+    }
+  }, [location, loc]);
 
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
     console.log(res, "res");
     const address = getLocation(res);
-    console.log(address, "address");
     getPhones(res);
     setAppointment(res);
+    getPosition(res);
+    return res;
   };
 
   const getPhones = async (appointment) => {
@@ -65,7 +79,7 @@ const Subpage = () => {
   const handelcheck = () => {
     setcheked(!check);
   };
-  const getPosition = () => {
+  const getPosition = (job) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
     } else {
@@ -75,8 +89,8 @@ const Subpage = () => {
     function success(position) {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
-      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
       setLocation({ latitude, longitude });
+      getLocForContractor(job);
     }
 
     function error() {
@@ -84,7 +98,6 @@ const Subpage = () => {
     }
   };
   const navigate = useNavigate();
-  console.log(appointment, "appointment");
 
   const getBuildingInformation = (a) => {
     let text = [];
@@ -112,6 +125,7 @@ const Subpage = () => {
   };
 
   const getDeepItems = (a) => {
+    console.log(a, "a");
     const items = [];
     if (a?.DC_Blinds)
       items.push(`Blinds ${a?.DC_BlindsAmount} (${a?.DC_BlindsCondition})`);
@@ -146,6 +160,17 @@ const Subpage = () => {
     return text.join(", ");
   };
 
+  const getLocForContractor = async (job) => {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${getLocation(
+      job
+    )}&key=${GOOGLE_MAP_KEY}`;
+    let res = await fetch(url);
+    res = await res.json();
+    const item = res?.results?.[0]?.geometry?.location;
+    setLoc(item);
+    return item;
+  };
+
   function haversineDistance(coord1, coord2) {
     const toRad = (value) => (value * Math.PI) / 180;
 
@@ -169,19 +194,11 @@ const Subpage = () => {
 
   const onStart = async () => {
     const job = JSON.parse(localStorage.getItem("current_appointment"));
-    console.log(job, "job");
     if (job?.AppointmentId === parseInt(params?.id)) {
       if (!location?.latitude) {
         setOpenLocation(true);
         return false;
       }
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${getLocation(
-        job
-      )}&key=${GOOGLE_MAP_KEY}`;
-      let res = await fetch(url);
-      res = await res.json();
-      console.log(res?.results?.[0]?.geometry?.location);
-      const loc = res?.results?.[0]?.geometry?.location;
       const distance = haversineDistance(
         { latitude: loc?.lat, longitude: loc?.lng },
         location
@@ -537,7 +554,9 @@ const Subpage = () => {
               onClick={() => onStart()}
               type="submit"
               style={
-                show && check ? { background: "green" } : { background: "grey" }
+                show && check && isValidLocation
+                  ? { background: "green" }
+                  : { background: "grey" }
               }
               className=" border border-transparent text-white text-lg px-28 py-2 rounded-lg transition-all delay-150 "
               disabled={show && check ? false : true}
