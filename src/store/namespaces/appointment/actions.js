@@ -13,7 +13,7 @@ export const getAppointments = async ({ state, effects, actions }, data) => {
           ? -1
           : 1
       );
-      data.map(d => d.AproxPay = (d.customerRate * d.Hours * 0.92 + d.ContractorTips + d.CustomerServiceFee).toFixed(0))
+      data.map(d => d.AproxPay = Math.round(d.customerRate * d.Hours * 0.92 + d.ContractorTips + d.CustomerServiceFee))
       state.appointment.appointments = groupBy(data, "ScheduleDate");
     }
 

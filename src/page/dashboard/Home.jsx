@@ -103,6 +103,7 @@ const Home = () => {
     });
     today.hourlyRate = today.hourlyRate / payments.length || 0;
     today.hours = today.pay / today.hourlyRate || 0;
+    Object.keys(today).map((key) => (today[key] = Math.round(today[key])));
     const thisWeek = {
       hours: 0,
       pay: 0,
@@ -121,6 +122,9 @@ const Home = () => {
     });
     thisWeek.hourlyRate = thisWeek.hourlyRate / thisWeekPayments.length || 0;
     thisWeek.hours = thisWeek.pay / thisWeek.hourlyRate || 0;
+    Object.keys(thisWeek).map(
+      (key) => (thisWeek[key] = Math.round(thisWeek[key]))
+    );
     const nextWeek = {
       hours: 0,
       pay: 0,
@@ -139,6 +143,9 @@ const Home = () => {
     });
     nextWeek.hourlyRate = nextWeek.hourlyRate / nextWeekPayments.length || 0;
     nextWeek.hours = nextWeek.pay / nextWeek.hourlyRate || 0;
+    Object.keys(nextWeek).map(
+      (key) => (nextWeek[key] = Math.round(nextWeek[key]))
+    );
     const reports = {
       today: today,
       thisWeek: thisWeek,

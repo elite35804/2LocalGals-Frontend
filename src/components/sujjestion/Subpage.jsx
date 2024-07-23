@@ -372,11 +372,11 @@ const Subpage = () => {
                     <span className="text-lg  font-medium">Approx.Pay:</span>
                     <span className="text-red-600">
                       $
-                      {(
+                      {Math.round(
                         appointment.customerRate * appointment.Hours * 0.92 +
-                        appointment.ContractorTips +
-                        appointment.CustomerServiceFee
-                      ).toFixed(0)}
+                          appointment.ContractorTips +
+                          appointment.CustomerServiceFee
+                      )}
                     </span>
                   </p>
                 </div>
