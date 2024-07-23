@@ -359,11 +359,11 @@ const Subpage = () => {
                   <div className="flex gap-5 items-center justify-between mt-3 send_icon">
                     <p className="font-medium space-x-2">
                       <span className="text-lg">Partner(s):</span>
-                      <span className="text-grey-500   ">Kimber Stovall</span>
+                      <span className="text-grey-500"></span>
                     </p>
                     <p className="space-x-3">
-                      <AddIcCallIcon sx={{ color: "#478e00" }} />
-                      <InsertCommentIcon sx={{ color: "#6fc1e9" }} />
+                      {/* <AddIcCallIcon sx={{ color: "#478e00" }} />
+                      <InsertCommentIcon sx={{ color: "#6fc1e9" }} /> */}
                     </p>
                   </div>
                 </div>
@@ -371,7 +371,12 @@ const Subpage = () => {
                   <p className="space-x-2">
                     <span className="text-lg  font-medium">Approx.Pay:</span>
                     <span className="text-red-600">
-                      ${appointment?.AproxPay}
+                      $
+                      {(
+                        appointment.customerRate * appointment.Hours * 0.92 +
+                        appointment.ContractorTips +
+                        appointment.CustomerServiceFee
+                      ).toFixed(0)}
                     </span>
                   </p>
                 </div>
