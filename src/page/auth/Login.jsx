@@ -60,13 +60,14 @@ const Login = (props) => {
       });
       console.log(data, "data");
       if (data?.Token) {
+        await actions.user.getContractorInfo(state.currentUser?.contractorID);
         getPosition();
         actions.alert.showSuccess({
           message: "Logged in successfully!",
         });
-        const res = localStorage.getItem("walk_through_checked");
-        console.log(res, "res");
-        if (res === "true") {
+        // const res = localStorage.getItem("walk_through_checked");
+        // console.log(res, "res");
+        if (state.contractor?.IsCheckedWalkthrough) {
           navigate("/home");
         } else {
           navigate("/walk_through");

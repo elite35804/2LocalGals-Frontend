@@ -8,7 +8,6 @@ import UpdateAddress from "@/page/dashboard/UpdateAddress";
 import Slider from "@/components/sujjestion/Slider";
 import Subpage from "@/components/sujjestion/Subpage";
 import Finish from "@/components/sujjestion/Finish";
-import WithDashboardLayout from "@/hoc/WithDashboardLayout";
 
 const Routing = () => {
   return (

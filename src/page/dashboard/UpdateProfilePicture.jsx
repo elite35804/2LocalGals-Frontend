@@ -9,6 +9,13 @@ import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import plusIcon from "../../assets/plus-icon.png";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import Button from "@mui/material/Button";
+import getCroppedImg from "./cropImage";
+import Cropper from "react-easy-crop";
 
 const UpdateProfilePicture = () => {
   const state = useAppState();
@@ -17,6 +24,14 @@ const UpdateProfilePicture = () => {
   const [avatar, setAvatar] = useState(state.contractor?.ContractorPic);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setOpen] = useState(false);
+
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [rotation, setRotation] = useState(0);
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +45,29 @@ const UpdateProfilePicture = () => {
     console.log(e.target.files[0]);
     setAvatar(window.URL.createObjectURL(e.target.files[0]));
     setFile(e.target.files[0]);
+    setOpen(true);
+  };
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const showCroppedImage = async () => {
+    try {
+      const croppedImage = await getCroppedImg(
+        avatar,
+        croppedAreaPixels,
+        rotation
+      );
+      console.log("donee", { croppedImage });
+      setCroppedImage(croppedImage);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const onClose = () => {
+    setCroppedImage(null);
   };
   const onSave = async () => {
     console.log(state.currentUser, file);
@@ -132,6 +170,64 @@ const UpdateProfilePicture = () => {
           onChange={onUpload}
         />
       </div>
+      <Dialog
+        open={isOpen}
+        onClose={() => setOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth={true}
+        maxWidth="lg"
+        wrapperStyle={{ backgroundColor: "white" }}
+      >
+        {/* <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle> */}
+        <DialogContent>
+          <div className="w-80 h-96 mt-4">
+            <Cropper
+              image={avatar}
+              crop={crop}
+              rotation={rotation}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={setCrop}
+              onRotationChange={setRotation}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+              style={{
+                containerStyle: {
+                  width: "80%",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  marginBottom: "50px",
+                  marginTop: "50px",
+                },
+              }}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={async () => {
+              const image = await getCroppedImg(
+                avatar,
+                croppedAreaPixels,
+                rotation
+              );
+              setAvatar(image);
+              const base64Response = await fetch(`${image}`);
+              const blob = await base64Response.blob();
+              setFile(new File([blob], file.name, { type: "image/jpeg" }));
+              setCrop({ x: 0, y: 0 });
+              setZoom(1);
+              setOpen(false);
+            }}
+          >
+            Ok
+          </Button>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

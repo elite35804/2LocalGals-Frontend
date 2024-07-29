@@ -20,6 +20,14 @@ const Schedule = ({ appointments, date, currentAppointment, location }) => {
     window.open(`https://maps.apple.com?q=${text.join(", ")}`, "_blank");
   };
 
+  const onClickSchedule = async (appointment) => {
+    if (appointment?.jobStartTime) {
+      navigate(`/Startjob/${appointment?.AppointmentId}`);
+    } else {
+      navigate(`/schedule_detail/${appointment?.AppointmentId}`);
+    }
+  };
+
   return (
     <>
       <div className="bg-white w-full rounded-lg sm:w-full">
@@ -34,9 +42,7 @@ const Schedule = ({ appointments, date, currentAppointment, location }) => {
         </div>
         {appointments?.map((appointment, id) => (
           <div
-            onClick={() =>
-              navigate(`/schedule_detail/${appointment?.AppointmentId}`)
-            }
+            onClick={() => onClickSchedule(appointment)}
             key={id}
             className="cursor-pointer relative "
           >
@@ -85,7 +91,7 @@ const Schedule = ({ appointments, date, currentAppointment, location }) => {
                 </div>
               </div>
             </div>
-            {appointment.NC_RequiresKeys && (
+            {appointment.Keys && (
               <div className="absolute -left-6 top-7 p-1 bg-[#1BD30B] rounded-l-full">
                 <img src={key} alt="" />
               </div>

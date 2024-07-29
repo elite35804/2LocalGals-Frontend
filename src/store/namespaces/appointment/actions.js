@@ -4,7 +4,7 @@ import { groupBy } from "lodash";
 export const getAppointments = async ({ state, effects, actions }, data) => {
   try {
     const res = await API(
-      `Schedule/GetSchedule?startDate=${data?.startDate}&endDate=${data?.endDate}`,
+      `Schedule/GetSchedule?startDate=${data?.startDate}&ContractorID=${data?.id}&endDate=${data?.endDate}`,
       "get"
     );
     if (res) {
@@ -33,7 +33,6 @@ export const getAppointments = async ({ state, effects, actions }, data) => {
 export const getAppointmentById = async ({ state, actions }, id) => {
   try {
     const res = await API(`Schedule/GetAppointment/${id}`, "get");
-    state.appointment.appointment = res;
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {
@@ -50,6 +49,27 @@ export const getAppointmentById = async ({ state, actions }, id) => {
 export const startJob = async ({ state, actions }, id) => {
   try {
     const res = await API(`schedule/StartJob/${id}`, "post", {});
+    console.log(res, "res");
+    return res;
+  } catch (e) {
+    if (e?.message === "Unauthorized") {
+      actions.logout();
+      actions.alert.showError({
+        message: "Session expired. Please login again.",
+      });
+      window.location.href = "/";
+    }
+    throw new Error(e?.message);
+  }
+};
+
+export const updateJobDetail = async ({ state, actions }, data) => {
+  try {
+    const res = await API(
+      `Schedule/Appointment/UpdateDurationTime/${data?.id} `,
+      "post",
+      data
+    );
     console.log(res, "res");
     return res;
   } catch (e) {

@@ -32,7 +32,9 @@ export const getContractorInfo = async ({ state, actions }, id) => {
   try {
     const res = await API("GetContractorInfo/" + id, "get");
     console.log(res, "res");
-    state.contractor = res;
+    if (res?.contractorID === state.currentUser?.contractorID) {
+      state.contractor = res;
+    }
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {
@@ -63,6 +65,25 @@ export const addUnavailability = async ({ state, actions }, data) => {
     throw new Error(e?.message);
   }
 };
+
+export const updateWalkThrough = async ({ state, actions }, data) => {
+  console.log(data, "data");
+  try {
+    const res = await API(`Contractor/${data.id}/Walkthrough/${data.checked}`, "post", {});
+    console.log(res, "res");
+    return res;
+  } catch (e) {
+    if (e?.message === "Unauthorized") {
+      actions.logout();
+      actions.alert.showError({
+        message: "Session expired. Please login again.",
+      });
+      window.location.href = "/";
+    }
+    throw new Error(e?.message);
+  }
+};
+
 
 export const deleteUnavailability = async ({ state, actions }, id) => {
   try {

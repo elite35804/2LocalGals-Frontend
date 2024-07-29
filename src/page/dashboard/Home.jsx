@@ -15,15 +15,32 @@ const Home = () => {
   useEffect(() => {
     getPosition();
     getPayments();
-    getAppointments();
   }, []);
 
   useEffect(() => {
     updateCoords();
   }, [location]);
 
+  const sleep = (waitTimeInMs) =>
+    new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+
+  useEffect(() => {
+    if (state.contractor) {
+      getAppointments();
+      onReload();
+    }
+  }, [state.contractor]);
+
+  const onReload = async () => {
+    while (true) {
+      await sleep(5000);
+      await getAppointments();
+    }
+  };
+
   const getAppointments = async () => {
     await actions.appointment.getAppointments({
+      id: state.contractor?.contractorID,
       startDate: moment().format("M/D/YYYY"),
       endDate: moment().endOf("week").add("days", 7).format("M/D/YYYY"),
     });
@@ -48,6 +65,8 @@ const Home = () => {
           JSON.stringify(appointment)
         );
         setCurrentAppointment(appointment);
+      } else {
+        localStorage.removeItem("current_appointment");
       }
     }
   };
@@ -172,7 +191,7 @@ const Home = () => {
       <div className="container">
         <div className="py-4">
           <div className="flex items-center">
-            <h2 className="font-bold text-white text-base heading mt-3 w-1/2 ">
+            <h2 className="font-bold text-white text-base heading mt-3 ">
               Good {getTime()} {state.currentUser?.username}!
             </h2>
           </div>

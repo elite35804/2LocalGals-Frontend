@@ -9,6 +9,7 @@ import axios from "axios";
 import { Settings } from "../../../settings";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
+import { upperFirst } from "lodash";
 
 const UpdateAddress = () => {
   const state = useAppState();
@@ -19,6 +20,29 @@ const UpdateAddress = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const abbreviations = {
+    street: "St.",
+    avenue: "Ave.",
+    road: "Rd.",
+    drive: "Dr.",
+    boulevard: "Blvd",
+    apartment: "Apt.",
+    "post office": "Po.",
+  };
+
+  function expandAbbreviations(address) {
+    return address
+      .split(" ")
+      .map((word) => abbreviations[word] || upperFirst(word))
+      .join(" ");
+  }
+
+  function normalizeAddress(address) {
+    address = address.toLowerCase();
+    // .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+    return expandAbbreviations(address);
+  }
+
   useEffect(() => {
     if (state.contractor) {
       setAddress(state.contractor?.address || "");
@@ -28,12 +52,11 @@ const UpdateAddress = () => {
   }, [state.contractor]);
 
   const onSave = async () => {
-    console.log(state.currentUser);
     try {
       setLoading(true);
       const formData = new FormData();
-      formData.append("address", address);
-      formData.append("city", city);
+      formData.append("address", normalizeAddress(address));
+      formData.append("city", normalizeAddress(city));
       formData.append("zip", zip);
       formData.append("state", state.contractor?.state);
       //   formData.append("businessName", "test");
@@ -73,6 +96,7 @@ const UpdateAddress = () => {
                 borderRadius: "50%",
                 color: "#fda839",
               }}
+              onClick={() => navigate(-1)}
             />
             <h2 className="font-medium text-base mt-3 ">Update Address</h2>
             <div className="max-w-[320px] w-full mx-auto mt-3">
@@ -80,7 +104,7 @@ const UpdateAddress = () => {
                 <img className="w-5" src={map_img} alt="" />
                 <input
                   type="text"
-                  className="outline-none w-full py-3 rounded-md"
+                  className="outline-none w-full py-3 rounded-md capitalize"
                   placeholder="Street Address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
@@ -90,7 +114,7 @@ const UpdateAddress = () => {
                 <img className="w-5" src={city_img} alt="" />
                 <input
                   type="text"
-                  className="outline-none w-full py-3 rounded-md"
+                  className="outline-none w-full py-3 rounded-md capitalize"
                   placeholder="City"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}

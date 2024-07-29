@@ -42,13 +42,22 @@ const Startjob = () => {
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [isOpen, setOpen] = useState(false);
+  const [phones, setPhones] = useState([]);
+  const [isShowPhone, setShowPhone] = useState(false);
+  const [isShowSms, setShowSms] = useState(false);
   const circleRef = useRef(null);
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
-
   useEffect(() => {
-    getAppointment();
+    window.addEventListener("beforeunload", async function (e) {
+      await updateDuration();
+    });
   }, []);
+  useEffect(() => {
+    if (state.contractor?.contractorID) {
+      getAppointment();
+    }
+  }, [state.contractor]);
 
   useEffect(() => {
     if (seconds > 0) {
@@ -82,28 +91,25 @@ const Startjob = () => {
   useEffect(() => {
     if (appointment) {
       getDuration();
+      getPhones(appointment);
     }
   }, [appointment]);
 
-  useEffect(() => {
-    const data =
-      JSON.parse(localStorage.getItem(`checked-items-${params?.id}`)) || [];
-    if (data) {
-      if (generalItems?.length > 0 || deepItems?.length > 0) {
-        localStorage.setItem(
-          `checked-items-${params?.id}`,
-          JSON.stringify({ generalItems, deepItems })
-        );
-      }
-    } else {
-      if (generalItems?.length > 0 || deepItems?.length > 0) {
-        localStorage.setItem(
-          `checked-items-${params?.id}`,
-          JSON.stringify({ generalItems, deepItems })
-        );
-      }
+  useEffect(() => {}, [generalItems, deepItems]);
+
+  const getPhones = async (appointment) => {
+    const list = [];
+    if (appointment?.bestPhone?.length > 0) {
+      list.push(appointment?.bestPhone);
     }
-  }, [generalItems, deepItems]);
+    if (appointment?.alternatePhoneOne?.length > 0) {
+      list.push(appointment?.alternatePhoneOne);
+    }
+    if (appointment?.alternatePhoneTwo?.length > 0) {
+      list.push(appointment?.alternatePhoneTwo);
+    }
+    setPhones(list);
+  };
 
   const playAudio = () => {
     audioRef.current.pause();
@@ -113,42 +119,78 @@ const Startjob = () => {
 
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
-    console.log(res, "res");
+    console.log(res, "appointment");
     setAppointment(res);
-    const data =
-      JSON.parse(localStorage.getItem(`checked-items-${params?.id}`)) || {};
-    if (data?.generalItems?.length > 0 || data?.deepItems?.length > 0) {
-      setGeneralItems(data.generalItems);
-      setDeepItems(data.deepItems);
-    } else {
-      getGeneralItems(res);
-      getDeepItems(res);
+    const generalItems = getGeneralItems(res);
+    const deepItems = getDeepItems(res);
+    const { deep, general } = await getJobLogs();
+    // // UPDATE LOGIC
+    if (generalItems?.length > 0 || deepItems?.length > 0) {
+      const items = [...generalItems];
+      items.map((i) =>
+        i.options?.map((o) => {
+          if (
+            general.find(
+              (g) =>
+                g?.Checked &&
+                g?.Content === i?.label &&
+                g?.SubContent === o?.label
+            ) ||
+            deep.find(
+              (g) =>
+                g?.Checked &&
+                g?.Content === i?.label &&
+                g?.SubContent === o?.label
+            )
+          ) {
+            o.isCompleted = true;
+          }
+        })
+      );
+      setGeneralItems(items);
+      const items1 = [...deepItems];
+      items1.map((i) => {
+        if (
+          deep.find(
+            (g) => g?.Checked && g?.Content === i?.label && !g?.SubContent
+          ) ||
+          general.find(
+            (g) => g?.Checked && g?.Content === i?.label && !g?.SubContent
+          )
+        ) {
+          i.isCompleted = true;
+        }
+      });
+      setDeepItems(items1);
     }
-    getJobLogs();
   };
 
   const getJobLogs = async () => {
-    console.log(state.currentUser, "state.currentUser");
     if (state.currentUser) {
       const res = await actions.appointment.getJobLogs({
         AppointmentId: params?.id,
         contractorID: state.currentUser?.contractorID,
         isGeneral: false,
       });
-      console.log(res, "res");
+      const res1 = await actions.appointment.getJobLogs({
+        AppointmentId: params?.id,
+        contractorID: state.currentUser?.contractorID,
+        isGeneral: true,
+      });
+      return { deep: res, general: res1 };
     }
   };
 
   const getDuration = () => {
-    const timers = JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-    const timer = timers?.find((t) => t?.appointmentId === params?.id);
-    if (timer) {
-      setSeconds(timer.time);
+    // const timers = JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+    // const timer = timers?.find((t) => t?.appointmentId === params?.id);
+    var ms = moment(appointment?.endTime, "hh:mm A").diff(
+      moment(appointment?.startTime, "hh:mm A")
+    );
+    var d = moment.duration(ms);
+    if (appointment?.jobStartTime && appointment?.Duration > 0) {
+      setSeconds(d?.asSeconds() - appointment?.Duration);
     } else {
-      var ms = moment(appointment?.endTime, "hh:mm A").diff(
-        moment(appointment?.startTime, "hh:mm A")
-      );
-      var d = moment.duration(ms);
       setSeconds(d?.asSeconds());
     }
   };
@@ -163,9 +205,23 @@ const Startjob = () => {
   };
 
   // Handle pause button click
-  const handlePause = () => {
+  const handlePause = async () => {
+    console.log(seconds);
     setIsActive(false);
     setElapsedTime((seconds - startTime) / 1000);
+    updateDuration();
+  };
+
+  const updateDuration = async () => {
+    var ms = moment(appointment?.endTime, "hh:mm A").diff(
+      moment(appointment?.startTime, "hh:mm A")
+    );
+    var d = moment.duration(ms);
+
+    await actions.appointment.updateJobDetail({
+      id: params?.id,
+      duration: d.asSeconds() - seconds,
+    });
   };
 
   const updateCoords = async (data) => {
@@ -244,16 +300,18 @@ const Startjob = () => {
       } else {
         setDeepItems(items);
       }
-      await actions.appointment.updateJobLog({
-        contractorId: state.currentUser?.contractorID,
-        customerId: appointment?.CustomerId,
-        appointmentId: appointment?.AppointmentId,
-        content: parent?.label,
-        checked,
-        checkedBy: state.currentUser?.username,
-        isGeneral,
-      });
     }
+
+    await actions.appointment.updateJobLog({
+      contractorId: state.currentUser?.contractorID,
+      customerId: appointment?.CustomerId,
+      appointmentId: appointment?.AppointmentId,
+      content: parent?.label,
+      SubContent: child?.label || "",
+      checked,
+      checkedBy: state.currentUser?.username,
+      isGeneral,
+    });
   };
 
   // Format time as HH:MM:SS
@@ -323,33 +381,110 @@ const Startjob = () => {
     const items = [];
     if (!isNaN(parseInt(a?.Bedrooms))) {
       for (let i = 0; i < parseInt(a?.Bedrooms); i++) {
-        const options = [];
+        let options = [];
         if (a?.TakePic) {
           options.push({
             label: "Take Before/After Pictures",
             isCompleted: false,
           });
         }
-        if (a?.DC_Blinds) options.push({ label: `Blinds`, isCompleted: false });
+        options = [
+          ...options,
+          {
+            label: "Dust all furniture (no screens)",
+            isCompleted: false,
+          },
+          {
+            label: "Vacuum carpet/shake rugs outside",
+            isCompleted: false,
+          },
+          {
+            label: "Sweep/vacuum any hard flooring",
+            isCompleted: false,
+          },
+          {
+            label: "Mop any hard flooring",
+            isCompleted: false,
+          },
+          {
+            label: "Remove all cobwebs",
+            isCompleted: false,
+          },
+          {
+            label: "Dust pictures frames carefully",
+            isCompleted: false,
+          },
+          {
+            label: "Dust window sills/ledges",
+            isCompleted: false,
+          },
+          {
+            label: "dust louvered doors, if needed",
+            isCompleted: false,
+          },
+          {
+            label: "Dust lampshades, if needed",
+            isCompleted: false,
+          },
+          {
+            label: "Make beds(s), if present",
+            isCompleted: false,
+          },
+          {
+            label: "Empty garbage and replace liner",
+            isCompleted: false,
+          },
+        ];
+        if (a?.DC_Blinds)
+          options.push({ label: `Blinds`, isCompleted: false, deep: true });
         if (a?.DC_Windows)
-          options.push({ label: `Windows`, isCompleted: false });
+          options.push({ label: `Windows`, isCompleted: false, deep: true });
         if (a?.DC_WindowsSills)
-          options.push({ label: `Tracks & Sills`, isCompleted: false });
-        if (a?.DC_Walls) options.push({ label: `Walls`, isCompleted: false });
+          options.push({
+            label: `Tracks & Sills`,
+            isCompleted: false,
+            deep: true,
+          });
+        if (a?.DC_Walls)
+          options.push({ label: `Walls`, isCompleted: false, deep: true });
         if (a?.DC_CeilingFans)
-          options.push({ label: `Ceiling Fans`, isCompleted: false });
+          options.push({
+            label: `Ceiling Fans`,
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_Baseboards)
-          options.push({ label: "Baseboards", isCompleted: false });
+          options.push({ label: "Baseboards", isCompleted: false, deep: true });
         if (a?.DC_DoorFrames)
-          options.push({ label: "Doors/Door Frames", isCompleted: false });
+          options.push({
+            label: "Doors/Door Frames",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_LightFixtures)
-          options.push({ label: "Light Fixtures", isCompleted: false });
+          options.push({
+            label: "Light Fixtures",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_LightSwitches)
-          options.push({ label: "Light Switches", isCompleted: false });
+          options.push({
+            label: "Light Switches",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_VentCovers)
-          options.push({ label: "Vent Covers", isCompleted: false });
+          options.push({
+            label: "Vent Covers",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_InsideVents)
-          options.push({ label: "Inside Vents", isCompleted: false });
+          options.push({
+            label: "Inside Vents",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.NC_ChangeBed)
           options.push({ label: `Change Bed Lines`, isCompleted: false });
         // if (a?.DC_Pantry)
@@ -366,42 +501,117 @@ const Startjob = () => {
 
     if (!isNaN(parseInt(a?.Bathrooms))) {
       for (let i = 0; i < parseInt(a?.Bathrooms); i++) {
-        const options = [];
+        let options = [];
         if (a?.TakePic) {
           options.push({
             label: "Take Before/After Pictures",
             isCompleted: false,
           });
         }
-        if (a?.DC_Blinds) options.push({ label: `Blinds`, isCompleted: false });
+        options = [
+          ...options,
+          {
+            label: "General dusting",
+            isCompleted: false,
+          },
+          {
+            label: "Title Walls/Bathtubs/Showers cleaned",
+            isCompleted: false,
+          },
+          {
+            label: "Mirrors/Chrome fixtures /Shined",
+            isCompleted: false,
+          },
+          {
+            label: "Floors washed and disinfacted",
+            isCompleted: false,
+          },
+          {
+            label: "Carpets vacuumed",
+            isCompleted: false,
+          },
+
+          {
+            label: "Shake rugs outside",
+            isCompleted: false,
+          },
+          {
+            label: "Toilet cleaned/disinfected inside/ou",
+            isCompleted: false,
+          },
+          {
+            label: "Empty garbage and replace liner",
+            isCompleted: false,
+          },
+          {
+            label: "Tidy towels",
+            isCompleted: false,
+          },
+          {
+            label: "Clean window sills",
+            isCompleted: false,
+          },
+          {
+            label: "Clean baseboards",
+            isCompleted: false,
+          },
+        ];
+        if (a?.DC_Blinds)
+          options.push({ label: `Blinds`, isCompleted: false, deep: true });
         if (a?.DC_Windows)
-          options.push({ label: `Windows`, isCompleted: false });
+          options.push({ label: `Windows`, isCompleted: false, deep: true });
         if (a?.DC_WindowsSills)
-          options.push({ label: `Tracks & Sills`, isCompleted: false });
-        if (a?.DC_Walls) options.push({ label: `Walls`, isCompleted: false });
+          options.push({
+            label: `Tracks & Sills`,
+            isCompleted: false,
+            deep: true,
+          });
+        if (a?.DC_Walls)
+          options.push({ label: `Walls`, isCompleted: false, deep: true });
         if (a?.DC_Baseboards)
-          options.push({ label: "Baseboards", isCompleted: false });
+          options.push({ label: "Baseboards", isCompleted: false, deep: true });
         if (a?.DC_DoorFrames)
-          options.push({ label: "Doors/Door Frames", isCompleted: false });
+          options.push({
+            label: "Doors/Door Frames",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_LightFixtures)
-          options.push({ label: "Light Fixtures", isCompleted: false });
+          options.push({
+            label: "Light Fixtures",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_LightSwitches)
-          options.push({ label: "Light Switches", isCompleted: false });
+          options.push({
+            label: "Light Switches",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_VentCovers)
-          options.push({ label: "Vent Covers", isCompleted: false });
+          options.push({
+            label: "Vent Covers",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_InsideVents)
-          options.push({ label: "Inside Vents", isCompleted: false });
+          options.push({
+            label: "Inside Vents",
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_BathroomCuboards)
           options.push({
             label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
             isCompleted: false,
+            deep: true,
           });
         // if (a?.DC_Pantry)
         //   items.push({ label: "Clean Pantry", isCompleted: false });
         // if (a?.DC_LaundryRoom)
         //   items.push({ label: "Clean Laundry Room", isCompleted: false });
         items.push({
-          label: i === 0 ? "Master Bashroom" : `Bashroom ${i}`,
+          label: i === 0 ? "Master Bathroom" : `Bathroom ${i}`,
           isCompleted: false,
           options,
         });
@@ -409,45 +619,110 @@ const Startjob = () => {
     }
 
     // Kitchen
-    const options = [];
+    let options = [];
     if (a?.TakePic) {
       options.push({
         label: "Take Before/After Pictures",
         isCompleted: false,
       });
     }
-    if (a?.DC_Blinds) options.push({ label: `Blinds`, isCompleted: false });
-    if (a?.DC_Windows) options.push({ label: `Windows`, isCompleted: false });
+    options = [
+      ...options,
+      {
+        label: "General dusting and remove cobwebs",
+        isCompleted: false,
+      },
+      {
+        label: "Damp wipe countertops & cloth dry",
+        isCompleted: false,
+      },
+      {
+        label: "Clean outsides of range hood",
+        isCompleted: false,
+      },
+      {
+        label: "Clean top/front of range and fridge",
+        isCompleted: false,
+      },
+      {
+        label: "Clean top/front of all appliances",
+        isCompleted: false,
+      },
+      {
+        label: "Wipe out Microwave",
+        isCompleted: false,
+      },
+      {
+        label: "Do any dishes or place in dishwasher",
+        isCompleted: false,
+      },
+      {
+        label: "Clean/disinfect sink",
+        isCompleted: false,
+      },
+      {
+        label: "Dry/polish fixtures",
+        isCompleted: false,
+      },
+      {
+        label: "Empty garbage and replace liner",
+        isCompleted: false,
+      },
+      {
+        label: "Sweep/vacuum any hard flooring",
+        isCompleted: false,
+      },
+      {
+        label: "Mop any hard flooring",
+        isCompleted: false,
+      },
+    ];
+    if (a?.DC_Blinds)
+      options.push({ label: `Blinds`, isCompleted: false, deep: true });
+    if (a?.DC_Windows)
+      options.push({ label: `Windows`, isCompleted: false, deep: true });
     if (a?.DC_WindowsSills)
-      options.push({ label: `Tracks & Sills`, isCompleted: false });
-    if (a?.DC_Walls) options.push({ label: `Walls`, isCompleted: false });
+      options.push({ label: `Tracks & Sills`, isCompleted: false, deep: true });
+    if (a?.DC_Walls)
+      options.push({ label: `Walls`, isCompleted: false, deep: true });
     if (a?.DC_Baseboards)
-      options.push({ label: "Baseboards", isCompleted: false });
+      options.push({ label: "Baseboards", isCompleted: false, deep: true });
     if (a?.DC_DoorFrames)
-      options.push({ label: "Doors/Door Frames", isCompleted: false });
+      options.push({
+        label: "Doors/Door Frames",
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.DC_LightFixtures)
-      options.push({ label: "Light Fixtures", isCompleted: false });
+      options.push({ label: "Light Fixtures", isCompleted: false, deep: true });
     if (a?.DC_LightSwitches)
-      options.push({ label: "Light Switches", isCompleted: false });
+      options.push({ label: "Light Switches", isCompleted: false, deep: true });
     if (a?.DC_VentCovers)
-      options.push({ label: "Vent Covers", isCompleted: false });
+      options.push({ label: "Vent Covers", isCompleted: false, deep: true });
     if (a?.DC_InsideVents)
-      options.push({ label: "Inside Vents", isCompleted: false });
+      options.push({ label: "Inside Vents", isCompleted: false, deep: true });
     if (a?.DC_BathroomCuboards)
       options.push({
         label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
         isCompleted: false,
+        deep: true,
       });
     if (a?.DC_KitchenCuboards)
       options.push({
         label: `Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`,
         isCompleted: false,
+        deep: true,
       });
     if (a?.DC_Pantry)
-      options.push({ label: "Clean Pantry", isCompleted: false });
-    if (a?.DC_Oven) options.push({ label: "Inside Oven", isCompleted: false });
+      options.push({ label: "Clean Pantry", isCompleted: false, deep: true });
+    if (a?.DC_Oven)
+      options.push({ label: "Inside Oven", isCompleted: false, deep: true });
     if (a?.DC_Refrigerator)
-      options.push({ label: "Inside Fridge/Freezer", isCompleted: false });
+      options.push({
+        label: "Inside Fridge/Freezer",
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.NC_DoDishes)
       options.push({ label: "Do Dishes", isCompleted: false });
 
@@ -459,49 +734,126 @@ const Startjob = () => {
     items.push(kitchen);
 
     // Other rooms/areas
-    const options1 = [];
+    let options1 = [];
     if (a?.TakePic) {
-      options.push({
+      options1.push({
         label: "Take Before/After Pictures",
         isCompleted: false,
       });
     }
-    if (a?.DC_Blinds) options1.push({ label: `Blinds`, isCompleted: false });
-    if (a?.DC_Windows) options1.push({ label: `Windows`, isCompleted: false });
+    options1 = [
+      ...options1,
+      {
+        label: "Dust all furniture (no screens)",
+        isCompleted: false,
+      },
+      {
+        label: "Vacuum carpet/shake rugs outside",
+        isCompleted: false,
+      },
+      {
+        label: "Sweep/vacuum any hard flooring",
+        isCompleted: false,
+      },
+      {
+        label: "Mop any hard flooring",
+        isCompleted: false,
+      },
+      {
+        label: "Remove all cobwebs",
+        isCompleted: false,
+      },
+      {
+        label: "Dust pictures frames carefullyy",
+        isCompleted: false,
+      },
+      {
+        label: "Dust window sills/ledges",
+        isCompleted: false,
+      },
+      {
+        label: "Dust louvered doors, if needed",
+        isCompleted: false,
+      },
+      {
+        label: "Dust lampshades, if needed",
+        isCompleted: false,
+      },
+      {
+        label: "Make beds(s), if present",
+        isCompleted: false,
+      },
+      {
+        label: "Empty garbage and replace liner",
+        isCompleted: false,
+      },
+    ];
+    if (a?.DC_Blinds)
+      options1.push({ label: `Blinds`, isCompleted: false, deep: true });
+    if (a?.DC_Windows)
+      options1.push({ label: `Windows`, isCompleted: false, deep: true });
     if (a?.DC_WindowsSills)
-      options1.push({ label: `Tracks & Sills`, isCompleted: false });
-    if (a?.DC_Walls) options1.push({ label: `Walls`, isCompleted: false });
+      options1.push({
+        label: `Tracks & Sills`,
+        isCompleted: false,
+        deep: true,
+      });
+    if (a?.DC_Walls)
+      options1.push({ label: `Walls`, isCompleted: false, deep: true });
     if (a?.DC_CeilingFans)
-      options1.push({ label: `Ceiling Fans`, isCompleted: false });
+      options1.push({ label: `Ceiling Fans`, isCompleted: false, deep: true });
     if (a?.DC_Baseboards)
-      options1.push({ label: "Baseboards", isCompleted: false });
+      options1.push({ label: "Baseboards", isCompleted: false, deep: true });
     if (a?.DC_DoorFrames)
-      options1.push({ label: "Doors/Door Frames", isCompleted: false });
+      options1.push({
+        label: "Doors/Door Frames",
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.DC_LightFixtures)
-      options1.push({ label: "Light Fixtures", isCompleted: false });
+      options1.push({
+        label: "Light Fixtures",
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.DC_LightSwitches)
-      options1.push({ label: "Light Switches", isCompleted: false });
+      options1.push({
+        label: "Light Switches",
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.DC_VentCovers)
-      options1.push({ label: "Vent Covers", isCompleted: false });
+      options1.push({ label: "Vent Covers", isCompleted: false, deep: true });
     if (a?.DC_InsideVents)
-      options1.push({ label: "Inside Vents", isCompleted: false });
+      options1.push({ label: "Inside Vents", isCompleted: false, deep: true });
     if (a?.DC_BathroomCuboards)
       options1.push({
         label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
         isCompleted: false,
+        deep: true,
       });
     if (a?.DC_KitchenCuboards)
       options1.push({
         label: `Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`,
         isCompleted: false,
+        deep: true,
       });
     if (a?.DC_Pantry)
-      options1.push({ label: "Clean Pantry", isCompleted: false });
-    if (a?.DC_Oven) options1.push({ label: "Inside Oven", isCompleted: false });
+      options1.push({ label: "Clean Pantry", isCompleted: false, deep: true });
+    if (a?.DC_Oven)
+      options1.push({ label: "Inside Oven", isCompleted: false, deep: true });
     if (a?.DC_Refrigerator)
-      options1.push({ label: "Inside Fridge/Freezer", isCompleted: false });
+      options1.push({
+        label: "Inside Fridge/Freezer",
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.DC_LaundryRoom)
-      options1.push({ label: "Clean Laundry Room", isCompleted: false });
+      options1.push({
+        label: "Clean Laundry Room",
+        isCompleted: false,
+        deep: true,
+      });
 
     const otherRoom = {
       label: `Othre Rooms/Areas`,
@@ -509,31 +861,8 @@ const Startjob = () => {
       options: options1,
     };
     items.push(otherRoom);
-
-    // const item = {
-    //   label: `Floor`,
-    //   isCompleted: false,
-    //   options: [],
-    // };
-    // if (a?.NC_FlooringCarpet)
-    //   item.options.push({ label: "Carpet", isCompleted: false });
-    // if (a?.NC_FlooringHardwood)
-    //   item.options.push({ label: "Hardwood", isCompleted: false });
-    // if (a?.NC_FlooringLinoleum)
-    //   item.options.push({ label: "Linoleum", isCompleted: false });
-    // if (a?.NC_FlooringMarble)
-    //   item.options.push({ label: "Marble", isCompleted: false });
-    // if (a?.NC_FlooringSlate)
-    //   item.options.push({ label: "Slate", isCompleted: false });
-    // if (a?.NC_FlooringTile)
-    //   item.options.push({ label: "Tile", isCompleted: false });
-    // items.push(item);
-
-    // if (a?.NC_DoDishes) text.push(`Do Dishes`);
-    // if (a?.NC_ChangeBed) text.push(`Change Bed Lines`);
-    // if (a?.NC_RequestEcoCleaners) text.push("Eco Cleaners Requested");
-    console.log(items, "items");
     setGeneralItems(items);
+    return items;
   };
 
   const getDeepItems = (a) => {
@@ -594,6 +923,7 @@ const Startjob = () => {
     if (a?.DC_OtherOne) items.push({ label: "Other 1", isCompleted: false });
     if (a?.DC_OtherTwo) items.push({ label: "Other 2", isCompleted: false });
     setDeepItems(items);
+    return items;
   };
 
   const isDeepItemsCompleted = () => {
@@ -640,7 +970,7 @@ const Startjob = () => {
     //   actions.alert.showError({ message: "Please input the notes" });
     //   return false;
     // }
-    if (a?.TakePic && files?.length === 0) {
+    if (appointment?.TakePic && files?.length === 0) {
       actions.alert.showError({ message: "Please upload images" });
       return false;
     }
@@ -672,13 +1002,7 @@ const Startjob = () => {
   };
 
   const getButtonText = () => {
-    const timers = JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-    const timer = timers?.find((t) => t.appointmentId === params?.id);
-    var ms = moment(appointment?.endTime, "hh:mm A").diff(
-      moment(appointment?.startTime, "hh:mm A")
-    );
-    var d = moment.duration(ms);
-    if (timer?.time && timer?.time !== d?.asSeconds()) {
+    if (appointment?.jobStartTime) {
       return "Continue";
     } else {
       return "Start";
@@ -726,10 +1050,70 @@ const Startjob = () => {
               <p className="font-semibold text-lg">
                 {appointment?.CustomerName}
               </p>
-              <p className="space-x-2">
-                <AddIcCallIcon sx={{ color: "#478e00" }} />
-                <InsertCommentIcon sx={{ color: "#6fc1e9" }} />
-              </p>
+              <div className="space-x-3 flex items-center">
+                <div className="relative">
+                  <a
+                    onClick={(e) => {
+                      setShowPhone(!isShowPhone);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>
+                  </a>
+                  {isShowPhone ? (
+                    <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                      {phones.map((phone, index) => (
+                        <a
+                          key={index}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.open(
+                              `tel:${phone.replace(/[^0-9]/g, "")}`,
+                              "_blank"
+                            );
+                            setShowPhone(false);
+                          }}
+                          className="flex items-center px-2 py-1.5 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <p className="text-sm">{phone}</p>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="relative">
+                  <a
+                    onClick={(e) => {
+                      setShowSms(!isShowSms);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <InsertCommentIcon
+                      sx={{ color: "#6fc1e9" }}
+                    ></InsertCommentIcon>
+                  </a>
+                  {isShowSms ? (
+                    <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                      {phones.map((phone, index) => (
+                        <a
+                          key={index}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.open(
+                              `sms:${phone.replace(/[^0-9]/g, "")}`,
+                              "_blank"
+                            );
+                            setShowSms(false);
+                          }}
+                          className="flex items-center px-2 py-1.5 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <p className="text-sm">{phone}</p>
+                        </a>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
             <div className="flex flex-col items-start gap-2 justify-between mt-5 march_date">
               <div>
@@ -808,41 +1192,114 @@ const Startjob = () => {
             {step === 1 ? (
               <div className="flex items-start justify-between md:block mb-20">
                 <div className="w-full ">
-                  <div className="flex justify-between items-center mt-10">
+                  <button onClick={() => setStep(0)}>
+                    <KeyboardBackspaceIcon
+                      sx={{
+                        fontSize: "30px",
+                        cursor: "pointer",
+                        color: "#fda839",
+                      }}
+                    />
+                  </button>
+                  <div className="flex justify-between items-center mt-4">
                     <h4 className="font-medium sm:text-sm text-lg">
                       {selected?.label}
                     </h4>
                     <h4
                       className={
                         ("font-medium  sm:text-sm text-lg",
-                        selected?.isCompleted
+                        selected?.options?.filter((o) => !o?.deep)?.length ===
+                        selected?.options?.filter(
+                          (o) => !o?.deep && o?.isCompleted
+                        )?.length
                           ? "text-green-600"
                           : "text-red-600")
                       }
                     >
-                      {selected?.isCompleted ? "Completed" : "Not Completed"}
+                      {selected?.options?.filter((o) => !o?.deep)?.length ===
+                      selected?.options?.filter(
+                        (o) => !o?.deep && o?.isCompleted
+                      )?.length
+                        ? "Completed"
+                        : "Not Completed"}
                     </h4>
                   </div>
-                  {selected?.options?.map((o) => (
-                    <ul
-                      key={o?.label}
-                      className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between"
-                    >
-                      <li className="text-grey-500 font-semibold sm:text-sm">
-                        {o?.label}
-                      </li>
-                      <input
-                        className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
-                        type="checkbox"
-                        id="vehicle2"
-                        name="vehicle1"
-                        checked={o?.isCompleted}
-                        onChange={(e) =>
-                          handleChecked(e?.target?.checked, selected, o)
-                        }
-                      />
-                    </ul>
-                  ))}
+                  {selected?.options
+                    ?.filter((o) => !o?.deep)
+                    ?.map((o) => (
+                      <ul
+                        key={o?.label}
+                        className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between"
+                      >
+                        <li className="text-grey-500 font-semibold sm:text-sm">
+                          {o?.label}
+                        </li>
+                        <input
+                          className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
+                          type="checkbox"
+                          id="vehicle2"
+                          name="vehicle1"
+                          checked={o?.isCompleted}
+                          onChange={(e) =>
+                            handleChecked(e?.target?.checked, selected, o, true)
+                          }
+                        />
+                      </ul>
+                    ))}
+                  {selected?.options?.filter((o) => o?.deep)?.length > 0 && (
+                    <div>
+                      <div className="flex justify-between items-center mt-4">
+                        <h4 className="font-medium sm:text-sm text-lg">
+                          Deep Clean Items
+                        </h4>
+                        <h4
+                          className={
+                            ("font-medium  sm:text-sm text-lg",
+                            selected?.options?.filter(
+                              (o) => o?.deep && o?.isCompleted
+                            )?.length ===
+                            selected?.options?.filter((o) => o?.deep)?.length
+                              ? "text-green-600"
+                              : "text-red-600")
+                          }
+                        >
+                          {selected?.options?.filter(
+                            (o) => o?.deep && o?.isCompleted
+                          )?.length ===
+                          selected?.options?.filter((o) => o?.deep)?.length
+                            ? "Completed"
+                            : "Not Completed"}
+                        </h4>
+                      </div>
+                      {selected?.options
+                        ?.filter((o) => o?.deep)
+                        ?.map((o) => (
+                          <ul
+                            key={o?.label}
+                            className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between"
+                          >
+                            <li className="text-grey-500 font-semibold sm:text-sm">
+                              {o?.label}
+                            </li>
+                            <input
+                              className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
+                              type="checkbox"
+                              id="vehicle2"
+                              name="vehicle1"
+                              checked={o?.isCompleted}
+                              onChange={(e) =>
+                                handleChecked(
+                                  e?.target?.checked,
+                                  selected,
+                                  o,
+                                  false
+                                )
+                              }
+                            />
+                          </ul>
+                        ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -901,9 +1358,10 @@ const Startjob = () => {
                             id="vehicle2"
                             name="vehicle1"
                             checked={i?.isCompleted}
-                            onChange={(e) =>
-                              handleChecked(e.target.checked, i, null, true)
-                            }
+                            readOnly
+                            // onChange={(e) =>
+                            //   handleChecked(e.target.checked, i, null, true)
+                            // }
                           />
                           <AddBoxIcon
                             sx={{
@@ -1029,6 +1487,7 @@ const Startjob = () => {
                   <div className="flex items-center justify-center  mt-10">
                     <button
                       onClick={() => onNext()}
+                      disabled={images?.length === 0}
                       className={`border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 ${
                         completed ? "bg-green-400" : "bg-gray-400"
                       }`}

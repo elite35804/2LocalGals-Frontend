@@ -12,33 +12,31 @@ import Eight from "@/components/sujjestion/Eight";
 import Ninth from "@/components/sujjestion/Ninth";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import WithDashboardLayout from "@/hoc/WithDashboardLayout";
+import { useActions, useAppState } from "@/store";
 
 const Slider = () => {
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [checked, setChecked] = useState(false);
+  const state = useAppState();
+  const actions = useActions();
 
   useEffect(() => {
-    const res = localStorage.getItem("walk_through_checked");
-    console.log(res, "res");
-    if (res === "true") {
-      setChecked(true);
+    if (state.contractor?.IsCheckedWalkthrough) {
+      navigate("/home");
     }
-  }, []);
+  }, [state.contractor]);
 
   useEffect(() => {
     checkWalkthrough();
   }, [checked]);
 
-  const checkWalkthrough = () => {
-    console.log(checked);
-    if (checked) {
-      localStorage.setItem("walk_through_checked", "true");
-    } else {
-      const res = localStorage.getItem("walk_through_checked");
-      if (res === "true") {
-        localStorage.removeItem("walk_through_checked");
-      }
+  const checkWalkthrough = async () => {
+    if (state.contractor?.contractorID) {
+      await actions.user.updateWalkThrough({
+        id: state.contractor?.contractorID,
+        checked,
+      });
     }
   };
 
@@ -61,8 +59,6 @@ const Slider = () => {
     onSwipedRight: handlePrev,
     trackMouse: true, // enables mouse swipe functionality
   });
-
-  console.log(checked, "checked");
 
   const data = [
     <First />,

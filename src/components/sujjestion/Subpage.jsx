@@ -30,6 +30,7 @@ const Subpage = () => {
   const [location, setLocation] = useState({});
   const [isValidLocation, setIsValidLocation] = useState(false);
   const [loc, setLoc] = useState({});
+  const [partners, setPartners] = useState([]);
   const GOOGLE_MAP_KEY = "AIzaSyDfEYZOxYfhwqXUK-yXDZP8vnbf_79lpuk";
 
   useEffect(() => {
@@ -52,11 +53,31 @@ const Subpage = () => {
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
     console.log(res, "res");
-    const address = getLocation(res);
+    getLocation(res);
     getPhones(res);
     setAppointment(res);
     getPosition(res);
+    getPartners(res);
+
     return res;
+  };
+
+  const getPartners = async (appointment) => {
+    if (appointment?.AppointmentId) {
+      const users = [];
+      appointment?.Partners?.map((p) => {
+        const phones = [];
+        if (p?.PhoneNumber) phones.push(p?.PhoneNumber);
+        if (p?.AlternatePhone) phones.push(p?.AlternatePhone);
+        users.push({
+          name: `${p?.Firstname} ${p?.Lastname}`,
+          phones,
+          isShowPhone: false,
+          isShowSms: false,
+        });
+      });
+      setPartners(users);
+    }
   };
 
   const getPhones = async (appointment) => {
@@ -125,7 +146,6 @@ const Subpage = () => {
   };
 
   const getDeepItems = (a) => {
-    console.log(a, "a");
     const items = [];
     if (a?.DC_Blinds)
       items.push(`Blinds ${a?.DC_BlindsAmount} (${a?.DC_BlindsCondition})`);
@@ -200,7 +220,11 @@ const Subpage = () => {
   }
 
   const onStart = async () => {
-    const job = JSON.parse(localStorage.getItem("current_appointment"));
+    let job = JSON.parse(localStorage.getItem("current_appointment"));
+    if (!job?.AppointmentId) {
+      localStorage.setItem("current_appointment", JSON.stringify(appointment));
+      job = appointment;
+    }
     if (job?.AppointmentId === parseInt(params?.id)) {
       if (!location?.latitude) {
         setOpenLocation(true);
@@ -233,6 +257,13 @@ const Subpage = () => {
     }
   };
 
+  const handlePartners = (key, type) => {
+    const items = [...partners];
+    items[key][type === "phone" ? "isShowPhone" : "isShowSms"] =
+      !items[key][type === "phone" ? "isShowPhone" : "isShowSms"];
+    setPartners(items);
+  };
+
   return (
     <div className="min-h-screen">
       {params.pathname == "/walk_through" ? null : <Header />}
@@ -260,7 +291,7 @@ const Subpage = () => {
                       <AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>
                     </a>
                     {isShowPhone ? (
-                      <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                      <div className="absolute right-0 w-40 mt-2 z-50 bg-white shadow-xl border divide-y">
                         {phones.map((phone, index) => (
                           <a
                             key={index}
@@ -356,15 +387,100 @@ const Subpage = () => {
                 </div>
                 {/* partner */}
                 <div className="w-full">
-                  <div className="flex gap-5 items-center justify-between mt-3 send_icon">
+                  <div className="flex space-x-2 mt-5">
                     <p className="font-medium space-x-2">
                       <span className="text-lg">Partner(s):</span>
-                      <span className="text-grey-500"></span>
                     </p>
-                    <p className="space-x-3">
-                      {/* <AddIcCallIcon sx={{ color: "#478e00" }} />
-                      <InsertCommentIcon sx={{ color: "#6fc1e9" }} /> */}
-                    </p>
+                    <div className="space-y-2 w-full">
+                      {partners?.map((p, i) => (
+                        <div
+                          key={p?.name}
+                          className="flex justify-between items-center w-full"
+                        >
+                          <span className="text-grey-500">{p.name}</span>
+                          <p className="flex items-center space-x-3">
+                            <div className="relative">
+                              <a
+                                onClick={(e) =>
+                                  p?.phones?.length === 1
+                                    ? window.open(
+                                        `tel:${p.phones?.[0].replace(
+                                          /[^0-9]/g,
+                                          ""
+                                        )}`,
+                                        "_blank"
+                                      )
+                                    : handlePartners(i, "phone")
+                                }
+                                className="cursor-pointer"
+                              >
+                                <AddIcCallIcon sx={{ color: "#478e00" }} />
+                              </a>
+                              {p.isShowPhone ? (
+                                <div className="absolute right-0 w-40 z-50 mt-2 bg-white shadow-xl border divide-y">
+                                  {p.phones.map((phone, index) => (
+                                    <a
+                                      key={index}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        window.open(
+                                          `tel:${phone.replace(/[^0-9]/g, "")}`,
+                                          "_blank"
+                                        );
+                                        setShowPhone(false);
+                                      }}
+                                      className="flex items-center px-2 py-1.5 hover:bg-gray-100 cursor-pointer"
+                                    >
+                                      <p className="text-sm">{phone}</p>
+                                    </a>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                            <div className="relative">
+                              <a
+                                onClick={(e) =>
+                                  p?.phones?.length === 1
+                                    ? window.open(
+                                        `sms:${p.phones?.[0].replace(
+                                          /[^0-9]/g,
+                                          ""
+                                        )}`,
+                                        "_blank"
+                                      )
+                                    : handlePartners(i, "sms")
+                                }
+                                className="cursor-pointer"
+                              >
+                                <InsertCommentIcon
+                                  sx={{ color: "#6fc1e9" }}
+                                ></InsertCommentIcon>
+                              </a>
+                              {p.isShowSms ? (
+                                <div className="absolute right-0 w-40 mt-2 z-50 bg-white shadow-xl border divide-y">
+                                  {p.phones.map((phone, index) => (
+                                    <a
+                                      key={index}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        window.open(
+                                          `sms:${phone.replace(/[^0-9]/g, "")}`,
+                                          "_blank"
+                                        );
+                                        setShowSms(false);
+                                      }}
+                                      className="flex items-center px-2 py-1.5 hover:bg-gray-100 cursor-pointer"
+                                    >
+                                      <p className="text-sm">{phone}</p>
+                                    </a>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
                 <div className="mt-3">
