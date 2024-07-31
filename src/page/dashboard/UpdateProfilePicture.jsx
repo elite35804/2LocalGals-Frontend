@@ -89,6 +89,7 @@ const UpdateProfilePicture = () => {
           state.currentUser?.contractorID,
         formData,
         {
+          maxBodyLength: Infinity,
           headers: {
             "Content-Type": "multipart/form-data",
           },

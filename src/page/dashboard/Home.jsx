@@ -45,29 +45,16 @@ const Home = () => {
       endDate: moment().endOf("week").add("days", 7).format("M/D/YYYY"),
     });
     console.log(state.appointment.appointments, "appointments");
-    const data = JSON.parse(localStorage.getItem("current_appointment"));
-    if (
-      data &&
-      moment(data?.ScheduleDate).format("M/D/YYYY") ===
-        moment().format("M/D/YYYY")
-    ) {
-      setCurrentAppointment(data);
+    const appointment = state.appointment.appointments[
+      Object.keys(state.appointment.appointments).find(
+        (k) => moment(k).format("M/D/YYYY") === moment().format("M/D/YYYY")
+      )
+    ]?.filter((a) => !a?.JobCompleted)?.[0];
+    if (appointment) {
+      localStorage.setItem("current_appointment", JSON.stringify(appointment));
+      setCurrentAppointment(appointment);
     } else {
-      const appointment =
-        state.appointment.appointments[
-          Object.keys(state.appointment.appointments).find(
-            (k) => moment(k).format("M/D/YYYY") === moment().format("M/D/YYYY")
-          )
-        ]?.[0];
-      if (appointment) {
-        localStorage.setItem(
-          "current_appointment",
-          JSON.stringify(appointment)
-        );
-        setCurrentAppointment(appointment);
-      } else {
-        localStorage.removeItem("current_appointment");
-      }
+      localStorage.removeItem("current_appointment");
     }
   };
 

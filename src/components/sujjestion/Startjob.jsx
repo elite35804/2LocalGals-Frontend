@@ -49,9 +49,17 @@ const Startjob = () => {
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
   useEffect(() => {
-    window.addEventListener("beforeunload", async function (e) {
-      await updateDuration();
-    });
+    const handleEvent = async (e) => {
+      const timers =
+        JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+      const timer = timers?.find((t) => t.appointmentId === params?.id);
+      e.preventDefault();
+      await updateDuration(timer?.duration);
+    };
+    window.addEventListener("beforeunload", handleEvent);
+    return () => {
+      window.removeEventListener("beforeunload", handleEvent);
+    };
   }, []);
   useEffect(() => {
     if (state.contractor?.contractorID) {
@@ -79,10 +87,19 @@ const Startjob = () => {
       const timers =
         JSON.parse(localStorage.getItem("2localgals-timers")) || [];
       const timer = timers?.find((t) => t.appointmentId === params?.id);
+      var ms = moment(appointment?.endTime, "hh:mm A").diff(
+        moment(appointment?.startTime, "hh:mm A")
+      );
+      var d = moment.duration(ms);
       if (timer) {
         timer.time = seconds;
+        timer.duration = d?.asSeconds() - seconds;
       } else {
-        timers.push({ appointmentId: params?.id, time: seconds });
+        timers.push({
+          appointmentId: params?.id,
+          time: seconds,
+          duration: d?.asSeconds() - seconds,
+        });
       }
       localStorage.setItem("2localgals-timers", JSON.stringify(timers));
     }
@@ -182,8 +199,6 @@ const Startjob = () => {
   };
 
   const getDuration = () => {
-    // const timers = JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-    // const timer = timers?.find((t) => t?.appointmentId === params?.id);
     var ms = moment(appointment?.endTime, "hh:mm A").diff(
       moment(appointment?.startTime, "hh:mm A")
     );
@@ -212,7 +227,8 @@ const Startjob = () => {
     updateDuration();
   };
 
-  const updateDuration = async () => {
+  const updateDuration = async (duration) => {
+    console.log(duration, "duration");
     var ms = moment(appointment?.endTime, "hh:mm A").diff(
       moment(appointment?.startTime, "hh:mm A")
     );
@@ -220,7 +236,8 @@ const Startjob = () => {
 
     await actions.appointment.updateJobDetail({
       id: params?.id,
-      duration: d.asSeconds() - seconds,
+      duration: duration || d.asSeconds() - seconds,
+      pauseTime: new Date(),
     });
   };
 
@@ -257,7 +274,7 @@ const Startjob = () => {
   };
 
   // Handle reset button click
-  const handleStart = () => {
+  const handleStart = async () => {
     setIsActive(true);
     var ms = moment(appointment?.endTime, "hh:mm A").diff(
       moment(appointment?.startTime, "hh:mm A")
@@ -272,11 +289,18 @@ const Startjob = () => {
     }
     setStartTime(seconds); // adjust start time based on elapsed time
     setElapsedTime(0);
+
+    await actions.appointment.updateJobDetail({
+      id: params?.id,
+      duration: d.asSeconds() - seconds,
+      lastStartTime: new Date(),
+    });
     // No need to reset seconds here, as it's already managed by isActive state
   };
 
   // Handle checkbox toggle
   const handleChecked = async (checked, parent, child, isGeneral) => {
+    // if (appointment?.JobCompleted) return false;
     if (child) {
       const items = [...generalItems];
       items
@@ -311,6 +335,7 @@ const Startjob = () => {
       checked,
       checkedBy: state.currentUser?.username,
       isGeneral,
+      createdAtStr: moment().format("YYYY-MM-DDThh:mm A"),
     });
   };
 
@@ -978,12 +1003,15 @@ const Startjob = () => {
     try {
       setLoading(true);
       const formData = new FormData();
-      formData.append("files", files);
-      formData.append("notes", notes);
+      files.map((f) => formData.append("files", f));
+      if (!appointment?.JobCompleted) {
+        formData.append("notes", notes);
+      }
       const res = await axios.post(
         Settings.api_url + "schedule/UpdateAppointment/" + params?.id,
         formData,
         {
+          maxBodyLength: Infinity,
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -1159,30 +1187,32 @@ const Startjob = () => {
                     {formatTime(seconds)}
                   </span>
                 </div>
-                <div className="mt-8 flex gap-4">
-                  <button
-                    onClick={handlePause}
-                    className={`px-10 py-2 rounded-lg font-semibold ${
-                      !isActive
-                        ? "bg-gray-300 text-gray-500"
-                        : "bg-transparent border-2 text-black"
-                    }`}
-                    disabled={!isActive}
-                  >
-                    Pause
-                  </button>
-                  <button
-                    onClick={handleStart}
-                    className={`px-10 py-2 rounded-lg font-semibold ${
-                      !isActive
-                        ? "bg-transparent border-2 text-black"
-                        : "bg-gray-300 text-gray-500"
-                    }`}
-                    disabled={isActive}
-                  >
-                    {getButtonText()}
-                  </button>
-                </div>
+                {!appointment?.JobCompleted && (
+                  <div className="mt-8 flex gap-4">
+                    <button
+                      onClick={handlePause}
+                      className={`px-10 py-2 rounded-lg font-semibold ${
+                        !isActive
+                          ? "bg-gray-300 text-gray-500"
+                          : "bg-transparent border-2 text-black"
+                      }`}
+                      disabled={!isActive}
+                    >
+                      Pause
+                    </button>
+                    <button
+                      onClick={handleStart}
+                      className={`px-10 py-2 rounded-lg font-semibold ${
+                        !isActive
+                          ? "bg-transparent border-2 text-black"
+                          : "bg-gray-300 text-gray-500"
+                      }`}
+                      disabled={isActive}
+                    >
+                      {getButtonText()}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1414,7 +1444,7 @@ const Startjob = () => {
                             name="vehicle1"
                             checked={di?.isCompleted}
                             onChange={(e) =>
-                              handleChecked(e.target.checked, di)
+                              handleChecked(e.target.checked, di, null, false)
                             }
                           />
                         </ul>
@@ -1438,6 +1468,7 @@ const Startjob = () => {
                         className="custom_textarea w-full"
                         value={notes}
                         onChange={(e) => setNotes(e?.target?.value)}
+                        disabled={appointment?.JobCompleted}
                       ></textarea>
                     </div>
 
@@ -1485,15 +1516,17 @@ const Startjob = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-center  mt-10">
-                    <button
-                      onClick={() => onNext()}
-                      disabled={images?.length === 0}
-                      className={`border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 ${
-                        completed ? "bg-green-400" : "bg-gray-400"
-                      }`}
-                    >
-                      Next
-                    </button>
+                    {!appointment?.JobCompleted && (
+                      <button
+                        onClick={() => onNext()}
+                        disabled={images?.length === 0}
+                        className={`border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 ${
+                          completed ? "bg-green-400" : "bg-gray-400"
+                        }`}
+                      >
+                        Next
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -13,13 +13,16 @@ const Finish = () => {
   useEffect(() => {
     getAppointment();
     getAppointments();
-  }, []);
+  }, [state.contractor]);
 
   const getAppointments = async () => {
-    await actions.appointment.getAppointments({
-      startDate: moment().format("M/D/YYYY"),
-      endDate: moment().endOf("week").add("days", 7).format("M/D/YYYY"),
-    });
+    if (state.contractor?.contractorID) {
+      await actions.appointment.getAppointments({
+        startDate: moment().format("M/D/YYYY"),
+        endDate: moment().endOf("week").add("days", 7).format("M/D/YYYY"),
+        id: state.contractor?.contractorID,
+      });
+    }
   };
 
   const getAppointment = async () => {
@@ -83,6 +86,7 @@ const Finish = () => {
     await actions.appointment.getAppointments({
       startDate: moment().format("M/D/YYYY"),
       endDate: moment().endOf("month").format("M/D/YYYY"),
+      id: state.contractor?.contractorID,
     });
     if (res) {
       const appointments =
@@ -97,6 +101,8 @@ const Finish = () => {
           "current_appointment",
           JSON.stringify(appointments[index + 1])
         );
+      } else {
+        localStorage.removeItem("current_appointment");
       }
       actions.alert.showSuccess({ message: "Job finished successfully!" });
       navigate("/home");
