@@ -300,7 +300,7 @@ const Startjob = () => {
 
   // Handle checkbox toggle
   const handleChecked = async (checked, parent, child, isGeneral) => {
-    // if (appointment?.JobCompleted) return false;
+    if (appointment?.JobCompleted) return false;
     if (child) {
       const items = [...generalItems];
       items
