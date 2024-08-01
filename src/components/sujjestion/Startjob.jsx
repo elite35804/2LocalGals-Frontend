@@ -50,6 +50,7 @@ const Startjob = () => {
   const audioRef = useRef(null);
   useEffect(() => {
     const handleEvent = async (e) => {
+      if (isActive) return false;
       const timers =
         JSON.parse(localStorage.getItem("2localgals-timers")) || [];
       const timer = timers?.find((t) => t.appointmentId === params?.id);
@@ -59,6 +60,12 @@ const Startjob = () => {
     window.addEventListener("beforeunload", handleEvent);
     return () => {
       window.removeEventListener("beforeunload", handleEvent);
+      const timers =
+        JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+      const timer = timers?.find((t) => t.appointmentId === params?.id);
+      if (!isActive && timer.duration) {
+        localStorage.setItem("active_timer", JSON.stringify(timer));
+      }
     };
   }, []);
   useEffect(() => {
@@ -1550,9 +1557,6 @@ const Startjob = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          {/* <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle> */}
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               All of the cleaning items are not completed. Are you sure you want

@@ -32,10 +32,10 @@ const Home = () => {
   }, [state.contractor]);
 
   const onReload = async () => {
-    while (true) {
-      await sleep(5000);
-      await getAppointments();
-    }
+    // while (true) {
+    //   await sleep(5000);
+    //   await getAppointments();
+    // }
   };
 
   const getAppointments = async () => {
