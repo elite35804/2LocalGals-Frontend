@@ -998,6 +998,13 @@ const Startjob = () => {
   };
 
   const onSave = async () => {
+    if (
+      moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
+      moment().format("YYYY-MM-DD")
+    ) {
+      actions.alert.showError({ message: "The deadline has already passed." });
+      return false;
+    }
     // if (!notes) {
     //   actions.alert.showError({ message: "Please input the notes" });
     //   return false;
