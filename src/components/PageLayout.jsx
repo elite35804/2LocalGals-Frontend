@@ -4,10 +4,8 @@ import { useAppState, useActions } from "@/store";
 
 const PageLayout = () => {
   const location = useLocation();
-  const state = useAppState();
   const actions = useActions();
   useEffect(() => {
-    console.log(location, "Location ============");
     checkActiveTimer();
   }, [location]);
 

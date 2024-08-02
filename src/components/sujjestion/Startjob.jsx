@@ -247,34 +247,9 @@ const Startjob = () => {
       pauseTime: new Date(),
     });
   };
-
-  const updateCoords = async (data) => {
-    const res = await actions.appointment.updateCoordinate({
-      id: params?.id,
-      ...data,
-    });
-  };
-  const getPosition = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, error);
-    } else {
-      console.log("Geolocation not supported");
-    }
-
-    function success(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-      updateCoords({ latitude, longitude });
-    }
-
-    function error() {
-      console.log("Unable to retrieve your location");
-    }
-  };
+  
   const getStarted = async () => {
     const res = await actions.appointment.startJob(params?.id);
-    getPosition();
     if (res) {
       actions.alert.showSuccess({ message: "Job started successfully!" });
     }
@@ -1002,7 +977,9 @@ const Startjob = () => {
       moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
       moment().format("YYYY-MM-DD")
     ) {
-      actions.alert.showError({ message: "The deadline has already passed." });
+      actions.alert.showError({
+        message: "You are not allowed to upload pictures in this contract.",
+      });
       return false;
     }
     // if (!notes) {
@@ -1052,6 +1029,15 @@ const Startjob = () => {
   };
 
   const onNext = () => {
+    if (
+      moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
+      moment().format("YYYY-MM-DD")
+    ) {
+      actions.alert.showError({
+        message: "You are not allowed to go ahead in this contract.",
+      });
+      return false;
+    }
     if (!isGeneralItemsCompleted() || !isDeepItemsCompleted()) {
       setOpen(true);
       return false;
@@ -1279,7 +1265,7 @@ const Startjob = () => {
                           {o?.label}
                         </li>
                         <input
-                          className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
+                          className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600 flex flex-shrink-0"
                           type="checkbox"
                           id="vehicle2"
                           name="vehicle1"
@@ -1326,7 +1312,7 @@ const Startjob = () => {
                               {o?.label}
                             </li>
                             <input
-                              className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
+                              className="checkbox_class  w-[17px] h-[17px] leading-tight text-red-600 flex flex-shrink-0"
                               type="checkbox"
                               id="vehicle2"
                               name="vehicle1"
@@ -1395,9 +1381,9 @@ const Startjob = () => {
                             {i?.label}
                           </li>
                         </ul>
-                        <div className="bg-[#fafafa] p-4 inline-block rounded-xl">
+                        <div className="bg-[#fafafa] p-4 flex items-center rounded-xl">
                           <input
-                            className="checkbox_class w-[17px] h-[17px]"
+                            className="checkbox_class flex flex-shrink-0 w-[17px] h-[17px]"
                             type="checkbox"
                             id="vehicle2"
                             name="vehicle1"
@@ -1410,7 +1396,6 @@ const Startjob = () => {
                           <AddBoxIcon
                             sx={{
                               color: "#6fc1e9",
-                              marginTop: "-10px",
                               marginLeft: "5px",
                               cursor: "pointer",
                             }}
@@ -1452,7 +1437,7 @@ const Startjob = () => {
                             {di?.label}
                           </li>
                           <input
-                            className="checkbox_class w-[17px] h-[17px] leading-tight text-red-600"
+                            className="checkbox_class flex flex-shrink-0 w-[17px] h-[17px] leading-tight text-red-600"
                             type="checkbox"
                             id="vehicle2"
                             name="vehicle1"
@@ -1533,7 +1518,7 @@ const Startjob = () => {
                     {!appointment?.JobCompleted && (
                       <button
                         onClick={() => onNext()}
-                        disabled={images?.length === 0}
+                        disabled={appointment.TakePic && images?.length === 0}
                         className={`border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 ${
                           completed ? "bg-green-400" : "bg-gray-400"
                         }`}

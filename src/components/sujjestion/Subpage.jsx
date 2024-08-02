@@ -56,9 +56,8 @@ const Subpage = () => {
     getLocation(res);
     getPhones(res);
     setAppointment(res);
-    getPosition(res);
+    // getPosition(res);
     getPartners(res);
-
     return res;
   };
 
@@ -111,12 +110,33 @@ const Subpage = () => {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
       setLocation({ latitude, longitude });
+      updateCoords({ latitude, longitude });
       getLocForContractor(job);
     }
 
-    function error() {
-      console.log("Unable to retrieve your location");
+    function error(error) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          console.log("User denied the request for Geolocation.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          console.log("Location information is unavailable.");
+          break;
+        case error.TIMEOUT:
+          console.log("The request to get user location timed out.");
+          break;
+        case error.UNKNOWN_ERROR:
+          console.log("An unknown error occurred.");
+          break;
+      }
     }
+  };
+
+  const updateCoords = async (data) => {
+    const res = await actions.appointment.updateCoordinate({
+      id: params?.id,
+      ...data,
+    });
   };
   const navigate = useNavigate();
 
@@ -220,6 +240,15 @@ const Subpage = () => {
   }
 
   const onStart = async () => {
+    if (
+      moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
+      moment().format("YYYY-MM-DD")
+    ) {
+      actions.alert.showError({
+        message: "You are not allowed to start this job.",
+      });
+      return false;
+    }
     let job = JSON.parse(localStorage.getItem("current_appointment"));
     if (!job?.AppointmentId) {
       localStorage.setItem("current_appointment", JSON.stringify(appointment));
@@ -657,7 +686,7 @@ const Subpage = () => {
             <div className="flex items-center justify-between gap-4 mt-4 bg-[#fafafa] p-6 sm:gap-0 sm:p-4 rounded-xl">
               <p>All needed supplies have been brought into the property</p>{" "}
               <input
-                className="checkbox_class w-4 h-4 sm:w-[24px] sm:h[15px]  lg:w-[16px] lg:h-[16px] border-red-500 border-0"
+                className="checkbox_class w-[17px] h-[17px] flex flex-shrink-0 border-red-500 border-0"
                 type="checkbox"
                 id="vehicle2"
                 name="vehicle1"
@@ -669,7 +698,7 @@ const Subpage = () => {
             <div className="flex items-center justify-between gap-4 mt-4 bg-[#fafafa] p-6 sm:gap-0 sm:p-4 rounded-xl">
               <p>All details have been read</p>
               <input
-                className="checkbox_class checkbox_border flex-shrink-0 sm:w-[24px] sm:h-[24px] w-4 h-4 lg:w-[16px] lg:h-[16px]"
+                className="checkbox_class checkbox_border flex flex-shrink-0 w-[17px] h-[17px]"
                 type="checkbox"
                 id="vehicle2"
                 name="vehicle1"
@@ -739,7 +768,13 @@ const Subpage = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenLocation(false)} autoFocus>
+          <Button
+            onClick={() => {
+              setOpenLocation(false);
+              getPosition(appointment);
+            }}
+            autoFocus
+          >
             Ok
           </Button>
         </DialogActions>

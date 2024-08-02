@@ -13,7 +13,7 @@ const Home = () => {
   const [currentAppointment, setCurrentAppointment] = useState({});
 
   useEffect(() => {
-    getPosition();
+    // getPosition();
     getPayments();
   }, []);
 
@@ -94,6 +94,7 @@ const Home = () => {
         .format("M/D/YYYY"),
       EndDate: moment().endOf("isoweek").add(8, "days").format("M/D/YYYY"),
     });
+    console.log(state.user.payments, "payments");
     const today = {
       hours: 0,
       pay: 0,
@@ -109,6 +110,7 @@ const Home = () => {
     });
     today.hourlyRate = today.hourlyRate / payments.length || 0;
     today.hours = today.pay / today.hourlyRate || 0;
+    today.pay = Math.round(today.pay * 0.92);
     Object.keys(today).map((key) => (today[key] = Math.round(today[key])));
     const thisWeek = {
       hours: 0,
@@ -128,6 +130,7 @@ const Home = () => {
     });
     thisWeek.hourlyRate = thisWeek.hourlyRate / thisWeekPayments.length || 0;
     thisWeek.hours = thisWeek.pay / thisWeek.hourlyRate || 0;
+    thisWeek.pay = Math.round(thisWeek.pay * 0.92);
     Object.keys(thisWeek).map(
       (key) => (thisWeek[key] = Math.round(thisWeek[key]))
     );
@@ -149,6 +152,7 @@ const Home = () => {
     });
     nextWeek.hourlyRate = nextWeek.hourlyRate / nextWeekPayments.length || 0;
     nextWeek.hours = nextWeek.pay / nextWeek.hourlyRate || 0;
+    nextWeek.pay = Math.round(nextWeek.pay * 0.92);
     Object.keys(nextWeek).map(
       (key) => (nextWeek[key] = Math.round(nextWeek[key]))
     );

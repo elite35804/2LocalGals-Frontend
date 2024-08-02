@@ -61,7 +61,7 @@ const Login = (props) => {
       console.log(data, "data");
       if (data?.Token) {
         await actions.user.getContractorInfo(state.currentUser?.contractorID);
-        getPosition();
+        // getPosition();
         actions.alert.showSuccess({
           message: "Logged in successfully!",
         });
