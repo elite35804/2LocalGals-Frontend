@@ -125,7 +125,7 @@ const Finish = () => {
                     {l?.label}
                   </li>
                   <input
-                    className="checkbox_class w-[17px] h-[17px] sm:w-[23px]"
+                    className="checkbox_class w-[17px] h-[17px] flex flex-shrink-0"
                     type="checkbox"
                     name="vehicle1"
                     value="Bike"

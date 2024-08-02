@@ -84,64 +84,6 @@ const UpdateUnavailability = () => {
     getListByDate(date);
   };
 
-  // const onDelete = async () => {
-  //   console.log(selected, "selected");
-  //   try {
-  //     const data = state.user.unavailabilities?.filter(
-  //       (d) =>
-  //         moment(d?.dateRequested).format("YYYY-MM-DD") ===
-  //         moment(date).format("YYYY-MM-DD")
-  //     );
-  //     for (let i = 0; i < data?.length; i++) {
-  //       await actions.user.deleteUnavailability(data[i]?.unavailableID);
-  //     }
-  //     await getData();
-  //     actions.alert.showSuccess({ message: "Deleted successfully" });
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
-
-  // const onSave = async () => {
-  //   if (!startTime) {
-  //     actions.alert.showError({ message: "Please input start date!" });
-  //     return false;
-  //   }
-  //   if (!endTime) {
-  //     actions.alert.showError({ message: "Please input end date!" });
-  //     return false;
-  //   }
-  //   const startDate = new Date(date);
-  //   startDate.setHours(startTime?.split(":")?.[0]);
-  //   startDate.setMinutes(startTime?.split(":")?.[1]);
-
-  //   const endDate = new Date(date);
-  //   endDate.setHours(endTime?.split(":")?.[0]);
-  //   endDate.setMinutes(endTime?.split(":")?.[1]);
-  //   try {
-  //     setLoading(true);
-  //     const res = await actions.user.addUnavailability({
-  //       dateRequested: date,
-  //       startTime: startDate.toISOString(),
-  //       endTime: endDate.toISOString(),
-  //       recurrenceID: 0,
-  //       recurrenceType: recurrence,
-  //     });
-  //     console.log(res, "res");
-  //     if (res) {
-  //       await getData();
-  //       actions.alert.showSuccess({
-  //         message: res,
-  //       });
-  //       // navigate(-1);
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleChange = (key, value, index) => {
     const items = [...list];
     items[index][key] = value;
@@ -237,57 +179,62 @@ const UpdateUnavailability = () => {
                     key={l?.id}
                     className="flex items-center flex-1 w-full space-x-4"
                   >
-                    <div className="flex-1">
-                      <h2 className="font-medium text-base heading mt-3  ">
-                        Start Time
-                      </h2>
-                      <input
-                        type="time"
-                        placeholder="Start date"
-                        className="border outline-none px-2 rounded-md py-2 w-full"
-                        value={l?.startTime}
-                        onChange={(e) =>
-                          handleChange("startTime", e.target.value, id)
-                        }
-                      />
+                    <div className="flex sm:flex-col flex-row sm:space-x-0 space-x-4 flex-1">
+                      <div className="flex-1">
+                        <h2 className="font-medium text-base heading mt-3  ">
+                          Start Time
+                        </h2>
+                        <input
+                          type="time"
+                          placeholder="Start date"
+                          className="border outline-none px-2 rounded-md py-2 w-full"
+                          value={l?.startTime}
+                          onChange={(e) =>
+                            handleChange("startTime", e.target.value, id)
+                          }
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="font-medium text-base heading mt-3  ">
+                          End Time
+                        </h2>
+                        <input
+                          type="time"
+                          placeholder="End date"
+                          className="border outline-none px-2 rounded-md py-2 w-full"
+                          value={l?.endTime}
+                          onChange={(e) =>
+                            handleChange("endTime", e.target.value, id)
+                          }
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="font-medium text-base heading mt-3  ">
+                          Recurrence
+                        </h2>
+                        <Select
+                          className="w-full"
+                          value={l?.recurrence}
+                          onValueChange={(e) =>
+                            handleChange("recurrence", e, id)
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="None" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {recurrences?.map((r) => (
+                                <SelectItem value={r?.id} key={r?.id}>
+                                  {r?.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h2 className="font-medium text-base heading mt-3  ">
-                        End Time
-                      </h2>
-                      <input
-                        type="time"
-                        placeholder="End date"
-                        className="border outline-none px-2 rounded-md py-2 w-full"
-                        value={l?.endTime}
-                        onChange={(e) =>
-                          handleChange("endTime", e.target.value, id)
-                        }
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="font-medium text-base heading mt-3  ">
-                        Recurrence
-                      </h2>
-                      <Select
-                        className="w-full"
-                        value={l?.recurrence}
-                        onValueChange={(e) => handleChange("recurrence", e, id)}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="None" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {recurrences?.map((r) => (
-                              <SelectItem value={r?.id} key={r?.id}>
-                                {r?.label}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
+
                     <div className="flex items-center">
                       <a className="mt-8">
                         <Check

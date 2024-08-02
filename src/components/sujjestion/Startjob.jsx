@@ -171,6 +171,13 @@ const Startjob = () => {
           }
         })
       );
+      items.map(
+        (item) =>
+          (item.isCompleted =
+            item.options.filter((o) => o?.isCompleted)?.length ===
+            item?.options?.length)
+      );
+      console.log(items, "items");
       setGeneralItems(items);
       const items1 = [...deepItems];
       items1.map((i) => {
@@ -247,7 +254,7 @@ const Startjob = () => {
       pauseTime: new Date(),
     });
   };
-  
+
   const getStarted = async () => {
     const res = await actions.appointment.startJob(params?.id);
     if (res) {
@@ -1067,10 +1074,10 @@ const Startjob = () => {
             </p>
             <p
               className={`${
-                completed ? "text-green-600" : "text-red-600"
+                appointment.JobCompleted ? "text-green-600" : "text-red-600"
               } text-end font-medium text-lg`}
             >
-              {completed ? "Completed" : "Not Completed"}
+              {appointment.JobCompleted ? "Completed" : "Not Completed"}
             </p>
           </div>
           <div className="Brad_allen_section mt-8">

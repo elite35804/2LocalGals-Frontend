@@ -145,11 +145,15 @@ const Subpage = () => {
     if (a?.SquareFootage) {
       text.push(`SF(${a?.SquareFootage})`);
     }
-    if (a?.PetsCount !== "None") text.push(`Pets(${a?.PetsCount})`);
-    if (a?.CleanRating !== "N/A") text.push(`Clean Rating(${a?.CleanRating})`);
+    if (a?.PetsCount !== "None")
+      text.push(`Pets${a?.PetsCount ? "(" + a?.PetsCount + ")" : ""}`);
+    if (a?.CleanRating !== "N/A")
+      text.push(
+        `Clean Rating${a?.CleanRating ? "(" + a?.CleanRating + ")" : ""}`
+      );
     if (a?.NC_Vacuum) text.push(`Take Vaccum`);
-    text.push(`Bedrooms(${a?.Bedrooms})`);
-    text.push(`Bathrooms(${a?.Bathrooms})`);
+    text.push(a?.Bedrooms ? `Bedrooms(${a?.Bedrooms})` : `Bedrooms`);
+    text.push(a?.Bathrooms ? `Bathrooms(${a?.Bathrooms})` : `Bathrooms`);
     const floors = [];
     if (a?.NC_FlooringCarpet) floors.push("Carpet");
     if (a?.NC_FlooringHardwood) floors.push("Hardwood");
@@ -157,7 +161,9 @@ const Subpage = () => {
     if (a?.NC_FlooringMarble) floors.push("Marble");
     if (a?.NC_FlooringSlate) floors.push("Slate");
     if (a?.NC_FlooringTile) floors.push("Tile");
-    text.push(`Flooring(${floors.join(", ")})`);
+    text.push(
+      floors?.length > 0 ? `Flooring(${floors.join(", ")})` : `Flooring`
+    );
     if (a?.NC_DoDishes) text.push(`Do Dishes`);
     if (a?.NC_ChangeBed) text.push(`Change Bed Lines`);
     if (a?.NC_RequestEcoCleaners) text.push("Eco Cleaners Requested");
@@ -540,9 +546,6 @@ const Subpage = () => {
                   ) : null}
                 </p>
                 <p className="text-grey-500 text-sm">
-                  {/* SF(2000), Beds(2), Baths(2), Take Vaccum Pets(+3), Clean
-                  Rafting(5), Flooring(Carpet, Hardwood) */}
-                  {/* <br /> */}
                   {getBuildingInformation(appointment)}
                 </p>
               </div>
