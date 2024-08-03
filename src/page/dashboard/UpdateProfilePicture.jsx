@@ -138,7 +138,7 @@ const UpdateProfilePicture = () => {
                 </div>
               </div>
             </div>
-            <div className="w-[300px] mx-auto">
+            <div className="sm:w-full w-[300px] mx-auto">
               <button
                 onClick={onSave}
                 className="main_btn border border-transparent text-center w-full mt-10 flex justify-center items-center bg-yellow-900 text-white text-xs font-semibold px-12 py-3 rounded-lg"

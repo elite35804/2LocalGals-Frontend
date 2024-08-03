@@ -104,6 +104,7 @@ const Subpage = () => {
       navigator.geolocation.getCurrentPosition(success, error);
     } else {
       console.log("Geolocation not supported");
+      actions.alert.showError({ message: "Geolocation not supported" });
     }
 
     function success(position) {
