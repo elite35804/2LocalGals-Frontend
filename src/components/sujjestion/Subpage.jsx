@@ -100,6 +100,7 @@ const Subpage = () => {
     setcheked(!check);
   };
   const getPosition = (job) => {
+    actions.alert.showError({ message: "TEST" });
     if (navigator?.geolocation) {
       navigator?.geolocation?.getCurrentPosition(success, error);
     } else {
