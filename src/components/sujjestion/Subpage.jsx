@@ -107,8 +107,10 @@ const Subpage = () => {
     }
 
     function success(position) {
+      
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
+      actions.alert.showSuccess({message: `latitude:${latitude}, longitude:${longitude}`})
       setLocation({ latitude, longitude });
       updateCoords({ latitude, longitude });
       getLocForContractor(job);
