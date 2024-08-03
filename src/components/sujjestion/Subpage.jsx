@@ -107,16 +107,19 @@ const Subpage = () => {
     }
 
     function success(position) {
-      
+      actions.alert.showError({ message: JSON.stringify(potision) });
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
-      actions.alert.showSuccess({message: `latitude:${latitude}, longitude:${longitude}`})
+      actions.alert.showSuccess({
+        message: `latitude:${latitude}, longitude:${longitude}`,
+      });
       setLocation({ latitude, longitude });
       updateCoords({ latitude, longitude });
       getLocForContractor(job);
     }
 
     function error(error) {
+      actions.alert.showError({ message: JSON.stringify(error) });
       switch (error.code) {
         case error.PERMISSION_DENIED:
           actions.alert.showError({
@@ -728,7 +731,7 @@ const Subpage = () => {
                   ? { background: "green" }
                   : { background: "grey" }
               }
-              className=" border border-transparent text-white text-lg px-28 py-2 rounded-lg transition-all delay-150 "
+              className=" border border-transparent text-white text-lg px-28 py-2 rounded-lg transition-all delay-150 whitespace-nowrap "
               disabled={show && check ? false : true}
             >
               Start Job
