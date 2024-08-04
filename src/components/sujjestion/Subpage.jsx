@@ -112,7 +112,7 @@ const Subpage = () => {
       }
 
       function success(position) {
-        actions.alert.showError({ message: JSON.stringify(potision) });
+        actions.alert.showError({ message: JSON.stringify(position) });
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         actions.alert.showSuccess({
@@ -740,7 +740,7 @@ const Subpage = () => {
                   ? { background: "green" }
                   : { background: "grey" }
               }
-              className=" border border-transparent text-white text-lg px-28 py-2 rounded-lg transition-all delay-150 whitespace-nowrap "
+              className="border border-transparent text-white text-lg sm:w-full w-64 py-2 rounded-lg transition-all delay-150 whitespace-nowrap "
               disabled={show && check ? false : true}
             >
               Start Job
