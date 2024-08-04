@@ -56,7 +56,7 @@ const Subpage = () => {
     getLocation(res);
     getPhones(res);
     setAppointment(res);
-    // getPosition(res);
+    getPosition(res);
     getPartners(res);
     return res;
   };
