@@ -315,7 +315,7 @@ const Subpage = () => {
   return (
     <div className="min-h-screen">
       {params.pathname == "/walk_through" ? null : <Header />}
-      <div className="px-3 mb-3 max-w-3xl">
+      <div className="container max-w-3xl">
         <div className="bg-white p-4 mt-5 rounded-xl">
           <div>
             <div className="status">

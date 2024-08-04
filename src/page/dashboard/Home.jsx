@@ -179,7 +179,7 @@ const Home = () => {
 
   return (
     <div className="login_page min-h-screen">
-      <div className="container">
+      <div className="px-7 max-w-[1440px] mx-auto">
         <div className="py-4">
           <div className="flex items-center">
             <h2 className="font-bold text-white text-base heading mt-3 ">

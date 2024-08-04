@@ -89,8 +89,8 @@ input[type="checkbox"]:not(:checked){
 
 @media screen and (max-width:767px) {
     .container {
-        padding-left: 28px;
-        padding-right: 28px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
     .march_date {
         flex-direction: column;

@@ -7,14 +7,16 @@ const WeeklyData = ({ report }) => {
   return (
     <div className="bg-white p-3 mt-3 w-full rounded-lg sm:w-full">
       <div className="flex items-end">
-        <div className="w-[25%] mt-3 flex flex-col gap-3">
+        <div className="w-[25%] mt-3 flex flex-col gap-3 overflow-hidden">
           <p className="text-yellow-900 font-semibold text-sm">Hours</p>
           <p className="text-yellow-900 font-semibold text-sm">Pay</p>
-          <p className="text-yellow-900 font-semibold text-sm">Hourly Rate</p>
+          <p className="text-yellow-900 font-semibold text-sm whitespace-nowrap">
+            Hourly Rate
+          </p>
         </div>
-        <div className="flex items-center gap-4 justify-end w-[75%]">
+        <div className="flex items-center gap-4 justify-end sm:w-[75%] w-full">
           <div className="flex flex-col justify-center items-center w-[25%]">
-            <span className="text-[#747474] sm:text-xs font-semibold">
+            <span className="text-[#6c5e5e] sm:text-xs font-semibold">
               Today
             </span>
             <img className="w-14" src={calender_img} alt="" />
@@ -31,7 +33,7 @@ const WeeklyData = ({ report }) => {
             </div>
           </div>
           <div className="flex flex-col justify-center items-center w-[25%]">
-            <span className="text-[#747474] sm:text-xs font-semibold">
+            <span className="text-[#747474] sm:text-xs font-semibold whitespace-nowrap">
               This Week
             </span>
             <img className="w-14" src={balance_img} alt="" />
@@ -48,7 +50,7 @@ const WeeklyData = ({ report }) => {
             </div>
           </div>
           <div className="flex flex-col justify-center items-center w-[25%]">
-            <span className="text-[#747474] sm:text-xs font-semibold">
+            <span className="text-[#747474] sm:text-xs font-semibold whitespace-nowrap text-ellipsis">
               Next Week
             </span>
             <img className="w-14" src={wallet_img} alt="" />

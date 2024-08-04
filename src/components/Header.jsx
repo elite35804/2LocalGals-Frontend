@@ -25,11 +25,11 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Link
             to={"/home"}
-            className="w-16 h-16 rounded-full bg-white flex justify-center items-center"
+            className="sm:w-10 w-16 sm:h-10 h-16 rounded-full bg-white flex justify-center items-center"
           >
             {state.contractor?.ContractorPic ? (
               <img
-                className="w-16 object-cover h-16 rounded-full"
+                className="sm:w-10 w-16 object-cover sm:h-10 h-16 rounded-full"
                 src={state.contractor?.ContractorPic}
                 alt="profile img"
               />
