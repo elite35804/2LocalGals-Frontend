@@ -56,7 +56,7 @@ const Subpage = () => {
     getLocation(res);
     getPhones(res);
     setAppointment(res);
-    getPosition(res);
+    // getPosition(res);
     getPartners(res);
     return res;
   };
@@ -108,23 +108,17 @@ const Subpage = () => {
         });
       } else {
         console.log("Geolocation not supported");
-        actions.alert.showError({ message: "Geolocation not supported" });
       }
 
       function success(position) {
-        actions.alert.showError({ message: JSON.stringify(position) });
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        actions.alert.showSuccess({
-          message: `latitude:${latitude}, longitude:${longitude}`,
-        });
         setLocation({ latitude, longitude });
         updateCoords({ latitude, longitude });
         getLocForContractor(job);
       }
 
       function error(error) {
-        actions.alert.showError({ message: error });
         switch (error.code) {
           case error.PERMISSION_DENIED:
             actions.alert.showError({
@@ -148,7 +142,6 @@ const Subpage = () => {
       }
     } catch (e) {
       console.log(e);
-      actions.alert.showError({ message: e });
     }
   };
 
@@ -322,7 +315,7 @@ const Subpage = () => {
   return (
     <div className="min-h-screen">
       {params.pathname == "/walk_through" ? null : <Header />}
-      <div className="container max-w-3xl">
+      <div className="px-3 mb-3 max-w-3xl">
         <div className="bg-white p-4 mt-5 rounded-xl">
           <div>
             <div className="status">

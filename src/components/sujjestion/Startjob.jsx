@@ -1054,7 +1054,7 @@ const Startjob = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="container max-w-3xl">
+      <div className="px-3 mb-3 max-w-3xl">
         <div className="bg-white p-4 mt-5 rounded-xl">
           <div className="status flex items-center justify-between">
             <p>
@@ -1461,7 +1461,7 @@ const Startjob = () => {
 
                 <hr className="border-dashed mt-4" />
 
-                <div className="container">
+                <div>
                   <div className="flex flex-col justify-between lg:block">
                     <div className="mt-12">
                       <h4 className="font-medium text-lg">Notes</h4>
