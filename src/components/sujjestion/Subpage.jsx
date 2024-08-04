@@ -104,7 +104,7 @@ const Subpage = () => {
       if (navigator?.geolocation) {
         navigator?.geolocation?.getCurrentPosition(success, error, {
           enableHighAccuracy: true,
-          timeout: 5000,
+          timeout: 20000,
         });
       } else {
         console.log("Geolocation not supported");
