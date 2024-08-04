@@ -49,24 +49,29 @@ const Startjob = () => {
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
   useEffect(() => {
-    const handleEvent = async (e) => {
-      if (isActive) return false;
-      const timers =
-        JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-      const timer = timers?.find((t) => t.appointmentId === params?.id);
-      e.preventDefault();
-      await updateDuration(timer?.duration);
-    };
-    window.addEventListener("beforeunload", handleEvent);
-    return () => {
-      window.removeEventListener("beforeunload", handleEvent);
-      const timers =
-        JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-      const timer = timers?.find((t) => t.appointmentId === params?.id);
-      if (!isActive && timer.duration) {
-        localStorage.setItem("active_timer", JSON.stringify(timer));
-      }
-    };
+    try {
+      const handleEvent = async (e) => {
+        if (isActive) return false;
+        const timers =
+          JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+        const timer = timers?.find((t) => t?.appointmentId === params?.id);
+        e.preventDefault();
+        await updateDuration(timer?.duration);
+      };
+      window.addEventListener("beforeunload", handleEvent);
+      return () => {
+        window.removeEventListener("beforeunload", handleEvent);
+        const timers =
+          JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+        const timer = timers?.find((t) => t?.appointmentId === params?.id);
+        if (!isActive && timer.duration) {
+          localStorage.setItem("active_timer", JSON.stringify(timer));
+        }
+      };
+    } catch (e) {
+      console.log(e);
+      actions.alert.showError({ message: e });
+    }
   }, []);
   useEffect(() => {
     if (state.contractor?.contractorID) {
@@ -75,40 +80,45 @@ const Startjob = () => {
   }, [state.contractor]);
 
   useEffect(() => {
-    if (seconds > 0) {
-      if (
-        seconds === 600 ||
-        seconds === 540 ||
-        seconds === 480 ||
-        seconds === 420 ||
-        seconds === 360 ||
-        seconds === 300 ||
-        seconds === 240 ||
-        seconds === 180 ||
-        seconds === 120 ||
-        seconds === 60 ||
-        seconds === 0
-      ) {
-        playAudio();
+    try {
+      if (seconds > 0) {
+        if (
+          seconds === 600 ||
+          seconds === 540 ||
+          seconds === 480 ||
+          seconds === 420 ||
+          seconds === 360 ||
+          seconds === 300 ||
+          seconds === 240 ||
+          seconds === 180 ||
+          seconds === 120 ||
+          seconds === 60 ||
+          seconds === 0
+        ) {
+          playAudio();
+        }
+        const timers =
+          JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+        const timer = timers?.find((t) => t?.appointmentId === params?.id);
+        var ms = moment(appointment?.endTime, "hh:mm A").diff(
+          moment(appointment?.startTime, "hh:mm A")
+        );
+        var d = moment.duration(ms);
+        if (timer) {
+          timer.time = seconds;
+          timer.duration = d?.asSeconds() - seconds;
+        } else {
+          timers.push({
+            appointmentId: params?.id,
+            time: seconds,
+            duration: d?.asSeconds() - seconds,
+          });
+        }
+        localStorage.setItem("2localgals-timers", JSON.stringify(timers));
       }
-      const timers =
-        JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-      const timer = timers?.find((t) => t.appointmentId === params?.id);
-      var ms = moment(appointment?.endTime, "hh:mm A").diff(
-        moment(appointment?.startTime, "hh:mm A")
-      );
-      var d = moment.duration(ms);
-      if (timer) {
-        timer.time = seconds;
-        timer.duration = d?.asSeconds() - seconds;
-      } else {
-        timers.push({
-          appointmentId: params?.id,
-          time: seconds,
-          duration: d?.asSeconds() - seconds,
-        });
-      }
-      localStorage.setItem("2localgals-timers", JSON.stringify(timers));
+    } catch (e) {
+      console.log(e);
+      actions.alert.showError({ message: e });
     }
   }, [seconds]);
 
