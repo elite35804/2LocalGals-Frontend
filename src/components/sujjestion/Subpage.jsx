@@ -100,48 +100,52 @@ const Subpage = () => {
     setcheked(!check);
   };
   const getPosition = (job) => {
-    actions.alert.showError({ message: "TEST" });
-    if (navigator?.geolocation) {
-      navigator?.geolocation?.getCurrentPosition(success, error);
-    } else {
-      console.log("Geolocation not supported");
-      actions.alert.showError({ message: "Geolocation not supported" });
-    }
-
-    function success(position) {
-      actions.alert.showError({ message: JSON.stringify(potision) });
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      actions.alert.showSuccess({
-        message: `latitude:${latitude}, longitude:${longitude}`,
-      });
-      setLocation({ latitude, longitude });
-      updateCoords({ latitude, longitude });
-      getLocForContractor(job);
-    }
-
-    function error(error) {
-      actions.alert.showError({ message: JSON.stringify(error) });
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          actions.alert.showError({
-            message: "User denied the request for Geolocation.",
-          });
-          break;
-        case error.POSITION_UNAVAILABLE:
-          actions.alert.showError({
-            message: "Location information is unavailable.",
-          });
-          break;
-        case error.TIMEOUT:
-          actions.alert.showError({
-            message: "The request to get user location timed out.",
-          });
-          break;
-        case error.UNKNOWN_ERROR:
-          actions.alert.showError({ message: "An unknown error occurred." });
-          break;
+    try {
+      if (navigator?.geolocation) {
+        navigator?.geolocation?.getCurrentPosition(success, error);
+      } else {
+        console.log("Geolocation not supported");
+        actions.alert.showError({ message: "Geolocation not supported" });
       }
+
+      function success(position) {
+        actions.alert.showError({ message: JSON.stringify(potision) });
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        actions.alert.showSuccess({
+          message: `latitude:${latitude}, longitude:${longitude}`,
+        });
+        setLocation({ latitude, longitude });
+        updateCoords({ latitude, longitude });
+        getLocForContractor(job);
+      }
+
+      function error(error) {
+        actions.alert.showError({ message: error });
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            actions.alert.showError({
+              message: "User denied the request for Geolocation.",
+            });
+            break;
+          case error.POSITION_UNAVAILABLE:
+            actions.alert.showError({
+              message: "Location information is unavailable.",
+            });
+            break;
+          case error.TIMEOUT:
+            actions.alert.showError({
+              message: "The request to get user location timed out.",
+            });
+            break;
+          case error.UNKNOWN_ERROR:
+            actions.alert.showError({ message: "An unknown error occurred." });
+            break;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      actions.alert.showError({ message: e });
     }
   };
 
