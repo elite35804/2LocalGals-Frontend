@@ -105,12 +105,14 @@ const Home = () => {
         moment(p?.Date).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD")
     );
     payments.map((p) => {
-      today.pay += p?.Total;
-      today.hourlyRate += p?.AveragePayRate;
+      p.Details.map((d) => {
+        today.pay += Math.round(
+          d.HourRate * parseInt(d?.Hours) * 0.92 + d.ServiceFee + d.Tips
+        );
+        today.hours += parseInt(d?.Hours);
+      });
     });
-    today.hourlyRate = today.hourlyRate / payments.length || 0;
-    today.hours = today.pay / today.hourlyRate || 0;
-    today.pay = Math.round(today.pay * 0.92);
+    today.hourlyRate = Math.round(today.pay / today.hours || 0);
     Object.keys(today).map((key) => (today[key] = Math.round(today[key])));
     const thisWeek = {
       hours: 0,
@@ -125,12 +127,14 @@ const Home = () => {
           moment().endOf("isoweek").format("YYYY-MM-DD")
     );
     thisWeekPayments.map((p) => {
-      thisWeek.pay += p?.Total;
-      thisWeek.hourlyRate += p?.AveragePayRate;
+      p.Details.map((d) => {
+        thisWeek.pay += Math.round(
+          d.HourRate * parseInt(d?.Hours) * 0.92 + d.ServiceFee + d.Tips
+        );
+        thisWeek.hours += parseInt(d?.Hours);
+      });
     });
-    thisWeek.hourlyRate = thisWeek.hourlyRate / thisWeekPayments.length || 0;
-    thisWeek.hours = thisWeek.pay / thisWeek.hourlyRate || 0;
-    thisWeek.pay = Math.round(thisWeek.pay * 0.92);
+    thisWeek.hourlyRate = Math.round(thisWeek.pay / thisWeek.hours || 0);
     Object.keys(thisWeek).map(
       (key) => (thisWeek[key] = Math.round(thisWeek[key]))
     );
@@ -147,12 +151,14 @@ const Home = () => {
           moment().endOf("isoweek").add(7, "days").format("YYYY-MM-DD")
     );
     nextWeekPayments.map((p) => {
-      nextWeek.pay += p?.Total;
-      nextWeek.hourlyRate += p?.AveragePayRate;
+      p.Details.map((d) => {
+        nextWeek.pay += Math.round(
+          d.HourRate * parseInt(d?.Hours) * 0.92 + d.ServiceFee + d.Tips
+        );
+        nextWeek.hours += parseInt(d?.Hours);
+      });
     });
-    nextWeek.hourlyRate = nextWeek.hourlyRate / nextWeekPayments.length || 0;
-    nextWeek.hours = nextWeek.pay / nextWeek.hourlyRate || 0;
-    nextWeek.pay = Math.round(nextWeek.pay * 0.92);
+    nextWeek.hourlyRate = Math.round(nextWeek.pay / nextWeek.hours || 0);
     Object.keys(nextWeek).map(
       (key) => (nextWeek[key] = Math.round(nextWeek[key]))
     );
