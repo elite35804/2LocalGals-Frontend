@@ -102,7 +102,10 @@ const Subpage = () => {
   const getPosition = (job) => {
     try {
       if (navigator?.geolocation) {
-        navigator?.geolocation?.getCurrentPosition(success, error);
+        navigator?.geolocation?.getCurrentPosition(success, error, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+        });
       } else {
         console.log("Geolocation not supported");
         actions.alert.showError({ message: "Geolocation not supported" });
