@@ -34,7 +34,7 @@ const Header = () => {
                 alt="profile img"
               />
             ) : (
-              <Person style={{ fontSize: "45px", color: "gray" }} />
+              <Person style={{ fontSize: "40px", color: "gray" }} />
             )}
           </Link>
           <Popover>
