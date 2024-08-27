@@ -4,7 +4,6 @@ import { API } from "@/utils/Api";
  *
  */
 export const updateContractorInfo = async ({ state, actions }, data) => {
-  console.log(data, "data");
   try {
     const res = await API(
       "UpdateContractorInfo/" + data?.contractorId,
@@ -31,7 +30,6 @@ export const updateContractorInfo = async ({ state, actions }, data) => {
 export const getContractorInfo = async ({ state, actions }, id) => {
   try {
     const res = await API("GetContractorInfo/" + id, "get");
-    console.log(res, "res");
     if (res?.contractorID === state.currentUser?.contractorID) {
       state.contractor = res;
     }
@@ -49,10 +47,8 @@ export const getContractorInfo = async ({ state, actions }, id) => {
 };
 
 export const addUnavailability = async ({ state, actions }, data) => {
-  console.log(data, "data");
   try {
     const res = await API("Schedule/AddUnavailibility", "post", data);
-    console.log(res, "res");
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {
@@ -67,10 +63,12 @@ export const addUnavailability = async ({ state, actions }, data) => {
 };
 
 export const updateWalkThrough = async ({ state, actions }, data) => {
-  console.log(data, "data");
   try {
-    const res = await API(`Contractor/${data.id}/Walkthrough/${data.checked}`, "post", {});
-    console.log(res, "res");
+    const res = await API(
+      `Contractor/${data.id}/Walkthrough/${data.checked}`,
+      "post",
+      {}
+    );
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {
@@ -83,7 +81,6 @@ export const updateWalkThrough = async ({ state, actions }, data) => {
     throw new Error(e?.message);
   }
 };
-
 
 export const deleteUnavailability = async ({ state, actions }, id) => {
   try {
@@ -129,7 +126,7 @@ export const getUnavailabilities = async ({ state, actions }, data) => {
 export const getPayments = async ({ state, actions }, data) => {
   try {
     const res = await API(
-      `Payment/GetPaymentByDateRange?StartDate=` +
+      `Payment/GetPaymentByDateRange/${data?.id}?StartDate=` +
         data.StartDate +
         `&EndDate=` +
         data.EndDate,

@@ -23,7 +23,7 @@ function App() {
 
   const onInitialize = async () => {
     try {
-      await actions.initialize(navigation);
+      await actions.initialize();
     } catch (e) {
       console.log(e);
     }

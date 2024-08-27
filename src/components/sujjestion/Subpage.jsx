@@ -13,6 +13,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
+import usePerfectInterval from "../../hooks/intervalHook.js";
 
 const Subpage = () => {
   const params = useParams();
@@ -44,19 +45,26 @@ const Subpage = () => {
           { latitude: loc?.lat, longitude: loc?.lng },
           location
         );
-        console.log(distance, "distance");
         setIsValidLocation(distance <= 100);
       }
     }
   }, [location, loc]);
 
-  const getAppointment = async () => {
+  usePerfectInterval(async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
-    console.log(res, "res");
+
     getLocation(res);
     getPhones(res);
     setAppointment(res);
-    // getPosition(res);
+    getPartners(res);
+  }, 5000);
+
+  const getAppointment = async () => {
+    const res = await actions.appointment.getAppointmentById(params?.id);
+    getLocation(res);
+    getPhones(res);
+    setAppointment(res);
+    getPosition(res);
     getPartners(res);
     return res;
   };
@@ -90,7 +98,6 @@ const Subpage = () => {
     if (appointment?.alternatePhoneTwo?.length > 0) {
       list.push(appointment?.alternatePhoneTwo);
     }
-    console.log(list, "list");
     setPhones(list);
   };
   const handleCheckboxChange = () => {
@@ -219,11 +226,35 @@ const Subpage = () => {
     return text.join(", ");
   };
 
+  function getMobileOperatingSystem() {
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    console.log(userAgent, "userAgent");
+    // Windows Phone must come first because its UA also contains "Android"
+    if (/windows phone/i.test(userAgent)) {
+      return "Windows Phone";
+    }
+    if (/android/i.test(userAgent)) {
+      return "Android";
+    }
+    // iOS detection from: http://stackoverflow.com/a/9039885/177710
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      return "iOS";
+    }
+    return "unknown";
+  }
+
   const onClickLocation = () => {
-    window.open(
-      `https://maps.apple.com?q=${getLocation(appointment)}`,
-      "_blank"
-    );
+    if (getMobileOperatingSystem() === "iOS") {
+      window.open(
+        `https://maps.apple.com?q=${getLocation(appointment)}`,
+        "_blank"
+      );
+    } else {
+      window.open(
+        `https://www.google.com/maps/dir/${getLocation(appointment)}`,
+        "_blank"
+      );
+    }
   };
 
   const getLocForContractor = async (job) => {
@@ -258,6 +289,13 @@ const Subpage = () => {
     return R * c; // Distance in meters
   }
 
+  const getStarted = async () => {
+    const res = await actions.appointment.startJob(params?.id);
+    if (res) {
+      actions.alert.showSuccess({ message: "Job started successfully!" });
+    }
+  };
+
   const onStart = async () => {
     if (
       moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
@@ -282,7 +320,6 @@ const Subpage = () => {
         { latitude: loc?.lat, longitude: loc?.lng },
         location
       );
-      console.log(distance, "distance");
 
       if (distance >= 100) {
         setOpenGeofence(true);
@@ -293,10 +330,12 @@ const Subpage = () => {
       );
       var duration = moment.duration(moment(startTime).diff(new Date()));
       var minutes = duration.asMinutes();
-      if (minutes < 10) {
+      console.log(minutes, "minutes");
+      if (Math.abs(minutes) < 10) {
         setOpenHour(true);
         return false;
       }
+      getStarted();
       navigate(`/Startjob/${params?.id}`);
     } else {
       actions.alert.showError({
@@ -594,7 +633,7 @@ const Subpage = () => {
               <div className="space-y-1">
                 <p className=" font-medium text-lg">Payment Type:</p>
                 <p className="text-[#a1d6f1] text-sm">
-                  <u>{appointment?.paymentType}</u>
+                  <u>{`${appointment?.paymentType} (Collect $${appointment?.total})`}</u>
                 </p>
               </div>
               <div>
@@ -759,6 +798,7 @@ const Subpage = () => {
           <Button
             onClick={() => {
               setOpenHour(false);
+              getStarted();
               navigate(`/Startjob/${params?.id}`);
             }}
           >
@@ -830,6 +870,7 @@ const Subpage = () => {
                 setOpenHour(true);
                 return false;
               }
+              getStarted();
               navigate(`/Startjob/${params?.id}`);
             }}
           >

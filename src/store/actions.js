@@ -89,6 +89,21 @@ export const getUser = async ({ state, actions }) => {
   }
 };
 
+const sleep = (waitTimeInMs) =>
+  new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+export const recursiveContractor = async ({ state, actions }) => {
+  while (true) {
+    if (!state.contractor?.active) {
+      actions.logout();
+      window.location.href = "/";
+      break;
+    } else {
+      await sleep(5000);
+      await actions.user.getContractorInfo(state.currentUser?.contractorID);
+    }
+  }
+};
+
 export const initialize = async ({ state, actions }) => {
   try {
     const token = await getStoredAuthToken();
@@ -97,6 +112,7 @@ export const initialize = async ({ state, actions }) => {
     if (state.authToken) {
       await actions.getUser();
       await actions.user.getContractorInfo(state.currentUser?.contractorID);
+      actions.recursiveContractor();
     }
   } catch (e) {
     if (e?.message === "Unauthorized") {

@@ -11,6 +11,7 @@ import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
 import { Link, useLocation } from "react-router-dom";
 import SettingsIcon from "@mui/icons-material/Settings";
 import profile_img from "../assets/profile-2.png";
+import logo from "../assets/logo.png";
 import HomeIcon from "@mui/icons-material/Home";
 import Person from "@mui/icons-material/Person";
 import { useActions, useAppState } from "@/store";
@@ -34,7 +35,11 @@ const Header = () => {
                 alt="profile img"
               />
             ) : (
-              <Person style={{ fontSize: "40px", color: "gray" }} />
+              <img
+                className="sm:w-10 w-16 object-cover sm:h-10 h-16 rounded-full"
+                src={logo}
+                alt="profile img"
+              />
             )}
           </Link>
           <Popover>

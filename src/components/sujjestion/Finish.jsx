@@ -27,7 +27,6 @@ const Finish = () => {
 
   const getAppointment = async () => {
     const res = await actions.appointment.getAppointmentById(params?.id);
-    console.log(res, "res");
     if (res?.TakePic) {
       setOptions([
         {
@@ -39,7 +38,7 @@ const Finish = () => {
           isChecked: false,
         },
         {
-          label: "Did the customer do a walthrough, if possible?",
+          label: "Did the customer do a walkthrough, if possible?",
           isChecked: false,
         },
         {
@@ -54,7 +53,7 @@ const Finish = () => {
           isChecked: false,
         },
         {
-          label: "Did the customer do a walthrough, if possible?",
+          label: "Did the customer do a walkthrough, if possible?",
           isChecked: false,
         },
         {

@@ -6,10 +6,26 @@ import { useNavigate } from "react-router-dom";
 import key from "../assets/key.png";
 import location_icon from "../assets/location.png";
 
-const Schedule = ({ appointments, date, currentAppointment, location }) => {
+const Schedule = ({ appointments, date, currentAppointment }) => {
   let pay = 0;
   appointments?.map((a) => (pay += a?.AproxPay));
   const navigate = useNavigate();
+  function getMobileOperatingSystem() {
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    console.log(userAgent, "userAgent");
+    // Windows Phone must come first because its UA also contains "Android"
+    if (/windows phone/i.test(userAgent)) {
+      return "Windows Phone";
+    }
+    if (/android/i.test(userAgent)) {
+      return "Android";
+    }
+    // iOS detection from: http://stackoverflow.com/a/9039885/177710
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      return "iOS";
+    }
+    return "unknown";
+  }
   const getLocation = (e, a) => {
     e.stopPropagation();
     let text = [];
@@ -17,7 +33,15 @@ const Schedule = ({ appointments, date, currentAppointment, location }) => {
     if (a?.locationCity) text.push(a?.locationCity);
     if (a?.locationState) text.push(a?.locationState);
     if (a?.locationZip) text.push(a?.locationZip);
-    window.open(`https://maps.apple.com?q=${text.join(", ")}`, "_blank");
+    console.log(getMobileOperatingSystem());
+    if (getMobileOperatingSystem() === "iOS") {
+      window.open(`https://maps.apple.com?q=${text.join(", ")}`, "_blank");
+    } else {
+      window.open(
+        `https://www.google.com/maps/dir/${text.join(", ")}`,
+        "_blank"
+      );
+    }
   };
 
   const onClickSchedule = async (appointment) => {
@@ -47,48 +71,41 @@ const Schedule = ({ appointments, date, currentAppointment, location }) => {
             className="cursor-pointer relative "
           >
             <div
-              className={`flex sm:justify-between border-b border-dashed py-2 p-3 hover:bg-[#cccccc45] ${
+              className={`grid sm:grid-cols-1 grid-cols-3 gap-3 border-b border-dashed py-2 p-3 hover:bg-[#cccccc45] ${
                 appointment?.AppointmentId ===
                   currentAppointment?.AppointmentId && "bg-green-200"
               }`}
             >
-              <div className="w-[33%] sm:w-[37%] ">
-                <div className="sm:flex sm:items-center sm:gap-7">
-                  <p className="text-yellow-900 font-semibold text-sm">Start</p>
-                  <span className="sm:text-[12px]">
-                    {appointment?.startTime}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <p className="text-yellow-900 font-semibold text-sm">
-                    Customer
-                  </p>
-                  <span className="text-grey-500 text-xs overflow-hidden whitespace-nowrap text-ellipsis pr-3">
-                    {appointment?.CustomerName}
-                  </span>
-                </div>
+              <div className="sm:flex sm:items-center sm:gap-4">
+                <p className="text-yellow-900 font-semibold text-sm">Start</p>
+                <span className="sm:text-[12px]">{appointment?.startTime}</span>
               </div>
-              <div className="w-[33%] sm:w-[30%]">
-                <div className="sm:flex sm:items-center sm:gap-4">
-                  <p className="text-yellow-900 font-semibold text-sm">End</p>
-                  <span className="sm:text-[12px]">{appointment?.endTime}</span>
-                </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-grey-500 text-xs">
-                    {appointment?.CustomerCity}
-                  </span>
-                </div>
+              <div className="sm:flex sm:items-center sm:gap-4">
+                <p className="text-yellow-900 font-semibold text-sm">End</p>
+                <span className="sm:text-[12px]">{appointment?.endTime}</span>
               </div>
-              <div className="w-[33%] sm:w-[28%]">
-                <div className="sm:flex sm:items-center sm:justify-between">
-                  <p className="text-yellow-900 font-semibold text-sm">Hrs</p>
-                  <span className="sm:text-[12px]">{appointment?.Hours}</span>
-                </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="text-grey-500 text-xs">
-                    {appointment?.Miles}
-                  </span>
-                </div>
+              <div className="sm:flex sm:items-center sm:gap-4">
+                <p className="text-yellow-900 font-semibold text-sm">Hrs</p>
+                <span className="sm:text-[12px]">{appointment?.Hours}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-yellow-900 font-semibold text-sm">
+                  Customer
+                </p>
+                <span className="text-grey-500 text-xs overflow-hidden whitespace-nowrap text-ellipsis pr-3">
+                  {appointment?.CustomerName}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-grey-500 text-xs">
+                  {appointment?.CustomerCity}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-grey-500 text-xs">
+                  {appointment?.Miles}
+                </span>
               </div>
             </div>
             {appointment.Keys && (

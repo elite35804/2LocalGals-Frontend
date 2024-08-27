@@ -21,6 +21,7 @@ import Button from "@mui/material/Button";
 import "./Style.css";
 import warning from "../../assets/warning.mp3";
 
+let timesForSeconds = 0;
 const Startjob = () => {
   const params = useParams();
   const state = useAppState();
@@ -38,46 +39,28 @@ const Startjob = () => {
   const [selected, setSelected] = useState(null);
   const [notes, setNotes] = useState("");
   const [images, setImages] = useState([]);
-  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [completed, setCompleted] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [phones, setPhones] = useState([]);
   const [isShowPhone, setShowPhone] = useState(false);
   const [isShowSms, setShowSms] = useState(false);
+  const [times, setTimes] = useState(0);
   const circleRef = useRef(null);
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
   useEffect(() => {
-    try {
-      const handleEvent = async (e) => {
-        if (isActive) return false;
-        const timers =
-          JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-        const timer = timers?.find((t) => t?.appointmentId === params?.id);
-        e.preventDefault();
-        await updateDuration(timer?.duration);
-      };
-      window.addEventListener("beforeunload", handleEvent);
-      return () => {
-        window.removeEventListener("beforeunload", handleEvent);
-        const timers =
-          JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-        const timer = timers?.find((t) => t?.appointmentId === params?.id);
-        if (!isActive && timer.duration) {
-          localStorage.setItem("active_timer", JSON.stringify(timer));
-        }
-      };
-    } catch (e) {
-      console.log(e);
-      actions.alert.showError({ message: e });
-    }
-  }, []);
-  useEffect(() => {
-    if (state.contractor?.contractorID) {
+    if (state.contractor?.contractorID && times === 0) {
       getAppointment();
+      setTimes(1);
+      setInterval(async () => {
+        const res = await actions.appointment.getAppointmentById(params?.id);
+        setAppointment(res);
+      }, 5000);
     }
   }, [state.contractor]);
+
+  const sleep = (waitTimeInMs) =>
+    new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 
   useEffect(() => {
     try {
@@ -97,24 +80,36 @@ const Startjob = () => {
         ) {
           playAudio();
         }
-        const timers =
-          JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-        const timer = timers?.find((t) => t?.appointmentId === params?.id);
-        var ms = moment(appointment?.endTime, "hh:mm A").diff(
-          moment(appointment?.startTime, "hh:mm A")
-        );
-        var d = moment.duration(ms);
-        if (timer) {
-          timer.time = seconds;
-          timer.duration = d?.asSeconds() - seconds;
-        } else {
-          timers.push({
-            appointmentId: params?.id,
-            time: seconds,
-            duration: d?.asSeconds() - seconds,
-          });
-        }
-        localStorage.setItem("2localgals-timers", JSON.stringify(timers));
+        // const timers =
+        //   JSON.parse(localStorage.getItem("2localgals-timers")) || [];
+        // const timer = timers?.find((t) => t?.appointmentId === params?.id);
+        // var ms = moment(appointment?.endTime, "hh:mm A").diff(
+        //   moment(appointment?.startTime, "hh:mm A")
+        // );
+        // var d = moment.duration(ms);
+        // if (timer) {
+        //   timer.time = seconds;
+        //   timer.duration = d?.asSeconds() - seconds;
+        // } else {
+        //   timers.push({
+        //     appointmentId: params?.id,
+        //     time: seconds,
+        //     duration: d?.asSeconds() - seconds,
+        //   });
+        // }
+        // localStorage.setItem("2localgals-timers", JSON.stringify(timers));
+      }
+      if (
+        appointment?.AppointmentId &&
+        !appointment?.JobCompleted &&
+        timesForSeconds === 0
+      ) {
+        updateDuration();
+      }
+      if (timesForSeconds === 4) {
+        timesForSeconds = 0;
+      } else {
+        timesForSeconds++;
       }
     } catch (e) {
       console.log(e);
@@ -123,13 +118,17 @@ const Startjob = () => {
   }, [seconds]);
 
   useEffect(() => {
-    if (appointment) {
-      getDuration();
-      getPhones(appointment);
-    }
+    getLogs();
   }, [appointment]);
 
-  useEffect(() => {}, [generalItems, deepItems]);
+  const getLogs = async () => {
+    if (appointment?.Partners?.length > 0) {
+      while (appointment?.Partners?.length > 0) {
+        await getJobLogsByPartners();
+        await sleep(5000);
+      }
+    }
+  };
 
   const getPhones = async (appointment) => {
     const list = [];
@@ -158,7 +157,6 @@ const Startjob = () => {
     const generalItems = getGeneralItems(res);
     const deepItems = getDeepItems(res);
     const { deep, general } = await getJobLogs();
-    // // UPDATE LOGIC
     if (generalItems?.length > 0 || deepItems?.length > 0) {
       const items = [...generalItems];
       items.map((i) =>
@@ -187,7 +185,6 @@ const Startjob = () => {
             item.options.filter((o) => o?.isCompleted)?.length ===
             item?.options?.length)
       );
-      console.log(items, "items");
       setGeneralItems(items);
       const items1 = [...deepItems];
       items1.map((i) => {
@@ -203,6 +200,19 @@ const Startjob = () => {
         }
       });
       setDeepItems(items1);
+    }
+    const res1 = await actions.appointment.getNotesAndPhotos(params?.id);
+    if (res1?.Notes) setNotes(res1?.Notes);
+    if (res1?.attachments?.length > 0) {
+      const images = [];
+      res1?.attachments?.map((a) =>
+        images.push({ id: a?.id, path: Settings.folder_path + a?.ImageURL })
+      );
+      setImages(images);
+    }
+    if (res?.AppointmentId) {
+      getDuration(res);
+      getPhones(res);
     }
   };
 
@@ -222,7 +232,69 @@ const Startjob = () => {
     }
   };
 
-  const getDuration = () => {
+  const getJobLogsByPartners = async () => {
+    let deep = [],
+      general = [];
+    for (let i = 0; i < appointment?.Partners?.length; i++) {
+      const partner = appointment?.Partners[i];
+      const res = await actions.appointment.getJobLogs({
+        AppointmentId: partner?.AppointmentId,
+        contractorID: partner?.ContractorId,
+        isGeneral: false,
+      });
+      const res1 = await actions.appointment.getJobLogs({
+        AppointmentId: params?.id,
+        contractorID: state.currentUser?.contractorID,
+        isGeneral: true,
+      });
+      deep = [...deep, ...res];
+      general = [...general, ...res1];
+    }
+    const items = [...generalItems];
+    items.map((i) =>
+      i.options?.map((o) => {
+        if (
+          general.find(
+            (g) =>
+              g?.Checked &&
+              g?.Content === i?.label &&
+              g?.SubContent === o?.label
+          ) ||
+          deep.find(
+            (g) =>
+              g?.Checked &&
+              g?.Content === i?.label &&
+              g?.SubContent === o?.label
+          )
+        ) {
+          o.isCompleted = true;
+        }
+      })
+    );
+    items.map(
+      (item) =>
+        (item.isCompleted =
+          item.options.filter((o) => o?.isCompleted)?.length ===
+          item?.options?.length)
+    );
+    setGeneralItems(items);
+    const items1 = [...deepItems];
+    items1.map((i) => {
+      if (
+        deep.find(
+          (g) => g?.Checked && g?.Content === i?.label && !g?.SubContent
+        ) ||
+        general.find(
+          (g) => g?.Checked && g?.Content === i?.label && !g?.SubContent
+        )
+      ) {
+        i.isCompleted = true;
+      }
+    });
+    setDeepItems(items1);
+  };
+
+  const getDuration = async (appointment) => {
     var ms = moment(appointment?.endTime, "hh:mm A").diff(
       moment(appointment?.startTime, "hh:mm A")
     );
@@ -231,6 +303,11 @@ const Startjob = () => {
       setSeconds(d?.asSeconds() - appointment?.Duration);
     } else {
       setSeconds(d?.asSeconds());
+      if (appointment && !appointment?.JobCompleted) {
+        await handleStart();
+        const res = await actions.appointment.getAppointmentById(params?.id);
+        setAppointment(res);
+      }
     }
   };
 
@@ -245,14 +322,12 @@ const Startjob = () => {
 
   // Handle pause button click
   const handlePause = async () => {
-    console.log(seconds);
     setIsActive(false);
     setElapsedTime((seconds - startTime) / 1000);
     updateDuration();
   };
 
-  const updateDuration = async (duration) => {
-    console.log(duration, "duration");
+  const updateDuration = async () => {
     var ms = moment(appointment?.endTime, "hh:mm A").diff(
       moment(appointment?.startTime, "hh:mm A")
     );
@@ -260,17 +335,17 @@ const Startjob = () => {
 
     await actions.appointment.updateJobDetail({
       id: params?.id,
-      duration: duration || d.asSeconds() - seconds,
+      duration: d.asSeconds() - seconds,
       pauseTime: new Date(),
     });
   };
 
-  const getStarted = async () => {
-    const res = await actions.appointment.startJob(params?.id);
-    if (res) {
-      actions.alert.showSuccess({ message: "Job started successfully!" });
-    }
-  };
+  // const getStarted = async () => {
+  //   const res = await actions.appointment.startJob(params?.id);
+  //   if (res) {
+  //     actions.alert.showSuccess({ message: "Job started successfully!" });
+  //   }
+  // };
 
   // Handle reset button click
   const handleStart = async () => {
@@ -280,21 +355,22 @@ const Startjob = () => {
     );
     var d = moment.duration(ms);
 
-    if (seconds === d?.asSeconds()) {
-      getStarted();
-    }
+    // if (seconds === d?.asSeconds()) {
+    //   getStarted();
+    // }
     if (seconds === 0) {
       // setSeconds(initialDuration);
     }
     setStartTime(seconds); // adjust start time based on elapsed time
     setElapsedTime(0);
 
-    await actions.appointment.updateJobDetail({
-      id: params?.id,
-      duration: d.asSeconds() - seconds,
-      lastStartTime: new Date(),
-    });
-    // No need to reset seconds here, as it's already managed by isActive state
+    // await actions.appointment.updateJobDetail({
+    //   id: params?.id,
+    //   duration: d.asSeconds() - seconds,
+    //   lastStartTime: new Date(),
+    // });
+    // const res = await actions.appointment.getAppointmentById(params?.id);
+    // setAppointment(res);
   };
 
   // Handle checkbox toggle
@@ -312,6 +388,42 @@ const Startjob = () => {
             i?.options?.length)
       );
       setGeneralItems(items);
+      if (!isGeneral && child) {
+        const list = [...deepItems];
+        list.map((l) => {
+          if (l?.label?.includes("Blinds")) {
+            l.isCompleted =
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label === "Blinds")
+              )?.length ===
+              items?.filter((i) =>
+                i?.options?.find((o) => o?.label === "Blinds" && o?.isCompleted)
+              )?.length;
+          } else {
+            l.isCompleted =
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label === l?.label)
+              )?.length ===
+              items?.filter((i) =>
+                i?.options?.find((o) => o?.label === l?.label && o?.isCompleted)
+              )?.length;
+          }
+          if (l?.isCompleted) {
+            actions.appointment.updateJobLog({
+              contractorId: state.currentUser?.contractorID,
+              customerId: appointment?.CustomerId,
+              appointmentId: appointment?.AppointmentId,
+              content: l?.label,
+              SubContent: "",
+              checked: l?.isCompleted,
+              checkedBy: state.currentUser?.username,
+              isGeneral: false,
+              createdAtStr: moment().format("YYYY-MM-DDThh:mm A"),
+            });
+          }
+        });
+        setDeepItems(list);
+      }
     } else {
       const items = isGeneral ? [...generalItems] : [...deepItems];
       items.find((i) => i.label === parent.label).isCompleted = checked;
@@ -435,7 +547,7 @@ const Startjob = () => {
             isCompleted: false,
           },
           {
-            label: "Dust pictures frames carefully",
+            label: "Dust picture frames carefully",
             isCompleted: false,
           },
           {
@@ -443,7 +555,7 @@ const Startjob = () => {
             isCompleted: false,
           },
           {
-            label: "dust louvered doors, if needed",
+            label: "Dust louvered doors, if needed",
             isCompleted: false,
           },
           {
@@ -539,7 +651,7 @@ const Startjob = () => {
             isCompleted: false,
           },
           {
-            label: "Title Walls/Bathtubs/Showers cleaned",
+            label: "Tile Walls/Bathtubs/Showers cleaned",
             isCompleted: false,
           },
           {
@@ -547,7 +659,7 @@ const Startjob = () => {
             isCompleted: false,
           },
           {
-            label: "Floors washed and disinfacted",
+            label: "Floors washed and disinfected",
             isCompleted: false,
           },
           {
@@ -560,7 +672,7 @@ const Startjob = () => {
             isCompleted: false,
           },
           {
-            label: "Toilet cleaned/disinfected inside/ou",
+            label: "Toilet cleaned/disinfected inside/out",
             isCompleted: false,
           },
           {
@@ -676,10 +788,10 @@ const Startjob = () => {
         label: "Wipe out Microwave",
         isCompleted: false,
       },
-      {
-        label: "Do any dishes or place in dishwasher",
-        isCompleted: false,
-      },
+      // {
+      //   label: "Do any dishes or place in dishwasher",
+      //   isCompleted: false,
+      // },
       {
         label: "Clean/disinfect sink",
         isCompleted: false,
@@ -725,12 +837,12 @@ const Startjob = () => {
       options.push({ label: "Vent Covers", isCompleted: false, deep: true });
     if (a?.DC_InsideVents)
       options.push({ label: "Inside Vents", isCompleted: false, deep: true });
-    if (a?.DC_BathroomCuboards)
-      options.push({
-        label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
-        isCompleted: false,
-        deep: true,
-      });
+    // if (a?.DC_BathroomCuboards)
+    //   options.push({
+    //     label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
+    //     isCompleted: false,
+    //     deep: true,
+    //   });
     if (a?.DC_KitchenCuboards)
       options.push({
         label: `Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`,
@@ -788,7 +900,7 @@ const Startjob = () => {
         isCompleted: false,
       },
       {
-        label: "Dust pictures frames carefullyy",
+        label: "Dust picture frames carefully",
         isCompleted: false,
       },
       {
@@ -850,37 +962,37 @@ const Startjob = () => {
       options1.push({ label: "Vent Covers", isCompleted: false, deep: true });
     if (a?.DC_InsideVents)
       options1.push({ label: "Inside Vents", isCompleted: false, deep: true });
-    if (a?.DC_BathroomCuboards)
-      options1.push({
-        label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
-        isCompleted: false,
-        deep: true,
-      });
-    if (a?.DC_KitchenCuboards)
-      options1.push({
-        label: `Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`,
-        isCompleted: false,
-        deep: true,
-      });
-    if (a?.DC_Pantry)
-      options1.push({ label: "Clean Pantry", isCompleted: false, deep: true });
-    if (a?.DC_Oven)
-      options1.push({ label: "Inside Oven", isCompleted: false, deep: true });
-    if (a?.DC_Refrigerator)
-      options1.push({
-        label: "Inside Fridge/Freezer",
-        isCompleted: false,
-        deep: true,
-      });
-    if (a?.DC_LaundryRoom)
-      options1.push({
-        label: "Clean Laundry Room",
-        isCompleted: false,
-        deep: true,
-      });
+    // if (a?.DC_BathroomCuboards)
+    //   options1.push({
+    //     label: `Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`,
+    //     isCompleted: false,
+    //     deep: true,
+    //   });
+    // if (a?.DC_KitchenCuboards)
+    //   options1.push({
+    //     label: `Kitchen Cupboards (${a?.DC_KitchenCuboardsDetail})`,
+    //     isCompleted: false,
+    //     deep: true,
+    //   });
+    // if (a?.DC_Pantry)
+    //   options1.push({ label: "Clean Pantry", isCompleted: false, deep: true });
+    // if (a?.DC_Oven)
+    //   options1.push({ label: "Inside Oven", isCompleted: false, deep: true });
+    // if (a?.DC_Refrigerator)
+    //   options1.push({
+    //     label: "Inside Fridge/Freezer",
+    //     isCompleted: false,
+    //     deep: true,
+    //   });
+    // if (a?.DC_LaundryRoom)
+    //   options1.push({
+    //     label: "Clean Laundry Room",
+    //     isCompleted: false,
+    //     deep: true,
+    //   });
 
     const otherRoom = {
-      label: `Othre Rooms/Areas`,
+      label: `Other Rooms/Areas`,
       isCompleted: false,
       options: options1,
     };
@@ -944,8 +1056,10 @@ const Startjob = () => {
     if (a?.DC_Refrigerator)
       items.push({ label: "Fridge/Freezer", isCompleted: false });
     if (a?.NC_Organize) items.push({ label: "Organize", isCompleted: false });
-    if (a?.DC_OtherOne) items.push({ label: "Other 1", isCompleted: false });
-    if (a?.DC_OtherTwo) items.push({ label: "Other 2", isCompleted: false });
+    if (a?.DC_OtherOne)
+      items.push({ label: a?.DC_OtherOne, isCompleted: false });
+    if (a?.DC_OtherTwo)
+      items.push({ label: a?.DC_OtherTwo, isCompleted: false });
     setDeepItems(items);
     return items;
   };
@@ -966,27 +1080,25 @@ const Startjob = () => {
   const onUpload = (e) => {
     e.preventDefault();
     const items = [...images];
-    const data = [...files];
     Object.values(e.target.files)?.map((f) => {
-      items.push(window.URL.createObjectURL(f));
-      data.push(f);
+      items.push({ id: null, path: window.URL.createObjectURL(f), file: f });
     });
     setImages(items);
-    setFiles(data);
   };
 
   const onUploadFiles = async () => {
     document.getElementById("upload-files").click();
   };
 
-  const onRemove = (e, i) => {
+  const onRemove = async (e, i) => {
     e.stopPropagation();
     const items = [...images];
-    const data = [...files];
+    const item = items[i];
     items.splice(i, 1);
-    data.splice(i, 1);
     setImages(items);
-    setFiles(data);
+    if (item?.id) {
+      await actions.appointment.deleteImage(item?.id);
+    }
   };
 
   const onSave = async () => {
@@ -999,19 +1111,16 @@ const Startjob = () => {
       });
       return false;
     }
-    // if (!notes) {
-    //   actions.alert.showError({ message: "Please input the notes" });
-    //   return false;
-    // }
-    if (appointment?.TakePic && files?.length === 0) {
+    if (appointment?.TakePic && images?.length === 0) {
       actions.alert.showError({ message: "Please upload images" });
       return false;
     }
-
     try {
       setLoading(true);
       const formData = new FormData();
-      files.map((f) => formData.append("files", f));
+      images
+        ?.filter((i) => i?.file)
+        .map((f) => formData.append("files", f?.file));
       if (!appointment?.JobCompleted) {
         formData.append("notes", notes);
       }
@@ -1026,9 +1135,17 @@ const Startjob = () => {
         }
       );
       console.log(res);
+      const res1 = await actions.appointment.getNotesAndPhotos(params?.id);
+      if (res1?.Notes) setNotes(res1?.Notes);
+      if (res1?.attachments?.length > 0) {
+        const images = [];
+        res1?.attachments?.map((a) =>
+          images.push({ id: a?.id, path: Settings.folder_path + a?.ImageURL })
+        );
+        setImages(images);
+      }
       if (res?.data?.Message) {
         actions.alert.showSuccess({ message: res?.data?.Message });
-        // setCompleted(true);
       }
     } catch (e) {
       console.log(e);
@@ -1084,10 +1201,16 @@ const Startjob = () => {
             </p>
             <p
               className={`${
-                appointment.JobCompleted ? "text-green-600" : "text-red-600"
+                appointment.JobCompleted ||
+                (isDeepItemsCompleted() && isGeneralItemsCompleted())
+                  ? "text-green-600"
+                  : "text-red-600"
               } text-end font-medium text-lg`}
             >
-              {appointment.JobCompleted ? "Completed" : "Not Completed"}
+              {appointment.JobCompleted ||
+              (isDeepItemsCompleted() && isGeneralItemsCompleted())
+                ? "Completed"
+                : "Not Completed"}
             </p>
           </div>
           <div className="Brad_allen_section mt-8">
@@ -1293,60 +1416,61 @@ const Startjob = () => {
                         />
                       </ul>
                     ))}
-                  {selected?.options?.filter((o) => o?.deep)?.length > 0 && (
-                    <div>
-                      <div className="flex justify-between items-center mt-4">
-                        <h4 className="font-medium sm:text-sm text-lg">
-                          Deep Clean Items
-                        </h4>
-                        <h4
-                          className={
-                            ("font-medium  sm:text-sm text-lg",
-                            selected?.options?.filter(
+                  {selected?.options?.filter((o) => o?.deep)?.length > 0 &&
+                    appointment?.NC_CleaningType !== "General Clean" && (
+                      <div>
+                        <div className="flex justify-between items-center mt-4">
+                          <h4 className="font-medium sm:text-sm text-lg">
+                            Deep Clean Items
+                          </h4>
+                          <h4
+                            className={
+                              ("font-medium  sm:text-sm text-lg",
+                              selected?.options?.filter(
+                                (o) => o?.deep && o?.isCompleted
+                              )?.length ===
+                              selected?.options?.filter((o) => o?.deep)?.length
+                                ? "text-green-600"
+                                : "text-red-600")
+                            }
+                          >
+                            {selected?.options?.filter(
                               (o) => o?.deep && o?.isCompleted
                             )?.length ===
                             selected?.options?.filter((o) => o?.deep)?.length
-                              ? "text-green-600"
-                              : "text-red-600")
-                          }
-                        >
-                          {selected?.options?.filter(
-                            (o) => o?.deep && o?.isCompleted
-                          )?.length ===
-                          selected?.options?.filter((o) => o?.deep)?.length
-                            ? "Completed"
-                            : "Not Completed"}
-                        </h4>
+                              ? "Completed"
+                              : "Not Completed"}
+                          </h4>
+                        </div>
+                        {selected?.options
+                          ?.filter((o) => o?.deep)
+                          ?.map((o) => (
+                            <ul
+                              key={o?.label}
+                              className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between"
+                            >
+                              <li className="text-grey-500 font-semibold sm:text-sm">
+                                {o?.label}
+                              </li>
+                              <input
+                                className="checkbox_class  w-[17px] h-[17px] leading-tight text-red-600 flex flex-shrink-0"
+                                type="checkbox"
+                                id="vehicle2"
+                                name="vehicle1"
+                                checked={o?.isCompleted}
+                                onChange={(e) =>
+                                  handleChecked(
+                                    e?.target?.checked,
+                                    selected,
+                                    o,
+                                    false
+                                  )
+                                }
+                              />
+                            </ul>
+                          ))}
                       </div>
-                      {selected?.options
-                        ?.filter((o) => o?.deep)
-                        ?.map((o) => (
-                          <ul
-                            key={o?.label}
-                            className="list-disc once_list mt-2 bg-[#fafafa] p-4 rounded-xl flex items-center justify-between"
-                          >
-                            <li className="text-grey-500 font-semibold sm:text-sm">
-                              {o?.label}
-                            </li>
-                            <input
-                              className="checkbox_class  w-[17px] h-[17px] leading-tight text-red-600 flex flex-shrink-0"
-                              type="checkbox"
-                              id="vehicle2"
-                              name="vehicle1"
-                              checked={o?.isCompleted}
-                              onChange={(e) =>
-                                handleChecked(
-                                  e?.target?.checked,
-                                  selected,
-                                  o,
-                                  false
-                                )
-                              }
-                            />
-                          </ul>
-                        ))}
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             ) : (
@@ -1425,7 +1549,8 @@ const Startjob = () => {
                       </div>
                     ))}
                   </div>
-                  {deepItems?.length > 0 ? (
+                  {deepItems?.length > 0 &&
+                  appointment?.NC_CleaningType !== "General Clean" ? (
                     <div className="w-full ">
                       <div className="flex justify-between items-center mt-10">
                         <h4 className="font-medium sm:text-sm text-lg">
@@ -1460,7 +1585,21 @@ const Startjob = () => {
                             name="vehicle1"
                             checked={di?.isCompleted}
                             onChange={(e) =>
-                              handleChecked(e.target.checked, di, null, false)
+                              di?.label !== "Organize" &&
+                              di?.label !== "Other 1" &&
+                              di?.label !== "Other 2"
+                                ? {}
+                                : handleChecked(
+                                    e.target.checked,
+                                    di,
+                                    null,
+                                    false
+                                  )
+                            }
+                            readOnly={
+                              di?.label !== "Organize" &&
+                              di?.label !== "Other 1" &&
+                              di?.label !== "Other 2"
                             }
                           />
                         </ul>
@@ -1496,7 +1635,10 @@ const Startjob = () => {
                       >
                         {images?.map((img, i) => (
                           <div key={i} className="relative">
-                            <img src={img} className="w-16 h-16 object-cover" />
+                            <img
+                              src={img?.path}
+                              className="w-16 h-16 object-cover"
+                            />
                             <a
                               onClick={(e) => onRemove(e, i)}
                               className="absolute -right-1 -top-1 bg-gray-400 w-4 h-4 rounded-full z-10 flex justify-center items-center"
@@ -1535,9 +1677,13 @@ const Startjob = () => {
                     {!appointment?.JobCompleted && (
                       <button
                         onClick={() => onNext()}
-                        disabled={appointment.TakePic && images?.length === 0}
+                        // disabled={appointment.TakePic && images?.length === 0}
                         className={`border border-transparent text-white text-lg w-[20%] lg:w-[70%] font-semibold px-12 py-2 rounded-lg transition-all delay-150 ${
-                          completed ? "bg-green-400" : "bg-gray-400"
+                          (appointment?.NC_CleaningType !== "General Clean"
+                            ? isDeepItemsCompleted()
+                            : true) && isGeneralItemsCompleted()
+                            ? "bg-green-400"
+                            : "bg-gray-400"
                         }`}
                       >
                         Next

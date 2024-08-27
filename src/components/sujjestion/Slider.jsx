@@ -22,9 +22,10 @@ const Slider = () => {
   const actions = useActions();
 
   useEffect(() => {
-    if (state.contractor?.IsCheckedWalkthrough) {
-      navigate("/home");
-    }
+    setChecked(state.contractor?.IsCheckedWalkthrough);
+    // if (state.contractor?.IsCheckedWalkthrough) {
+    //   navigate("/home");
+    // }
   }, [state.contractor]);
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const Slider = () => {
               <label className="switch">
                 <input
                   type="checkbox"
-                  value={checked}
+                  checked={checked}
                   onChange={(e) => setChecked(e.target.checked)}
                 />
                 <span className="slider round"></span>

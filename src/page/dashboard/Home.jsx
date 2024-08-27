@@ -1,42 +1,28 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import WeeklyData from "../../components/WeeklyData";
 import Schedule from "../../components/Schedule";
 import WithDashboardLayout from "@/hoc/WithDashboardLayout";
 import { useAppState, useActions } from "@/store";
 import moment from "moment";
+import usePerfectInterval from "../../hooks/intervalHook.js";
 
 const Home = () => {
   const state = useAppState();
   const actions = useActions();
   const [report, setReport] = useState({});
-  const [location, setLocation] = useState({});
   const [currentAppointment, setCurrentAppointment] = useState({});
 
-  useEffect(() => {
-    // getPosition();
+  usePerfectInterval(async () => {
     getPayments();
-  }, []);
-
-  useEffect(() => {
-    updateCoords();
-  }, [location]);
-
-  const sleep = (waitTimeInMs) =>
-    new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+    getAppointments();
+  }, 5000);
 
   useEffect(() => {
     if (state.contractor) {
+      getPayments();
       getAppointments();
-      onReload();
     }
   }, [state.contractor]);
-
-  const onReload = async () => {
-    // while (true) {
-    //   await sleep(5000);
-    //   await getAppointments();
-    // }
-  };
 
   const getAppointments = async () => {
     await actions.appointment.getAppointments({
@@ -58,34 +44,6 @@ const Home = () => {
     }
   };
 
-  const updateCoords = async (data) => {
-    if (state.currentUser?.contractorID) {
-      await updateCoords(data);
-    }
-  };
-
-  const getPosition = async () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, error);
-    } else {
-      console.log("Geolocation not supported");
-    }
-
-    async function success(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-      setLocation({
-        latitude,
-        longitude,
-      });
-    }
-
-    function error() {
-      console.log("Unable to retrieve your location");
-    }
-  };
-
   const getPayments = async () => {
     await actions.user.getPayments({
       StartDate: moment()
@@ -93,6 +51,7 @@ const Home = () => {
         .subtract(1, "days")
         .format("M/D/YYYY"),
       EndDate: moment().endOf("isoweek").add(8, "days").format("M/D/YYYY"),
+      id: state.contractor?.contractorID,
     });
     console.log(state.user.payments, "payments");
     const today = {
@@ -105,10 +64,8 @@ const Home = () => {
         moment(p?.Date).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD")
     );
     payments.map((p) => {
+      today.pay += Math.round(p?.Total);
       p.Details.map((d) => {
-        today.pay += Math.round(
-          d.HourRate * parseInt(d?.Hours) * 0.92 + d.ServiceFee + d.Tips
-        );
         today.hours += parseInt(d?.Hours);
       });
     });
@@ -127,10 +84,8 @@ const Home = () => {
           moment().endOf("isoweek").format("YYYY-MM-DD")
     );
     thisWeekPayments.map((p) => {
+      thisWeek.pay += Math.round(p?.Total);
       p.Details.map((d) => {
-        thisWeek.pay += Math.round(
-          d.HourRate * parseInt(d?.Hours) * 0.92 + d.ServiceFee + d.Tips
-        );
         thisWeek.hours += parseInt(d?.Hours);
       });
     });
@@ -151,10 +106,8 @@ const Home = () => {
           moment().endOf("isoweek").add(7, "days").format("YYYY-MM-DD")
     );
     nextWeekPayments.map((p) => {
+      nextWeek.pay = Math.round(p?.Total);
       p.Details.map((d) => {
-        nextWeek.pay += Math.round(
-          d.HourRate * parseInt(d?.Hours) * 0.92 + d.ServiceFee + d.Tips
-        );
         nextWeek.hours += parseInt(d?.Hours);
       });
     });
@@ -206,7 +159,6 @@ const Home = () => {
                       date={key}
                       appointments={state.appointment?.appointments?.[key]}
                       currentAppointment={currentAppointment}
-                      location={location}
                     />
                   );
                 }

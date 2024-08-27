@@ -60,13 +60,14 @@ const Login = (props) => {
       });
       console.log(data, "data");
       if (data?.Token) {
-        await actions.user.getContractorInfo(state.currentUser?.contractorID);
-        // getPosition();
         actions.alert.showSuccess({
           message: "Logged in successfully!",
         });
-        // const res = localStorage.getItem("walk_through_checked");
-        // console.log(res, "res");
+        try {
+          await actions.initialize();
+        } catch (e) {
+          console.log(e);
+        }
         if (state.contractor?.IsCheckedWalkthrough) {
           navigate("/home");
         } else {
@@ -87,7 +88,7 @@ const Login = (props) => {
         <div className="text-center">
           <div className="flex justify-center">
             <img
-              className="rounded-full border-2 w-28 h-28"
+              className="rounded-full border-2 border-black w-28 h-28"
               src={Logo}
               alt=""
             />
@@ -105,7 +106,7 @@ const Login = (props) => {
           <div className="2xl:p-4 focus:border bg-white border-input-placeholder focus:border-[#000E2F70] flex items-center gap-x-2 rounded-xl px-4 py-3 relative mt-2">
             <EmailIcon sx={{ fontSize: "15px", color: "#747474" }} />
             <input
-              placeholder="Email"
+              placeholder="Username"
               className="w-full bg-transparent outline-none text-md text-input-placeholder"
               id="email"
               value={username}
