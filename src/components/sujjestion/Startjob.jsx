@@ -22,6 +22,7 @@ import "./Style.css";
 import warning from "../../assets/warning.mp3";
 
 let timesForSeconds = 0;
+let jobLogs = 0;
 const Startjob = () => {
   const params = useParams();
   const state = useAppState();
@@ -117,18 +118,21 @@ const Startjob = () => {
     }
   }, [seconds]);
 
-  useEffect(() => {
-    getLogs();
-  }, [appointment]);
-
   const getLogs = async () => {
     if (appointment?.Partners?.length > 0) {
       while (appointment?.Partners?.length > 0) {
-        await getJobLogsByPartners();
         await sleep(5000);
+        await getJobLogsByPartners();
       }
     }
   };
+
+  useEffect(() => {
+    if (appointment?.AppointmentId && jobLogs === 0) {
+      jobLogs++;
+      getLogs();
+    }
+  }, [appointment]);
 
   const getPhones = async (appointment) => {
     const list = [];
@@ -201,6 +205,7 @@ const Startjob = () => {
       });
       setDeepItems(items1);
     }
+    getLogs(res);
     const res1 = await actions.appointment.getNotesAndPhotos(params?.id);
     if (res1?.Notes) setNotes(res1?.Notes);
     if (res1?.attachments?.length > 0) {
@@ -221,35 +226,21 @@ const Startjob = () => {
       const res = await actions.appointment.getJobLogs({
         AppointmentId: params?.id,
         contractorID: state.currentUser?.contractorID,
-        isGeneral: false,
       });
-      const res1 = await actions.appointment.getJobLogs({
-        AppointmentId: params?.id,
-        contractorID: state.currentUser?.contractorID,
-        isGeneral: true,
-      });
-      return { deep: res, general: res1 };
+      return {
+        deep: res?.filter((r) => !r?.isGeneral),
+        general: res?.filter((r) => r?.isGeneral),
+      };
     }
   };
 
   const getJobLogsByPartners = async () => {
-    let deep = [],
-      general = [];
-    for (let i = 0; i < appointment?.Partners?.length; i++) {
-      const partner = appointment?.Partners[i];
-      const res = await actions.appointment.getJobLogs({
-        AppointmentId: partner?.AppointmentId,
-        contractorID: partner?.ContractorId,
-        isGeneral: false,
-      });
-      const res1 = await actions.appointment.getJobLogs({
-        AppointmentId: params?.id,
-        contractorID: state.currentUser?.contractorID,
-        isGeneral: true,
-      });
-      deep = [...deep, ...res];
-      general = [...general, ...res1];
-    }
+    const res = await actions.appointment.getJobLogs({
+      AppointmentId: params?.id,
+      contractorID: state.currentUser?.contractorID,
+    });
+    const deep = res?.filter((r) => !r?.isGeneral);
+    const general = res?.filter((r) => r?.isGeneral);
     const items = [...generalItems];
     items.map((i) =>
       i.options?.map((o) => {
@@ -375,6 +366,7 @@ const Startjob = () => {
 
   // Handle checkbox toggle
   const handleChecked = async (checked, parent, child, isGeneral) => {
+    console.log(checked, parent, child, isGeneral);
     if (appointment?.JobCompleted) return false;
     if (child) {
       const items = [...generalItems];
@@ -390,6 +382,7 @@ const Startjob = () => {
       setGeneralItems(items);
       if (!isGeneral && child) {
         const list = [...deepItems];
+        console.log(list, "deepitems");
         list.map((l) => {
           if (l?.label?.includes("Blinds")) {
             l.isCompleted =
@@ -399,7 +392,7 @@ const Startjob = () => {
               items?.filter((i) =>
                 i?.options?.find((o) => o?.label === "Blinds" && o?.isCompleted)
               )?.length;
-          } else {
+          } else if (l?.label !== "Organize" && !l?.name) {
             l.isCompleted =
               items.filter((i) =>
                 i?.options?.find((o) => o?.label === l?.label)
@@ -1057,9 +1050,17 @@ const Startjob = () => {
       items.push({ label: "Fridge/Freezer", isCompleted: false });
     if (a?.NC_Organize) items.push({ label: "Organize", isCompleted: false });
     if (a?.DC_OtherOne)
-      items.push({ label: a?.DC_OtherOne, isCompleted: false });
+      items.push({
+        label: a?.DC_OtherOne,
+        name: "Other 1",
+        isCompleted: false,
+      });
     if (a?.DC_OtherTwo)
-      items.push({ label: a?.DC_OtherTwo, isCompleted: false });
+      items.push({
+        label: a?.DC_OtherTwo,
+        name: "Other 2",
+        isCompleted: false,
+      });
     setDeepItems(items);
     return items;
   };
@@ -1101,6 +1102,14 @@ const Startjob = () => {
     }
   };
 
+  function chunkArray(array, chunkSize) {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
+  }
+
   const onSave = async () => {
     if (
       moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
@@ -1117,24 +1126,28 @@ const Startjob = () => {
     }
     try {
       setLoading(true);
-      const formData = new FormData();
-      images
-        ?.filter((i) => i?.file)
-        .map((f) => formData.append("files", f?.file));
-      if (!appointment?.JobCompleted) {
-        formData.append("notes", notes);
-      }
-      const res = await axios.post(
-        Settings.api_url + "schedule/UpdateAppointment/" + params?.id,
-        formData,
-        {
-          maxBodyLength: Infinity,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const items = images.filter((i) => i?.file);
+      const chunkedArray = chunkArray(items, 3);
+      let res = null;
+      for (let i = 0; i < chunkedArray?.length; i++) {
+        const formData = new FormData();
+        chunkedArray[i].map((f) => formData.append("files", f?.file));
+        if (!appointment?.JobCompleted) {
+          formData.append("notes", notes);
         }
-      );
-      console.log(res);
+        res = await axios.post(
+          Settings.api_url + "schedule/UpdateAppointment/" + params?.id,
+          formData,
+          {
+            maxBodyLength: Infinity,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(res);
+      }
+
       const res1 = await actions.appointment.getNotesAndPhotos(params?.id);
       if (res1?.Notes) setNotes(res1?.Notes);
       if (res1?.attachments?.length > 0) {
@@ -1586,8 +1599,8 @@ const Startjob = () => {
                             checked={di?.isCompleted}
                             onChange={(e) =>
                               di?.label !== "Organize" &&
-                              di?.label !== "Other 1" &&
-                              di?.label !== "Other 2"
+                              di?.name !== "Other 1" &&
+                              di?.name !== "Other 2"
                                 ? {}
                                 : handleChecked(
                                     e.target.checked,
@@ -1598,8 +1611,8 @@ const Startjob = () => {
                             }
                             readOnly={
                               di?.label !== "Organize" &&
-                              di?.label !== "Other 1" &&
-                              di?.label !== "Other 2"
+                              di?.name !== "Other 1" &&
+                              di?.name !== "Other 2"
                             }
                           />
                         </ul>

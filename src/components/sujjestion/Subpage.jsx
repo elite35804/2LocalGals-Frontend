@@ -574,19 +574,14 @@ const Subpage = () => {
                   <p className="space-x-2">
                     <span className="text-lg  font-medium">Approx.Pay:</span>
                     <span className="text-red-600">
-                      $
-                      {Math.round(
-                        appointment.customerRate * appointment.Hours * 0.92 +
-                          appointment.ContractorTips +
-                          appointment.CustomerServiceFee
-                      )}
+                      ${appointment.AproxPay}
                     </span>
                   </p>
                 </div>
               </div>
             </div>
             <hr className="border-dashed mt-5" />
-            {/* buildinginformation */}
+            {/* building information */}
             <div className="building mt-4 flex flex-col space-y-4 justify-between">
               <div className="space-y-1">
                 <p className=" font-medium text-lg space-x-2">
@@ -624,11 +619,7 @@ const Subpage = () => {
             <div className="Details flex flex-col space-y-4 justify-between mt-4">
               <div className="space-y-1">
                 <p className=" font-medium text-lg">Details:</p>
-                <p className="text-grey-500 text-sm">
-                  {/* SF(2000), Beds(2), Baths(2), Take Vaccum Pets(+3), Clean
-                  Rating(5), Flooring(Carpet, Hardwood) */}
-                  {appointment?.Details}
-                </p>
+                <p className="text-grey-500 text-sm">{appointment?.Details}</p>
               </div>
               <div className="space-y-1">
                 <p className=" font-medium text-lg">Payment Type:</p>

@@ -73,7 +73,7 @@ export const getNotesAndPhotos = async ({ state, actions }, id) => {
 export const startJob = async ({ actions }, id) => {
   try {
     const res = await API(
-      `schedule/StartJob/${id}?date=${moment().format("YYYY-MM-DDThh:mm A")}`,
+      `schedule/StartJob/${id}?date=${moment().format("YYYY-MM-DDThh:mm:ss")}`,
       "post",
       {}
     );
@@ -113,7 +113,7 @@ export const updateJobDetail = async ({ actions }, data) => {
 export const endJob = async ({ actions }, id) => {
   try {
     const res = await API(
-      `schedule/endJob/${id}?date=${moment().format("YYYY-MM-DDThh:mm A")}`,
+      `schedule/endJob/${id}?date=${moment().format("YYYY-MM-DDThh:mm:ss")}`,
       "post",
       {}
     );
@@ -189,10 +189,10 @@ export const deleteImage = async ({ actions }, id) => {
 export const getJobLogs = async ({ state, actions }, data) => {
   try {
     const res = await API(
-      `schedule/GetJobLogs?AppointmentId=${data?.AppointmentId}&contractorID=${data?.contractorID}&isGeneral=${data?.isGeneral}`,
+      `schedule/GetJobLogs?AppointmentId=${data?.AppointmentId}&contractorID=${data?.contractorID}`,
       "get"
     );
-    console.log(res, "res");
+    // console.log(res, "res");
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {
