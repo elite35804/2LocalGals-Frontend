@@ -619,7 +619,7 @@ const Startjob = () => {
             deep: true,
           });
         if (a?.NC_ChangeBed)
-          options.push({ label: `Change Bed Lines`, isCompleted: false });
+          options.push({ label: `Change Bed Linens`, isCompleted: false });
         // if (a?.DC_Pantry)
         //   items.push({ label: "Clean Pantry", isCompleted: false });
         // if (a?.DC_LaundryRoom)

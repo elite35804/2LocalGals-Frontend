@@ -185,7 +185,7 @@ const Subpage = () => {
       floors?.length > 0 ? `Flooring(${floors.join(", ")})` : `Flooring`
     );
     if (a?.NC_DoDishes) text.push(`Do Dishes`);
-    if (a?.NC_ChangeBed) text.push(`Change Bed Lines`);
+    if (a?.NC_ChangeBed) text.push(`Change Bed Linens`);
     if (a?.NC_RequestEcoCleaners) text.push("Eco Cleaners Requested");
 
     return text.join(", ");
