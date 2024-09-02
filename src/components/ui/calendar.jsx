@@ -7,6 +7,39 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import moment from "moment";
 
+function timeToMinutes(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function areAllTimesTaken(startTime, endTime, bookedRanges) {
+  const mainStart = timeToMinutes(startTime);
+  const mainEnd = timeToMinutes(endTime);
+
+  // Sort bookedRanges by start time
+  bookedRanges.sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+
+  let currentStart = mainStart;
+
+  for (let i = 0; i < bookedRanges.length; i++) {
+    const rangeStart = timeToMinutes(bookedRanges[i].start);
+    const rangeEnd = timeToMinutes(bookedRanges[i].end);
+
+    if (rangeStart > currentStart) {
+      return false; // There's a gap between booked ranges
+    }
+
+    currentStart = Math.max(currentStart, rangeEnd);
+
+    if (currentStart >= mainEnd) {
+      return true; // All times are taken
+    }
+  }
+
+  return currentStart >= mainEnd;
+}
+const mainStartTime = "09:00";
+const mainEndTime = "18:00";
 function Calendar({
   className,
   classNames,
@@ -96,9 +129,10 @@ function Calendar({
               className={cn(
                 className,
                 "flex items-center justify-center text-sm text-center ",
-                checkList(items) === "full"
+                areAllTimesTaken(mainStartTime, mainEndTime, items)
                   ? "bg-red-500 px-2 py-0.5 rounded-full"
-                  : checkList(items) === "part"
+                  : !areAllTimesTaken(mainStartTime, mainEndTime, items) &&
+                    items?.length > 0
                   ? "bg-yellow-500 px-2 py-0.5 rounded-full"
                   : "px-2 py-0.5 rounded-full"
               )}

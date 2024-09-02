@@ -38,7 +38,9 @@ const Schedule = ({ appointments, date, currentAppointment }) => {
       window.open(`https://maps.apple.com?q=${text.join(", ")}`, "_blank");
     } else {
       window.open(
-        `https://www.google.com/maps/dir/${text.join(", ")}`,
+        `https://maps.google.com/maps?f=d&t=h&saddr=${text.join(
+          ", "
+        )}&daddr=${text.join(",")}`,
         "_blank"
       );
     }

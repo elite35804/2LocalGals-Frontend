@@ -85,7 +85,6 @@ export const updateWalkThrough = async ({ state, actions }, data) => {
 export const deleteUnavailability = async ({ state, actions }, id) => {
   try {
     const res = await API(`Schedule/DeleteUnavailibility/${id}`, "delete");
-    console.log(res, "res");
     return res;
   } catch (e) {
     if (e?.message === "Unauthorized") {

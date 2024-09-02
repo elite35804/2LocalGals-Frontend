@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../Header";
 import AddIcCallIcon from "@mui/icons-material/AddIcCall";
@@ -37,6 +38,27 @@ const Subpage = () => {
   useEffect(() => {
     getAppointment();
   }, []);
+
+  const ref = useRef();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        console.log("Clicked outside!");
+        // Add your logic here (e.g., close dropdown)
+        setShowPhone(false);
+        setShowSms(false);
+      }
+    };
+
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Unbind the event listener on cleanup
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
 
   useEffect(() => {
     if (location && loc) {
@@ -214,6 +236,8 @@ const Subpage = () => {
       items.push(`Bathroom Cupboards (${a?.DC_BathroomCuboardsDetail})`);
     if (a?.DC_Oven) items.push("Inside Oven");
     if (a?.DC_Refrigerator) items.push("Fridge/Freezer");
+    if (a?.DC_OtherOne) items.push(a?.DC_OtherOne);
+    if (a?.DC_OtherTwo) items.push(a?.DC_OtherTwo);
     return items;
   };
 
@@ -251,7 +275,9 @@ const Subpage = () => {
       );
     } else {
       window.open(
-        `https://www.google.com/maps/dir/${getLocation(appointment)}`,
+        `https://maps.google.com/maps?f=d&t=h&saddr=${getLocation(
+          appointment
+        )}&daddr=${getLocation(appointment)}`,
         "_blank"
       );
     }
@@ -378,7 +404,10 @@ const Subpage = () => {
                       <AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>
                     </a>
                     {isShowPhone ? (
-                      <div className="absolute right-0 w-40 mt-2 z-50 bg-white shadow-xl border divide-y">
+                      <div
+                        ref={ref}
+                        className="absolute right-0 w-40 mt-2 z-50 bg-white shadow-xl border divide-y"
+                      >
                         {phones.map((phone, index) => (
                           <a
                             key={index}
@@ -410,7 +439,10 @@ const Subpage = () => {
                       ></InsertCommentIcon>
                     </a>
                     {isShowSms ? (
-                      <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                      <div
+                        ref={ref}
+                        className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y"
+                      >
                         {phones.map((phone, index) => (
                           <a
                             key={index}
@@ -624,7 +656,12 @@ const Subpage = () => {
               <div className="space-y-1">
                 <p className=" font-medium text-lg">Payment Type:</p>
                 <p className="text-[#a1d6f1] text-sm">
-                  <u>{`${appointment?.paymentType} (Collect $${appointment?.total})`}</u>
+                  <u>{`${
+                    appointment?.paymentType === "Check" ||
+                    appointment?.paymentType === "Cash"
+                      ? `${appointment?.paymentType} (Collect $${appointment?.total})`
+                      : `${appointment?.paymentType}`
+                  }`}</u>
                 </p>
               </div>
               <div>
@@ -857,6 +894,7 @@ const Subpage = () => {
                 moment(startTime).diff(new Date())
               );
               var minutes = duration.asMinutes();
+
               if (Math.abs(minutes) > 10) {
                 setOpenHour(true);
                 return false;

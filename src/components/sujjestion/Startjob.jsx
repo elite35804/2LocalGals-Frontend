@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { generatePath, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import { useEffect, useState, useRef } from "react";
 import AddIcCallIcon from "@mui/icons-material/AddIcCall";
@@ -21,8 +21,7 @@ import Button from "@mui/material/Button";
 import "./Style.css";
 import warning from "../../assets/warning.mp3";
 
-let timesForSeconds = 0;
-let jobLogs = 0;
+let times = 0;
 const Startjob = () => {
   const params = useParams();
   const state = useAppState();
@@ -45,20 +44,49 @@ const Startjob = () => {
   const [phones, setPhones] = useState([]);
   const [isShowPhone, setShowPhone] = useState(false);
   const [isShowSms, setShowSms] = useState(false);
-  const [times, setTimes] = useState(0);
   const circleRef = useRef(null);
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
+  const ref = useRef();
+
   useEffect(() => {
     if (state.contractor?.contractorID && times === 0) {
-      getAppointment();
-      setTimes(1);
-      setInterval(async () => {
-        const res = await actions.appointment.getAppointmentById(params?.id);
-        setAppointment(res);
-      }, 5000);
+      onInitialize(times);
+      times++;
     }
   }, [state.contractor]);
+
+  const onInitialize = async () => {
+    for (let i = 0; i < 100000000; i++) {
+      getAppointment(i === 0);
+      await sleep(5000);
+    }
+  };
+
+  useEffect(() => {
+    if (generalItems?.length > 0 && selected) {
+      setSelected([...generalItems]?.find((i) => i?.label === selected?.label));
+    }
+  }, [generalItems]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        console.log("Clicked outside!");
+        // Add your logic here (e.g., close dropdown)
+        setShowPhone(false);
+        setShowSms(false);
+      }
+    };
+
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Unbind the event listener on cleanup
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
 
   useEffect(() => {
     onSaveNote();
@@ -85,58 +113,24 @@ const Startjob = () => {
         ) {
           playAudio();
         }
-        // const timers =
-        //   JSON.parse(localStorage.getItem("2localgals-timers")) || [];
-        // const timer = timers?.find((t) => t?.appointmentId === params?.id);
-        // var ms = moment(appointment?.endTime, "hh:mm A").diff(
-        //   moment(appointment?.startTime, "hh:mm A")
-        // );
-        // var d = moment.duration(ms);
-        // if (timer) {
-        //   timer.time = seconds;
-        //   timer.duration = d?.asSeconds() - seconds;
-        // } else {
-        //   timers.push({
-        //     appointmentId: params?.id,
-        //     time: seconds,
-        //     duration: d?.asSeconds() - seconds,
-        //   });
-        // }
-        // localStorage.setItem("2localgals-timers", JSON.stringify(timers));
       }
-      if (
-        appointment?.AppointmentId &&
-        !appointment?.JobCompleted &&
-        timesForSeconds === 0
-      ) {
-        updateDuration();
-      }
-      if (timesForSeconds === 4) {
-        timesForSeconds = 0;
-      } else {
-        timesForSeconds++;
-      }
+      // if (
+      //   appointment?.AppointmentId &&
+      //   !appointment?.JobCompleted &&
+      //   timesForSeconds === 0
+      // ) {
+      //   updateDuration();
+      // }
+      // if (timesForSeconds === 4) {
+      //   timesForSeconds = 0;
+      // } else {
+      //   timesForSeconds++;
+      // }
     } catch (e) {
       console.log(e);
       actions.alert.showError({ message: e });
     }
   }, [seconds]);
-
-  const getLogs = async () => {
-    if (appointment?.Partners?.length > 0) {
-      while (appointment?.Partners?.length > 0) {
-        await sleep(5000);
-        await getJobLogsByPartners();
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (appointment?.AppointmentId && jobLogs === 0) {
-      jobLogs++;
-      getLogs();
-    }
-  }, [appointment]);
 
   const getPhones = async (appointment) => {
     const list = [];
@@ -158,10 +152,13 @@ const Startjob = () => {
     audioRef.current.play();
   };
 
-  const getAppointment = async () => {
+  const getAppointment = async (initialized) => {
+    if (initialized) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
     const res = await actions.appointment.getAppointmentById(params?.id);
     console.log(res, "appointment");
-    setAppointment(res);
+
     const generalItems = getGeneralItems(res);
     const deepItems = getDeepItems(res);
     const { deep, general } = await getJobLogs();
@@ -187,13 +184,17 @@ const Startjob = () => {
           }
         })
       );
-      items.map(
-        (item) =>
-          (item.isCompleted =
+      items.map((item) => {
+        if (res?.NC_CleaningType === "General Clean") {
+          item.isCompleted =
             item.options.filter((o) => o?.isCompleted)?.length ===
-            item?.options?.length)
-      );
-      setGeneralItems(items);
+            item?.options?.filter((o) => !o?.deep).length;
+        } else {
+          item.isCompleted =
+            item.options.filter((o) => o?.isCompleted)?.length ===
+            item?.options?.length;
+        }
+      });
       const items1 = [...deepItems];
       items1.map((i) => {
         if (
@@ -207,21 +208,28 @@ const Startjob = () => {
           i.isCompleted = true;
         }
       });
+      setAppointment(res);
+      setGeneralItems(items);
       setDeepItems(items1);
     }
-    getLogs(res);
-    const res1 = await actions.appointment.getNotesAndPhotos(params?.id);
-    if (res1?.Notes) setNotes(res1?.Notes);
-    if (res1?.attachments?.length > 0) {
-      const images = [];
-      res1?.attachments?.map((a) =>
-        images.push({ id: a?.id, path: Settings.folder_path + a?.ImageURL })
-      );
-      setImages(images);
+    if (initialized) {
+      const res1 = await actions.appointment.getNotesAndPhotos(params?.id);
+      if (res1?.Notes) setNotes(res1?.Notes);
+      if (res1?.attachments?.length > 0) {
+        const images = [];
+        res1?.attachments?.map((a) =>
+          images.push({ id: a?.id, path: Settings.folder_path + a?.ImageURL })
+        );
+        setImages(images);
+      }
     }
+
     if (res?.AppointmentId) {
-      getDuration(res);
-      getPhones(res);
+      if (initialized) {
+        getDuration(res);
+      } else {
+        getPhones(res);
+      }
     }
   };
 
@@ -238,72 +246,62 @@ const Startjob = () => {
     }
   };
 
-  const getJobLogsByPartners = async () => {
-    const res = await actions.appointment.getJobLogs({
-      AppointmentId: params?.id,
-      contractorID: state.currentUser?.contractorID,
-    });
-    const deep = res?.filter((r) => !r?.isGeneral);
-    const general = res?.filter((r) => r?.isGeneral);
-    const items = [...generalItems];
-    items.map((i) =>
-      i.options?.map((o) => {
-        if (
-          general.find(
-            (g) =>
-              g?.Checked &&
-              g?.Content === i?.label &&
-              g?.SubContent === o?.label
-          ) ||
-          deep.find(
-            (g) =>
-              g?.Checked &&
-              g?.Content === i?.label &&
-              g?.SubContent === o?.label
-          )
-        ) {
-          o.isCompleted = true;
-        }
-      })
-    );
-    items.map(
-      (item) =>
-        (item.isCompleted =
-          item.options.filter((o) => o?.isCompleted)?.length ===
-          item?.options?.length)
-    );
-    setGeneralItems(items);
-    const items1 = [...deepItems];
-    items1.map((i) => {
-      if (
-        deep.find(
-          (g) => g?.Checked && g?.Content === i?.label && !g?.SubContent
-        ) ||
-        general.find(
-          (g) => g?.Checked && g?.Content === i?.label && !g?.SubContent
-        )
-      ) {
-        i.isCompleted = true;
-      }
-    });
-    setDeepItems(items1);
-  };
-
   const getDuration = async (appointment) => {
     var ms = moment(appointment?.endTime, "hh:mm A").diff(
       moment(appointment?.startTime, "hh:mm A")
     );
     var d = moment.duration(ms);
-    if (appointment?.jobStartTime && appointment?.Duration > 0) {
-      setSeconds(d?.asSeconds() - appointment?.Duration);
-    } else {
+    if (!appointment?.jobStartTime) {
       setSeconds(d?.asSeconds());
-      if (appointment && !appointment?.JobCompleted) {
-        await handleStart();
-        const res = await actions.appointment.getAppointmentById(params?.id);
-        setAppointment(res);
+    } else if (appointment?.jobStartTime && !appointment?.pauseTime) {
+      var mms = moment().diff(moment(appointment?.jobStartTime), "seconds");
+      setSeconds(d?.asSeconds() - mms);
+    } else if (appointment?.jobStartTime && appointment?.Duration > 0) {
+      if (
+        appointment?.Duration &&
+        appointment?.pauseTime &&
+        !appointment?.lastStartTime
+      ) {
+        setSeconds(d?.asSeconds() - appointment?.Duration);
+      } else if (
+        appointment?.Duration &&
+        appointment?.pauseTime &&
+        appointment?.lastStartTime &&
+        appointment?.lastStartTime > appointment?.pauseTime
+      ) {
+        const mmms = moment().diff(
+          moment(appointment?.lastStartTime),
+          "seconds"
+        );
+        setSeconds(d?.asSeconds() - appointment?.Duration - mmms);
+      } else if (
+        appointment?.Duration &&
+        appointment?.pauseTime &&
+        appointment?.lastStartTime &&
+        appointment?.lastStartTime <= appointment?.pauseTime
+      ) {
+        setSeconds(d?.asSeconds() - appointment?.Duration);
       }
     }
+    if (
+      appointment?.pauseTime &&
+      (!appointment?.lastStartTime ||
+        appointment?.lastStartTime < appointment?.pauseTime)
+    ) {
+      const res = await actions.appointment.updateJobDetail({
+        id: params?.id,
+        duration: appointment?.Duration,
+        lastStartTime: new Date(
+          new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+        ),
+      });
+      console.log(res, "res");
+    }
+    if (!appointment?.JobCompleted) {
+      setIsActive(true);
+    }
+    const res = await actions.appointment.getAppointmentById(params?.id);
+    setAppointment(res);
   };
 
   // Handle navigation back
@@ -331,7 +329,9 @@ const Startjob = () => {
     await actions.appointment.updateJobDetail({
       id: params?.id,
       duration: d.asSeconds() - seconds,
-      pauseTime: new Date(),
+      pauseTime: new Date(
+        new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+      ),
     });
   };
 
@@ -349,61 +349,104 @@ const Startjob = () => {
       moment(appointment?.startTime, "hh:mm A")
     );
     var d = moment.duration(ms);
-
-    // if (seconds === d?.asSeconds()) {
-    //   getStarted();
-    // }
-    if (seconds === 0) {
-      // setSeconds(initialDuration);
-    }
     setStartTime(seconds); // adjust start time based on elapsed time
     setElapsedTime(0);
 
-    // await actions.appointment.updateJobDetail({
-    //   id: params?.id,
-    //   duration: d.asSeconds() - seconds,
-    //   lastStartTime: new Date(),
-    // });
-    // const res = await actions.appointment.getAppointmentById(params?.id);
-    // setAppointment(res);
+    await actions.appointment.updateJobDetail({
+      id: params?.id,
+      duration: d.asSeconds() - seconds,
+      lastStartTime: new Date(
+        new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+      ),
+    });
+    const res = await actions.appointment.getAppointmentById(params?.id);
+    setAppointment(res);
   };
 
   // Handle checkbox toggle
   const handleChecked = async (checked, parent, child, isGeneral) => {
-    console.log(checked, parent, child, isGeneral);
     if (appointment?.JobCompleted) return false;
+    actions.appointment.updateJobLog({
+      contractorId: state.currentUser?.contractorID,
+      customerId: appointment?.CustomerId,
+      appointmentId: appointment?.AppointmentId,
+      content: parent?.label,
+      SubContent: child?.label || "",
+      checked,
+      checkedBy: state.currentUser?.username,
+      isGeneral,
+      createdAtStr: moment().format("YYYY-MM-DDThh:mm A"),
+    });
     if (child) {
       const items = [...generalItems];
       items
         .find((i) => i.label === parent.label)
         .options.find((o) => o.label === child.label).isCompleted = checked;
-      items.map(
-        (i) =>
-          (i.isCompleted =
+      items.map((i) => {
+        if (appointment?.NC_CleaningType === "General Clean") {
+          i.isCompleted =
             i?.options?.filter((o) => o?.isCompleted)?.length ===
-            i?.options?.length)
-      );
-      setGeneralItems(items);
+            i?.options?.filter((i) => !i?.deep).length;
+        } else {
+          i.isCompleted =
+            i?.options?.filter((o) => o?.isCompleted)?.length ===
+            i?.options?.length;
+        }
+      });
+      // setGeneralItems(items);
       if (!isGeneral && child) {
         const list = [...deepItems];
-        console.log(list, "deepitems");
         list.map((l) => {
           if (l?.label?.includes("Blinds")) {
             l.isCompleted =
               items.filter((i) =>
                 i?.options?.find((o) => o?.label === "Blinds")
+              )?.length > 0 &&
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label === "Blinds")
               )?.length ===
-              items?.filter((i) =>
-                i?.options?.find((o) => o?.label === "Blinds" && o?.isCompleted)
-              )?.length;
+                items?.filter((i) =>
+                  i?.options?.find(
+                    (o) => o?.label === "Blinds" && o?.isCompleted
+                  )
+                )?.length;
+          } else if (l?.label?.includes("Windows")) {
+            l.isCompleted =
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label === "Windows")
+              )?.length > 0 &&
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label === "Windows")
+              )?.length ===
+                items?.filter((i) =>
+                  i?.options?.find(
+                    (o) => o?.label === "Windows" && o?.isCompleted
+                  )
+                )?.length;
+          } else if (l?.label?.includes("Walls")) {
+            l.isCompleted =
+              items.filter((i) => i?.options?.find((o) => o?.label === "Walls"))
+                ?.length > 0 &&
+              items.filter((i) => i?.options?.find((o) => o?.label === "Walls"))
+                ?.length ===
+                items?.filter((i) =>
+                  i?.options?.find(
+                    (o) => o?.label === "Walls" && o?.isCompleted
+                  )
+                )?.length;
           } else if (l?.label !== "Organize" && !l?.name) {
             l.isCompleted =
               items.filter((i) =>
                 i?.options?.find((o) => o?.label === l?.label)
+              )?.length > 0 &&
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label === l?.label)
               )?.length ===
-              items?.filter((i) =>
-                i?.options?.find((o) => o?.label === l?.label && o?.isCompleted)
-              )?.length;
+                items?.filter((i) =>
+                  i?.options?.find(
+                    (o) => o?.label === l?.label && o?.isCompleted
+                  )
+                )?.length;
           }
           if (l?.isCompleted) {
             actions.appointment.updateJobLog({
@@ -427,35 +470,23 @@ const Startjob = () => {
       items
         .find((i) => i.label === parent.label)
         ?.options?.map((o) => (o.isCompleted = checked));
-      if (isGeneral) {
-        setGeneralItems(items);
-      } else {
-        setDeepItems(items);
-      }
+      // if (isGeneral) {
+      //   setGeneralItems(items);
+      // } else {
+      //   setDeepItems(items);
+      // }
     }
-
-    await actions.appointment.updateJobLog({
-      contractorId: state.currentUser?.contractorID,
-      customerId: appointment?.CustomerId,
-      appointmentId: appointment?.AppointmentId,
-      content: parent?.label,
-      SubContent: child?.label || "",
-      checked,
-      checkedBy: state.currentUser?.username,
-      isGeneral,
-      createdAtStr: moment().format("YYYY-MM-DDThh:mm A"),
-    });
   };
 
   // Format time as HH:MM:SS
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const secondss = totalSeconds % 60;
+    const seconds = totalSeconds % 60;
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
       2,
       "0"
-    )}:${String(secondss).padStart(2, "0")}`;
+    )}:${String(seconds).padStart(2, "0")}`;
   };
 
   // Effect for countdown timer
@@ -511,7 +542,7 @@ const Startjob = () => {
   };
 
   const getGeneralItems = (a) => {
-    const items = [];
+    let items = [];
     if (!isNaN(parseInt(a?.Bedrooms))) {
       for (let i = 0; i < parseInt(a?.Bedrooms); i++) {
         let options = [];
@@ -625,7 +656,7 @@ const Startjob = () => {
         // if (a?.DC_LaundryRoom)
         //   items.push({ label: "Clean Laundry Room", isCompleted: false });
         items.push({
-          label: i === 0 ? "Master Bedroom" : `Bedroom ${i}`,
+          label: i === 0 ? "Master Bedroom" : `Bedroom ${i + 1}`,
           isCompleted: false,
           options,
         });
@@ -744,7 +775,7 @@ const Startjob = () => {
         // if (a?.DC_LaundryRoom)
         //   items.push({ label: "Clean Laundry Room", isCompleted: false });
         items.push({
-          label: i === 0 ? "Master Bathroom" : `Bathroom ${i}`,
+          label: i === 0 ? "Master Bathroom" : `Bathroom ${i + 1}`,
           isCompleted: false,
           options,
         });
@@ -994,7 +1025,14 @@ const Startjob = () => {
       options: options1,
     };
     items.push(otherRoom);
-    setGeneralItems(items);
+    console.log(items, "items");
+    if (items.find((i) => i?.label === "Master Bathroom")) {
+      const element = items.splice(
+        items.findIndex((i) => i?.label === "Master Bathroom"),
+        1
+      )[0];
+      items.splice(1, 0, element);
+    }
     return items;
   };
 
@@ -1065,7 +1103,6 @@ const Startjob = () => {
         name: "Other 2",
         isCompleted: false,
       });
-    setDeepItems(items);
     return items;
   };
 
@@ -1202,7 +1239,7 @@ const Startjob = () => {
     }
   };
 
-  const onNext = () => {
+  const onNext = async () => {
     if (
       moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
       moment().format("YYYY-MM-DD")
@@ -1216,6 +1253,17 @@ const Startjob = () => {
       setOpen(true);
       return false;
     }
+    var ms = moment(appointment?.endTime, "hh:mm A").diff(
+      moment(appointment?.startTime, "hh:mm A")
+    );
+    var d = moment.duration(ms);
+    await actions.appointment.updateJobDetail({
+      id: params?.id,
+      duration: d.asSeconds() - seconds,
+      pauseTime: new Date(
+        new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000
+      ),
+    });
     navigate("/finish/" + params?.id);
   };
   return (
@@ -1241,14 +1289,18 @@ const Startjob = () => {
             </p>
             <p
               className={`${
-                appointment.JobCompleted ||
-                (isDeepItemsCompleted() && isGeneralItemsCompleted())
+                (appointment?.NC_CleaningType !== "General Clean"
+                  ? isDeepItemsCompleted()
+                  : true) && isGeneralItemsCompleted()
                   ? "text-green-600"
                   : "text-red-600"
               } text-end font-medium text-lg`}
             >
               {appointment.JobCompleted ||
-              (isDeepItemsCompleted() && isGeneralItemsCompleted())
+              ((appointment?.NC_CleaningType !== "General Clean"
+                ? isDeepItemsCompleted()
+                : true) &&
+                isGeneralItemsCompleted())
                 ? "Completed"
                 : "Not Completed"}
             </p>
@@ -1269,7 +1321,10 @@ const Startjob = () => {
                     <AddIcCallIcon sx={{ color: "#478e00" }}></AddIcCallIcon>
                   </a>
                   {isShowPhone ? (
-                    <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                    <div
+                      ref={ref}
+                      className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y"
+                    >
                       {phones.map((phone, index) => (
                         <a
                           key={index}
@@ -1301,7 +1356,10 @@ const Startjob = () => {
                     ></InsertCommentIcon>
                   </a>
                   {isShowSms ? (
-                    <div className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y">
+                    <div
+                      ref={ref}
+                      className="absolute right-0 w-40 mt-2 bg-white shadow-xl border divide-y"
+                    >
                       {phones.map((phone, index) => (
                         <a
                           key={index}
@@ -1536,7 +1594,7 @@ const Startjob = () => {
                 <div className="flex flex-col justify-between  items-start md:block">
                   <div className="flex justify-between w-full items-center mt-10">
                     <div className="font-medium text-start text-lg sm:text-sm">
-                      General clean items
+                      General Clean Items
                     </div>
                     <h4
                       className={
@@ -1594,7 +1652,7 @@ const Startjob = () => {
                     <div className="w-full ">
                       <div className="flex justify-between items-center mt-10">
                         <h4 className="font-medium sm:text-sm text-lg">
-                          Deep clean items
+                          Deep Clean Items
                         </h4>
                         <h4
                           className={
@@ -1760,8 +1818,20 @@ const Startjob = () => {
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={() => {
+              onClick={async () => {
                 setOpen(false);
+                var ms = moment(appointment?.endTime, "hh:mm A").diff(
+                  moment(appointment?.startTime, "hh:mm A")
+                );
+                var d = moment.duration(ms);
+                await actions.appointment.updateJobDetail({
+                  id: params?.id,
+                  duration: d.asSeconds() - seconds,
+                  pauseTime: new Date(
+                    new Date().getTime() -
+                      new Date().getTimezoneOffset() * 60 * 1000
+                  ),
+                });
                 navigate("/finish/" + params?.id);
               }}
             >

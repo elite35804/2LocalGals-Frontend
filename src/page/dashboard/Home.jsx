@@ -142,7 +142,7 @@ const Home = () => {
         <div className="py-4">
           <div className="flex items-center">
             <h2 className="font-bold text-white text-base heading mt-3 ">
-              Good {getTime()} {state.currentUser?.username}!
+              Good {getTime()} {state.contractor?.firstName}!
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-5">

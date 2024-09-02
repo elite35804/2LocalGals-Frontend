@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
@@ -11,14 +11,13 @@ import {
 import WithDashboardLayout from "@/hoc/WithDashboardLayout";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Close, Check } from "@mui/icons-material";
-import { RotatingLines } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { useActions, useAppState } from "@/store";
 import moment from "moment";
+import { json } from "overmind";
 
 const UpdateUnavailability = () => {
   const [date, setDate] = useState(new Date());
-  const [loading, setLoading] = useState(false);
   const state = useAppState();
   const actions = useActions();
   const recurrences = [
@@ -48,18 +47,8 @@ const UpdateUnavailability = () => {
       data?.map((d) => {
         items.push({
           id: d?.unavailableID,
-          startTime: moment(
-            new Date(d?.startTime).setHours(
-              new Date(d?.startTime).getHours() -
-                new Date().getTimezoneOffset() / 60
-            )
-          ).format("HH:mm"),
-          endTime: moment(
-            new Date(d?.endTime).setHours(
-              new Date(d?.endTime).getHours() -
-                new Date().getTimezoneOffset() / 60
-            )
-          ).format("HH:mm"),
+          startTime: moment(d?.startTime).format("HH:mm"),
+          endTime: moment(d?.endTime).format("HH:mm"),
           recurrence: d?.recurrenceType,
         });
       });
@@ -90,12 +79,17 @@ const UpdateUnavailability = () => {
     setList(items);
   };
 
-  const onDeleteById = async (id) => {
+  const onDeleteById = async (id, index) => {
+    console.log(id, "id");
     try {
       if (id) {
         await actions.user.deleteUnavailability(id);
         await getData();
         actions.alert.showSuccess({ message: "Deleted successfully" });
+      } else {
+        const items = [...list];
+        items.splice(index, 1);
+        setList(items);
       }
     } catch (e) {
       console.log(e);
@@ -116,8 +110,12 @@ const UpdateUnavailability = () => {
       endDate.setMinutes(item?.endTime?.split(":")?.[1]);
       await actions.user.addUnavailability({
         dateRequested: date,
-        startTime: startDate.toISOString(),
-        endTime: endDate.toISOString(),
+        startTime: new Date(
+          startDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000
+        ),
+        endTime: new Date(
+          endDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000
+        ),
         recurrenceID: 0,
         recurrenceType: item?.recurrence,
       });
@@ -137,6 +135,18 @@ const UpdateUnavailability = () => {
       recurrence: 0,
     });
     setList(items);
+  };
+
+  const getDates = (dates) => {
+    let items = [];
+    json(dates).map((d) => {
+      items.push({
+        ...d,
+        start: moment(new Date(d?.startTime)).format("HH:mm"),
+        end: moment(new Date(d?.endTime)).format("HH:mm"),
+      });
+    });
+    return items;
   };
 
   return (
@@ -163,7 +173,7 @@ const UpdateUnavailability = () => {
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md mt-5 w-full"
-                dates={state.user.unavailabilities}
+                dates={getDates(state.user.unavailabilities)}
               />
               <div className="w-full col-span-2 space-y-2">
                 <div className="flex justify-end items-end">
@@ -255,7 +265,7 @@ const UpdateUnavailability = () => {
                             padding: "2px",
                             color: "red",
                           }}
-                          onClick={() => onDeleteById(l?.id)}
+                          onClick={() => onDeleteById(l?.id, id)}
                         />
                       </a>
                     </div>
