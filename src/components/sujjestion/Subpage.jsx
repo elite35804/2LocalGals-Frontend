@@ -201,7 +201,7 @@ const Subpage = () => {
     if (a?.DC_CeilingFans)
       items.push(`Ceiling Fans(${a?.DC_CeilingFansAmount})`);
     if (a?.DC_Baseboards) items.push("Baseboards");
-    if (a?.DC_DoorFrames) items.push("Doors/Door Frames");
+    if (a?.DC_DoorFrames) items.push("Doors/door Frames");
     if (a?.DC_LightFixtures) items.push("Light Fixtures");
     if (a?.DC_LightSwitches) items.push("Light Switches");
     if (a?.DC_VentCovers) items.push("Vent Covers");
@@ -331,7 +331,7 @@ const Subpage = () => {
       var duration = moment.duration(moment(startTime).diff(new Date()));
       var minutes = duration.asMinutes();
       console.log(minutes, "minutes");
-      if (Math.abs(minutes) < 10) {
+      if (Math.abs(minutes) > 10) {
         setOpenHour(true);
         return false;
       }
@@ -857,7 +857,7 @@ const Subpage = () => {
                 moment(startTime).diff(new Date())
               );
               var minutes = duration.asMinutes();
-              if (minutes < 10) {
+              if (Math.abs(minutes) > 10) {
                 setOpenHour(true);
                 return false;
               }

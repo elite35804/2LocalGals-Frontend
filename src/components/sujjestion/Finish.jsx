@@ -4,6 +4,7 @@ import Header from "../Header";
 import { useEffect, useState } from "react";
 import { useActions, useAppState } from "@/store";
 import moment from "moment";
+let times = 0;
 const Finish = () => {
   const params = useParams();
   const actions = useActions();
@@ -11,8 +12,11 @@ const Finish = () => {
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
-    getAppointment();
-    getAppointments();
+    if (state.contractor?.contractorID && times === 0) {
+      getAppointment();
+      getAppointments();
+      times++;
+    }
   }, [state.contractor]);
 
   const getAppointments = async () => {
@@ -30,7 +34,7 @@ const Finish = () => {
     if (res?.TakePic) {
       setOptions([
         {
-          label: "Did you upload all Before/After pics, if applicable",
+          label: "Did you upload all Before/After pics, if applicable?",
           isChecked: false,
         },
         {

@@ -60,6 +60,10 @@ const Startjob = () => {
     }
   }, [state.contractor]);
 
+  useEffect(() => {
+    onSaveNote();
+  }, [notes]);
+
   const sleep = (waitTimeInMs) =>
     new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 
@@ -556,7 +560,7 @@ const Startjob = () => {
             isCompleted: false,
           },
           {
-            label: "Make beds(s), if present",
+            label: "Make bed(s), if present",
             isCompleted: false,
           },
           {
@@ -586,7 +590,7 @@ const Startjob = () => {
           options.push({ label: "Baseboards", isCompleted: false, deep: true });
         if (a?.DC_DoorFrames)
           options.push({
-            label: "Doors/Door Frames",
+            label: "Doors/door Frames",
             isCompleted: false,
             deep: true,
           });
@@ -648,7 +652,7 @@ const Startjob = () => {
             isCompleted: false,
           },
           {
-            label: "Mirrors/Chrome fixtures /Shined",
+            label: "Mirrors/Chrome fixtures Shined",
             isCompleted: false,
           },
           {
@@ -701,7 +705,7 @@ const Startjob = () => {
           options.push({ label: "Baseboards", isCompleted: false, deep: true });
         if (a?.DC_DoorFrames)
           options.push({
-            label: "Doors/Door Frames",
+            label: "Doors/door Frames",
             isCompleted: false,
             deep: true,
           });
@@ -818,7 +822,7 @@ const Startjob = () => {
       options.push({ label: "Baseboards", isCompleted: false, deep: true });
     if (a?.DC_DoorFrames)
       options.push({
-        label: "Doors/Door Frames",
+        label: "Doors/door Frames",
         isCompleted: false,
         deep: true,
       });
@@ -909,7 +913,7 @@ const Startjob = () => {
         isCompleted: false,
       },
       {
-        label: "Make beds(s), if present",
+        label: "Make bed(s), if present",
         isCompleted: false,
       },
       {
@@ -935,7 +939,7 @@ const Startjob = () => {
       options1.push({ label: "Baseboards", isCompleted: false, deep: true });
     if (a?.DC_DoorFrames)
       options1.push({
-        label: "Doors/Door Frames",
+        label: "Doors/door Frames",
         isCompleted: false,
         deep: true,
       });
@@ -1023,7 +1027,7 @@ const Startjob = () => {
       items.push({ label: "Baseboards", isCompleted: false });
 
     if (a?.DC_DoorFrames)
-      items.push({ label: "Doors/Door Frames", isCompleted: false });
+      items.push({ label: "Doors/door Frames", isCompleted: false });
     if (a?.DC_LightFixtures)
       items.push({ label: "Light Fixtures", isCompleted: false });
     if (a?.DC_LightSwitches)
@@ -1110,6 +1114,29 @@ const Startjob = () => {
     return result;
   }
 
+  const onSaveNote = async () => {
+    if (
+      moment(appointment.ScheduleDate).format("YYYY-MM-DD") ===
+        moment().format("YYYY-MM-DD") &&
+      !appointment?.JobCompleted
+    ) {
+      const formData = new FormData();
+      if (!appointment?.JobCompleted) {
+        formData.append("notes", notes);
+      }
+      await axios.post(
+        Settings.api_url + "schedule/UpdateAppointment/" + params?.id,
+        formData,
+        {
+          maxBodyLength: Infinity,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    }
+  };
+
   const onSave = async () => {
     if (
       moment(appointment.ScheduleDate).format("YYYY-MM-DD") !==
@@ -1132,9 +1159,9 @@ const Startjob = () => {
       for (let i = 0; i < chunkedArray?.length; i++) {
         const formData = new FormData();
         chunkedArray[i].map((f) => formData.append("files", f?.file));
-        if (!appointment?.JobCompleted) {
-          formData.append("notes", notes);
-        }
+        // if (!appointment?.JobCompleted) {
+        //   formData.append("notes", notes);
+        // }
         res = await axios.post(
           Settings.api_url + "schedule/UpdateAppointment/" + params?.id,
           formData,

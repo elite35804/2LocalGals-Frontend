@@ -73,7 +73,7 @@ export const getNotesAndPhotos = async ({ state, actions }, id) => {
 export const startJob = async ({ actions }, id) => {
   try {
     const res = await API(
-      `schedule/StartJob/${id}?date=${moment().format("YYYY-MM-DDThh:mm:ss")}`,
+      `schedule/StartJob/${id}?date=${moment().format("YYYY-MM-DDTHH:mm:ss")}`,
       "post",
       {}
     );
@@ -113,7 +113,7 @@ export const updateJobDetail = async ({ actions }, data) => {
 export const endJob = async ({ actions }, id) => {
   try {
     const res = await API(
-      `schedule/endJob/${id}?date=${moment().format("YYYY-MM-DDThh:mm:ss")}`,
+      `schedule/endJob/${id}?date=${moment().format("YYYY-MM-DDTHH:mm:ss")}`,
       "post",
       {}
     );
