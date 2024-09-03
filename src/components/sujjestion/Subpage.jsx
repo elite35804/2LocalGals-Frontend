@@ -15,6 +15,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
 import usePerfectInterval from "../../hooks/intervalHook.js";
+import numeral from "numeral";
 
 const Subpage = () => {
   const params = useParams();
@@ -606,7 +607,7 @@ const Subpage = () => {
                   <p className="space-x-2">
                     <span className="text-lg  font-medium">Approx.Pay:</span>
                     <span className="text-red-600">
-                      ${appointment.AproxPay}
+                      ${numeral(appointment.AproxPay).format("0,0.00")}
                     </span>
                   </p>
                 </div>

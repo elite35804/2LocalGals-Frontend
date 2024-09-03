@@ -5,6 +5,7 @@ import WithDashboardLayout from "@/hoc/WithDashboardLayout";
 import { useAppState, useActions } from "@/store";
 import moment from "moment";
 import usePerfectInterval from "../../hooks/intervalHook.js";
+import numeral from "numeral";
 
 const Home = () => {
   const state = useAppState();
@@ -64,13 +65,14 @@ const Home = () => {
         moment(p?.Date).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD")
     );
     payments.map((p) => {
-      today.pay += Math.round(p?.Total);
+      today.pay += p?.Total;
       p.Details.map((d) => {
-        today.hours += parseInt(d?.Hours);
+        today.hours += parseFloat(d?.Hours);
       });
     });
-    today.hourlyRate = Math.round(today.pay / today.hours || 0);
-    Object.keys(today).map((key) => (today[key] = Math.round(today[key])));
+    today.hourlyRate = today.pay / today.hours || 0;
+    today.pay = numeral(today.pay).format("0,0.00");
+    today.hourlyRate = numeral(today.hourlyRate).format("0,0.00");
     const thisWeek = {
       hours: 0,
       pay: 0,
@@ -84,15 +86,14 @@ const Home = () => {
           moment().endOf("isoweek").format("YYYY-MM-DD")
     );
     thisWeekPayments.map((p) => {
-      thisWeek.pay += Math.round(p?.Total);
+      thisWeek.pay += p?.Total;
       p.Details.map((d) => {
-        thisWeek.hours += parseInt(d?.Hours);
+        thisWeek.hours += parseFloat(d?.Hours);
       });
     });
-    thisWeek.hourlyRate = Math.round(thisWeek.pay / thisWeek.hours || 0);
-    Object.keys(thisWeek).map(
-      (key) => (thisWeek[key] = Math.round(thisWeek[key]))
-    );
+    thisWeek.hourlyRate = thisWeek.pay / thisWeek.hours || 0;
+    thisWeek.pay = numeral(thisWeek.pay).format("0,0.00");
+    thisWeek.hourlyRate = numeral(thisWeek.hourlyRate).format("0,0.00");
     const nextWeek = {
       hours: 0,
       pay: 0,
@@ -106,15 +107,14 @@ const Home = () => {
           moment().endOf("isoweek").add(7, "days").format("YYYY-MM-DD")
     );
     nextWeekPayments.map((p) => {
-      nextWeek.pay = Math.round(p?.Total);
+      nextWeek.pay = p?.Total;
       p.Details.map((d) => {
-        nextWeek.hours += parseInt(d?.Hours);
+        nextWeek.hours += parseFloat(d?.Hours);
       });
     });
-    nextWeek.hourlyRate = Math.round(nextWeek.pay / nextWeek.hours || 0);
-    Object.keys(nextWeek).map(
-      (key) => (nextWeek[key] = Math.round(nextWeek[key]))
-    );
+    nextWeek.hourlyRate = nextWeek.pay / nextWeek.hours || 0;
+    nextWeek.pay = numeral(nextWeek.pay).format("0,0.00");
+    nextWeek.hourlyRate = numeral(nextWeek.hourlyRate).format("0,0.00");
     const reports = {
       today: today,
       thisWeek: thisWeek,
@@ -135,6 +135,7 @@ const Home = () => {
       return "Night";
     }
   };
+  console.log(report, "report");
 
   return (
     <div className="login_page min-h-screen">

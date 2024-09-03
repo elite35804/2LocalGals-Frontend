@@ -62,7 +62,7 @@ const Schedule = ({ appointments, date, currentAppointment }) => {
           <p className="text-grey-500">
             Approx. Pay:{" "}
             <span className="font-semibold text-[red]">
-              ${numeral(pay).format("0,0")}
+              ${numeral(pay).format("0,0.00")}
             </span>
           </p>
         </div>
