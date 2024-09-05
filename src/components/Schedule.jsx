@@ -40,7 +40,7 @@ const Schedule = ({ appointments, date, currentAppointment }) => {
       window.open(
         `https://maps.google.com/maps?f=d&t=h&saddr=${text.join(
           ", "
-        )}&daddr=${text.join(",")}`,
+        )}&daddr=${text.join(", ")}`,
         "_blank"
       );
     }
