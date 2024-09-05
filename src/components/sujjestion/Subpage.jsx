@@ -89,6 +89,10 @@ const Subpage = () => {
     setAppointment(res);
     getPosition(res);
     getPartners(res);
+    if (res?.jobStartTime) {
+      setshow(true);
+      setcheked(true);
+    }
     return res;
   };
 
@@ -331,6 +335,10 @@ const Subpage = () => {
       actions.alert.showError({
         message: "You are not allowed to start this job.",
       });
+      return false;
+    }
+    if (appointment?.jobStartTime) {
+      navigate(`/Startjob/${params?.id}`);
       return false;
     }
     let job = JSON.parse(localStorage.getItem("current_appointment"));
@@ -797,14 +805,14 @@ const Subpage = () => {
               onClick={() => onStart()}
               type="submit"
               style={
-                show && check && isValidLocation
+                appointment?.jobStartTime || (show && check && isValidLocation)
                   ? { background: "green" }
                   : { background: "grey" }
               }
               className="border border-transparent text-white text-lg sm:w-full w-64 py-2 rounded-lg transition-all delay-150 whitespace-nowrap "
               disabled={show && check ? false : true}
             >
-              Start Job
+              {appointment?.jobStartTime ? "Continue" : "Start Job"}
             </button>
           </div>
         </div>
