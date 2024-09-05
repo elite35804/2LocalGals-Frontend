@@ -1,4 +1,4 @@
-import { generatePath, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import { useEffect, useState, useRef } from "react";
 import AddIcCallIcon from "@mui/icons-material/AddIcCall";
@@ -48,6 +48,10 @@ const Startjob = () => {
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
   const ref = useRef();
+
+  useEffect(() => {
+    times = 0;
+  }, []);
 
   useEffect(() => {
     if (state.contractor?.contractorID && times === 0) {
