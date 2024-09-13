@@ -46,12 +46,16 @@ const Home = () => {
   };
 
   const getPayments = async () => {
+    console.log(
+      moment().startOf("isoweek").subtract(1, "days").format("M/D/YYYY"),
+      moment().endOf("isoweek").add(6, "days").format("M/D/YYYY")
+    );
     await actions.user.getPayments({
       StartDate: moment()
         .startOf("isoweek")
         .subtract(1, "days")
         .format("M/D/YYYY"),
-      EndDate: moment().endOf("isoweek").add(8, "days").format("M/D/YYYY"),
+      EndDate: moment().endOf("isoweek").add(6, "days").format("M/D/YYYY"),
       id: state.contractor?.contractorID,
     });
     console.log(state.user.payments, "payments");
@@ -81,9 +85,12 @@ const Home = () => {
     const thisWeekPayments = state.user.payments.filter(
       (p) =>
         moment(p?.Date).format("YYYY-MM-DD") >=
-          moment().startOf("isoweek").format("YYYY-MM-DD") &&
+          moment()
+            .startOf("isoweek")
+            .subtract(1, "days")
+            .format("YYYY-MM-DD") &&
         moment(p?.Date).format("YYYY-MM-DD") <=
-          moment().endOf("isoweek").format("YYYY-MM-DD")
+          moment().endOf("isoweek").subtract(1, "days").format("YYYY-MM-DD")
     );
     thisWeekPayments.map((p) => {
       thisWeek.pay += p?.Total;
@@ -102,9 +109,9 @@ const Home = () => {
     const nextWeekPayments = state.user.payments.filter(
       (p) =>
         moment(p?.Date).format("YYYY-MM-DD") >=
-          moment().startOf("isoweek").add(7, "days").format("YYYY-MM-DD") &&
+          moment().startOf("isoweek").add(6, "days").format("YYYY-MM-DD") &&
         moment(p?.Date).format("YYYY-MM-DD") <=
-          moment().endOf("isoweek").add(7, "days").format("YYYY-MM-DD")
+          moment().endOf("isoweek").add(6, "days").format("YYYY-MM-DD")
     );
     nextWeekPayments.map((p) => {
       nextWeek.pay = p?.Total;
@@ -135,7 +142,6 @@ const Home = () => {
       return "Night";
     }
   };
-  console.log(report, "report");
 
   return (
     <div className="login_page min-h-screen">
@@ -160,6 +166,7 @@ const Home = () => {
                       date={key}
                       appointments={state.appointment?.appointments?.[key]}
                       currentAppointment={currentAppointment}
+                      contractor={state.contractor}
                     />
                   );
                 }

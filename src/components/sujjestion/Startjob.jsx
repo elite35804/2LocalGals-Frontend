@@ -54,6 +54,12 @@ const Startjob = () => {
   }, []);
 
   useEffect(() => {
+    if (step === 1) {
+      document.getElementById("subview").scrollIntoView({ behavior: "smooth" });
+    }
+  }, [step]);
+
+  useEffect(() => {
     if (state.contractor?.contractorID && times === 0) {
       onInitialize(times);
       times++;
@@ -429,13 +435,42 @@ const Startjob = () => {
                 )?.length;
           } else if (l?.label?.includes("Walls")) {
             l.isCompleted =
-              items.filter((i) => i?.options?.find((o) => o?.label === "Walls"))
-                ?.length > 0 &&
-              items.filter((i) => i?.options?.find((o) => o?.label === "Walls"))
-                ?.length ===
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label?.includes("Walls ("))
+              )?.length > 0 &&
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label?.includes("Walls ("))
+              )?.length ===
                 items?.filter((i) =>
                   i?.options?.find(
-                    (o) => o?.label === "Walls" && o?.isCompleted
+                    (o) => o?.label?.includes("Walls (") && o?.isCompleted
+                  )
+                )?.length;
+          } else if (l?.label?.includes("Fridge/Freezer")) {
+            l.isCompleted =
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label?.includes("Fridge/Freezer"))
+              )?.length > 0 &&
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label?.includes("Fridge/Freezer"))
+              )?.length ===
+                items?.filter((i) =>
+                  i?.options?.find(
+                    (o) =>
+                      o?.label?.includes("Fridge/Freezer") && o?.isCompleted
+                  )
+                )?.length;
+          } else if (l?.label?.includes("Ceiling Fans")) {
+            l.isCompleted =
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label?.includes("Ceiling Fans"))
+              )?.length > 0 &&
+              items.filter((i) =>
+                i?.options?.find((o) => o?.label?.includes("Ceiling Fans"))
+              )?.length ===
+                items?.filter((i) =>
+                  i?.options?.find(
+                    (o) => o?.label?.includes("Ceiling Fans") && o?.isCompleted
                   )
                 )?.length;
           } else if (l?.label !== "Organize" && !l?.name) {
@@ -614,7 +649,11 @@ const Startjob = () => {
             deep: true,
           });
         if (a?.DC_Walls)
-          options.push({ label: `Walls`, isCompleted: false, deep: true });
+          options.push({
+            label: `Walls (${a?.DC_WallsDetail})`,
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_CeilingFans)
           options.push({
             label: `Ceiling Fans`,
@@ -735,7 +774,11 @@ const Startjob = () => {
             deep: true,
           });
         if (a?.DC_Walls)
-          options.push({ label: `Walls`, isCompleted: false, deep: true });
+          options.push({
+            label: `Walls (${a?.DC_WallsDetail})`,
+            isCompleted: false,
+            deep: true,
+          });
         if (a?.DC_Baseboards)
           options.push({ label: "Baseboards", isCompleted: false, deep: true });
         if (a?.DC_DoorFrames)
@@ -852,7 +895,11 @@ const Startjob = () => {
     if (a?.DC_WindowsSills)
       options.push({ label: `Tracks & Sills`, isCompleted: false, deep: true });
     if (a?.DC_Walls)
-      options.push({ label: `Walls`, isCompleted: false, deep: true });
+      options.push({
+        label: `Walls (${a?.DC_WallsDetail})`,
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.DC_Baseboards)
       options.push({ label: "Baseboards", isCompleted: false, deep: true });
     if (a?.DC_DoorFrames)
@@ -967,7 +1014,11 @@ const Startjob = () => {
         deep: true,
       });
     if (a?.DC_Walls)
-      options1.push({ label: `Walls`, isCompleted: false, deep: true });
+      options1.push({
+        label: `Walls (${a?.DC_WallsDetail})`,
+        isCompleted: false,
+        deep: true,
+      });
     if (a?.DC_CeilingFans)
       options1.push({ label: `Ceiling Fans`, isCompleted: false, deep: true });
     if (a?.DC_Baseboards)
@@ -1016,12 +1067,12 @@ const Startjob = () => {
     //     isCompleted: false,
     //     deep: true,
     //   });
-    // if (a?.DC_LaundryRoom)
-    //   options1.push({
-    //     label: "Clean Laundry Room",
-    //     isCompleted: false,
-    //     deep: true,
-    //   });
+    if (a?.DC_LaundryRoom)
+      options1.push({
+        label: "Clean Laundry Room",
+        isCompleted: false,
+        deep: true,
+      });
 
     const otherRoom = {
       label: `Other Rooms/Areas`,
@@ -1029,13 +1080,12 @@ const Startjob = () => {
       options: options1,
     };
     items.push(otherRoom);
-    console.log(items, "items");
     if (items.find((i) => i?.label === "Master Bathroom")) {
       const element = items.splice(
         items.findIndex((i) => i?.label === "Master Bathroom"),
         1
       )[0];
-      items.splice(1, 0, element);
+      items.splice(0, 0, element);
     }
     return items;
   };
@@ -1253,7 +1303,14 @@ const Startjob = () => {
       });
       return false;
     }
-    if (!isGeneralItemsCompleted() || !isDeepItemsCompleted()) {
+    if (
+      !(
+        isGeneralItemsCompleted() &&
+        (appointment?.NC_CleaningType !== "General Clean"
+          ? isDeepItemsCompleted()
+          : true)
+      )
+    ) {
       setOpen(true);
       return false;
     }
@@ -1459,7 +1516,7 @@ const Startjob = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white p-3 mt-5 rounded-xl mx-auto">
+        <div id="subview" className="bg-white p-3 mt-5 rounded-xl mx-auto">
           <div className=" lg:w-full mx-auto mt-8">
             {step === 1 ? (
               <div className="flex items-start justify-between md:block mb-20">

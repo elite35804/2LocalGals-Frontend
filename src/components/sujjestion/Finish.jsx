@@ -12,6 +12,10 @@ const Finish = () => {
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
+    times = 0;
+  }, []);
+
+  useEffect(() => {
     if (state.contractor?.contractorID && times === 0) {
       getAppointment();
       getAppointments();

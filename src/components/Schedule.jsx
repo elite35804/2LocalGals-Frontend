@@ -6,26 +6,10 @@ import { useNavigate } from "react-router-dom";
 import key from "../assets/key.png";
 import location_icon from "../assets/location.png";
 
-const Schedule = ({ appointments, date, currentAppointment }) => {
+const Schedule = ({ appointments, date, currentAppointment, contractor }) => {
   let pay = 0;
   appointments?.map((a) => (pay += a?.AproxPay));
   const navigate = useNavigate();
-  function getMobileOperatingSystem() {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    console.log(userAgent, "userAgent");
-    // Windows Phone must come first because its UA also contains "Android"
-    if (/windows phone/i.test(userAgent)) {
-      return "Windows Phone";
-    }
-    if (/android/i.test(userAgent)) {
-      return "Android";
-    }
-    // iOS detection from: http://stackoverflow.com/a/9039885/177710
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      return "iOS";
-    }
-    return "unknown";
-  }
   const getLocation = (e, a) => {
     e.stopPropagation();
     let text = [];
@@ -33,17 +17,18 @@ const Schedule = ({ appointments, date, currentAppointment }) => {
     if (a?.locationCity) text.push(a?.locationCity);
     if (a?.locationState) text.push(a?.locationState);
     if (a?.locationZip) text.push(a?.locationZip);
-    console.log(getMobileOperatingSystem());
-    if (getMobileOperatingSystem() === "iOS") {
-      window.open(`https://maps.apple.com?q=${text.join(", ")}`, "_blank");
-    } else {
-      window.open(
-        `https://maps.google.com/maps?f=d&t=h&saddr=${text.join(
-          ", "
-        )}&daddr=${text.join(", ")}`,
-        "_blank"
-      );
-    }
+
+    let text1 = [];
+    if (contractor?.address) text1.push(contractor?.address);
+    if (contractor?.city) text1.push(contractor?.city);
+    if (contractor?.state) text1.push(contractor?.state);
+    if (contractor?.zip) text1.push(contractor?.zip);
+    window.open(
+      `https://maps.apple.com/?saddr=${text1?.join(",")}&daddr=${text?.join(
+        ","
+      )}`,
+      "_blank"
+    );
   };
 
   const onClickSchedule = async (appointment) => {

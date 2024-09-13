@@ -45,8 +45,6 @@ const Subpage = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
-        console.log("Clicked outside!");
-        // Add your logic here (e.g., close dropdown)
         setShowPhone(false);
         setShowSms(false);
       }
@@ -255,37 +253,26 @@ const Subpage = () => {
     return text.join(", ");
   };
 
-  function getMobileOperatingSystem() {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    console.log(userAgent, "userAgent");
-    // Windows Phone must come first because its UA also contains "Android"
-    if (/windows phone/i.test(userAgent)) {
-      return "Windows Phone";
-    }
-    if (/android/i.test(userAgent)) {
-      return "Android";
-    }
-    // iOS detection from: http://stackoverflow.com/a/9039885/177710
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      return "iOS";
-    }
-    return "unknown";
-  }
-
   const onClickLocation = () => {
-    if (getMobileOperatingSystem() === "iOS") {
-      window.open(
-        `https://maps.apple.com?q=${getLocation(appointment)}`,
-        "_blank"
-      );
-    } else {
-      window.open(
-        `https://maps.google.com/maps?f=d&t=h&saddr=${getLocation(
-          appointment
-        )}&daddr=${getLocation(appointment)}`,
-        "_blank"
-      );
-    }
+    let text = [];
+    const a = appointment;
+    if (a?.locationAddress)
+      text.push(a?.locationAddress?.split(" ")?.join("+"));
+    if (a?.locationCity) text.push(a?.locationCity);
+    if (a?.locationState) text.push(a?.locationState);
+    if (a?.locationZip) text.push(a?.locationZip);
+    const contractor = state.contractor;
+    let text1 = [];
+    if (contractor?.address) text1.push(contractor?.address);
+    if (contractor?.city) text1.push(contractor?.city);
+    if (contractor?.state) text1.push(contractor?.state);
+    if (contractor?.zip) text1.push(contractor?.zip);
+    window.open(
+      `https://maps.apple.com/?saddr=${text1?.join(",")}&daddr=${text?.join(
+        ","
+      )}`,
+      "_blank"
+    );
   };
 
   const getLocForContractor = async (job) => {
@@ -365,7 +352,6 @@ const Subpage = () => {
       );
       var duration = moment.duration(moment(startTime).diff(new Date()));
       var minutes = duration.asMinutes();
-      console.log(minutes, "minutes");
       if (Math.abs(minutes) > 10) {
         setOpenHour(true);
         return false;
@@ -643,18 +629,20 @@ const Subpage = () => {
                   {appointment?.NC_CleaningType}
                 </p>
               </div>
-              <div className="space-y-1">
-                <p className=" font-medium text-lg">Deep Cleaning Items</p>
-                <ol className="list-decimal px-4 text-grey-500 text-sm space-y-1">
-                  {/* <li>Kitch Cupboards (Outsides Only)</li>
+              {appointment?.NC_CleaningType !== "General Clean" && (
+                <div className="space-y-1">
+                  <p className=" font-medium text-lg">Deep Cleaning Items</p>
+                  <ol className="list-decimal px-4 text-grey-500 text-sm space-y-1">
+                    {/* <li>Kitch Cupboards (Outsides Only)</li>
                   <li>Bath Cupboards (Outsides Only)</li>
                   <li>Oven</li>
                   <li>Refrigerator</li> */}
-                  {getDeepItems(appointment)?.map((i) => (
-                    <li key={i}>{i}</li>
-                  ))}
-                </ol>
-              </div>
+                    {getDeepItems(appointment)?.map((i) => (
+                      <li key={i}>{i}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
             </div>
             <hr className="border-dashed mt-5" />
             <div className="Details flex flex-col space-y-4 justify-between mt-4">
@@ -828,7 +816,8 @@ const Subpage = () => {
         </DialogTitle> */}
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Do you have authorization to start the job early?
+            Do you have permission to begin the job at a different time than
+            originally scheduled?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
