@@ -69,7 +69,8 @@ const Home = () => {
         moment(p?.Date).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD")
     );
     payments.map((p) => {
-      today.pay += p?.Total;
+      p?.Details?.map((d) => (today.pay += d?.AproxPay));
+      // today.pay += p?.Details?.[0]?.AproxPay;
       p.Details.map((d) => {
         today.hours += parseFloat(d?.Hours);
       });
@@ -93,7 +94,7 @@ const Home = () => {
           moment().endOf("isoweek").subtract(1, "days").format("YYYY-MM-DD")
     );
     thisWeekPayments.map((p) => {
-      thisWeek.pay += p?.Total;
+      p?.Details?.map((d) => (thisWeek.pay += d?.AproxPay));
       p.Details.map((d) => {
         thisWeek.hours += parseFloat(d?.Hours);
       });
@@ -114,7 +115,7 @@ const Home = () => {
           moment().endOf("isoweek").add(6, "days").format("YYYY-MM-DD")
     );
     nextWeekPayments.map((p) => {
-      nextWeek.pay = p?.Total;
+      p?.Details?.map((d) => (nextWeek.pay += d?.AproxPay));
       p.Details.map((d) => {
         nextWeek.hours += parseFloat(d?.Hours);
       });
