@@ -268,7 +268,7 @@ const Subpage = () => {
     if (contractor?.state) text1.push(contractor?.state);
     if (contractor?.zip) text1.push(contractor?.zip);
     window.open(
-      `https://maps.apple.com/?saddr=${text1?.join(",")}&daddr=${text?.join(
+      `https://maps.google.com/?f=d&t=h&saddr=My+Location&daddr=${text?.join(
         ","
       )}`,
       "_blank"
@@ -620,6 +620,15 @@ const Subpage = () => {
                   ) : null}
                 </p>
                 <p className="text-grey-500 text-sm">
+                  {appointment?.HowtoEnterHome ? (
+                    <b>{`${
+                      appointment?.HowtoEnterHome
+                        ? `${appointment?.HowtoEnterHome}, `
+                        : ""
+                    }`}</b>
+                  ) : (
+                    ""
+                  )}
                   {getBuildingInformation(appointment)}
                 </p>
               </div>
@@ -656,7 +665,9 @@ const Subpage = () => {
                   <u>{`${
                     appointment?.paymentType === "Check" ||
                     appointment?.paymentType === "Cash"
-                      ? `${appointment?.paymentType} (Collect $${appointment?.total})`
+                      ? `${appointment?.paymentType} (Collect $${numeral(
+                          Math.round(appointment?.total * 10) / 10
+                        ).format("0,0.00")})`
                       : `${appointment?.paymentType}`
                   }`}</u>
                 </p>

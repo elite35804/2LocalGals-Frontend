@@ -6,6 +6,10 @@ import { useAppState, useActions } from "@/store";
 import moment from "moment";
 import usePerfectInterval from "../../hooks/intervalHook.js";
 import numeral from "numeral";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 
 const Home = () => {
   const state = useAppState();

@@ -24,7 +24,7 @@ const Schedule = ({ appointments, date, currentAppointment, contractor }) => {
     if (contractor?.state) text1.push(contractor?.state);
     if (contractor?.zip) text1.push(contractor?.zip);
     window.open(
-      `https://maps.apple.com/?saddr=${text1?.join(",")}&daddr=${text?.join(
+      `https://maps.google.com/?f=d&t=h&saddr=My+Location&daddr=${text?.join(
         ","
       )}`,
       "_blank"
