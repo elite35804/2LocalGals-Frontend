@@ -1,5 +1,5 @@
 export const Settings = {
   appName: "2LocalGals-Frontend",
-  api_url: "https://portal.2localgals.com/api/v1/",
-  folder_path: "https://portal.2localgals.com/ContratorPics/",
+  api_url: "https://back.decentrust.online/api/v1/",
+  folder_path: "https://back.decentrust.online/ContratorPics/",
 };
